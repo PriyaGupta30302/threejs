@@ -16,15 +16,14 @@ void main() {
   // Wave animation for base position
   vec3 wavePos = position;
   // 3D rolling hills moving from right to left
-  // Reduced amplitude so waves don't block the screen
-  float waveHeight = sin(wavePos.x * 0.05 + wavePos.z * 0.05 + uTime * 1.0) * 1.5;
-  waveHeight += sin(wavePos.x * 0.1 - wavePos.z * 0.02 + uTime * 1.5) * 0.5;
+  // Using lower frequencies for larger, smoother waves
+  float waveHeight = sin(wavePos.x * 0.02 + wavePos.z * 0.02 + uTime * 0.5) * 3.0;
+  waveHeight += sin(wavePos.x * 0.05 - wavePos.z * 0.01 + uTime * 0.8) * 1.5;
   wavePos.y += waveHeight;
 
-  // Staggered progress
-  float pProgress = clamp((uProgress - randomOffset * 0.4) / (1.0 - randomOffset * 0.4), 0.0, 1.0);
+  // Staggered progress (reduced stagger delay for faster start)
+  float pProgress = clamp((uProgress - randomOffset * 0.2) / (1.0 - randomOffset * 0.2), 0.0, 1.0);
   float easedProgress = smoothstep(0.0, 1.0, pProgress);
-  easedProgress = smoothstep(0.0, 1.0, easedProgress);
 
   vec3 finalPos = mix(wavePos, targetPosition, easedProgress);
 
@@ -35,9 +34,14 @@ void main() {
   vec4 mvPosition = modelViewMatrix * vec4(finalPos, 1.0);
   gl_Position = projectionMatrix * mvPosition;
 
-  // Smaller, crisper point size
-  // Increased base size from 50 to 100 so landscape dots are visible in the distance
-  float pointSize = mix(100.0, 80.0, easedProgress);
+  // Hide 80% of particles in the sphere to make it look sparse
+  float keepParticle = step(randomOffset, 0.2); 
+  float sizeMultiplier = mix(1.0, keepParticle, easedProgress);
+  
+  // Vary the point size to make it look dotted and organic
+  float targetSize = mix(30.0, 120.0, randomOffset * 5.0);
+  float pointSize = mix(60.0, targetSize, easedProgress) * sizeMultiplier;
+  
   gl_PointSize = (pointSize / -mvPosition.z);
   
   vProgress = easedProgress;
@@ -70,25 +74,25 @@ export function Particles({ progressRef }: { progressRef: React.MutableRefObject
   const pointsRef = useRef<THREE.Points>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
-  const particleCount = 12000;
+  const particleCount = 50000;
 
   const [positions, targetPositions, randomOffsets] = useMemo(() => {
     const pos = new Float32Array(particleCount * 3);
     const targetPos = new Float32Array(particleCount * 3);
     const randOffsets = new Float32Array(particleCount);
 
-    const widthSegments = 120;
-    const depthSegments = 100;
+    const widthSegments = 250;
+    const depthSegments = 200;
 
     for (let i = 0; i < particleCount; i++) {
       const col = i % widthSegments;
       const row = Math.floor(i / widthSegments);
       
-      // Keep x and z closer so points don't disappear into sub-pixel sizes
-      const x = (col / (widthSegments - 1)) * 120 - 60; 
-      const z = (row / (depthSegments - 1)) * 100 - 80; // from -80 to 20
-      // Bring y up so it's visible in the lower half of the screen
-      const y = -5; 
+      // Widen the grid and extend Z past the camera (z=30) so there's no blank space at the bottom
+      const x = (col / (widthSegments - 1)) * 180 - 90; 
+      const z = (row / (depthSegments - 1)) * 140 - 100; // from -100 to 40
+      // Set y slightly lower to give it a solid base
+      const y = -6; 
       pos[i * 3 + 0] = x;
       pos[i * 3 + 1] = y;
       pos[i * 3 + 2] = z;
@@ -96,8 +100,8 @@ export function Particles({ progressRef }: { progressRef: React.MutableRefObject
       const theta = Math.random() * 2 * Math.PI;
       const phi = Math.acos((Math.random() * 2) - 1);
       
-      // Reduce radius noise to make the sphere edges look much sharper and defined
-      const radius = 3 + (Math.random() - 0.5) * 0.1;
+      // Sharp radius for the sphere, the dotted look is handled by particle sizes and sparsity
+      const radius = 4.0;
 
       targetPos[i * 3 + 0] = radius * Math.sin(phi) * Math.cos(theta);
       targetPos[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
@@ -112,11 +116,11 @@ export function Particles({ progressRef }: { progressRef: React.MutableRefObject
   useFrame((state) => {
     if (materialRef.current) {
       materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
-      // Smoothly approach the target progress from the ref
+      // Faster lerp for immediate response on scroll
       materialRef.current.uniforms.uProgress.value = THREE.MathUtils.lerp(
         materialRef.current.uniforms.uProgress.value,
         progressRef.current,
-        0.05
+        0.2
       );
     }
     

@@ -21,7 +21,7 @@ export default function Hero() {
       start: 'top top',
       end: '+=300%',
       pin: true,
-      scrub: 1.5,
+      scrub: 0.5, // Reduced from 1.5 for faster, immediate response
       onUpdate: (self) => {
         progressRef.current = self.progress;
       },
@@ -35,7 +35,7 @@ export default function Hero() {
   return (
     <div ref={containerRef} className="relative h-screen w-full bg-black overflow-hidden">
       {/* Background Image */}
-      <div className="absolute inset-0 z-0 w-full h-screen">
+      <div className="absolute inset-0 z-0 w-full h-screen bg-black">
         <Image
           src="/hero/hero-img.png"
           alt="Hero Background"
@@ -43,6 +43,8 @@ export default function Hero() {
           priority
           className="object-fill"
         />
+        {/* Vignette Gradient Overlay */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_10%,_rgba(0,0,0,0.8)_90%)] pointer-events-none"></div>
       </div>
 
       {/* 3D Canvas */}
