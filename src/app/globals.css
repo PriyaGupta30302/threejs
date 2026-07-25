@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-dm-sans);
+  --font-heading: var(--font-lateef);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-lateef);
+  font-weight: 400;
+}
+
+:root {
+  --background: #000000;
+  --foreground: #ffffff;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-dm-sans), sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
