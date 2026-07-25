@@ -41,7 +41,7 @@ export default function Hero() {
           alt="Hero Background"
           fill
           priority
-          className="object-fill"
+          className="object-cover object-center"
         />
         {/* Vignette Gradient Overlay */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_10%,_rgba(0,0,0,0.8)_90%)] pointer-events-none"></div>
@@ -55,13 +55,13 @@ export default function Hero() {
       </div>
 
       {/* Logo Element */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 w-full pointer-events-none flex items-end">
+      <div className="absolute bottom-4 md:bottom-0 left-0 right-0 z-20 w-full px-4 md:px-0 pointer-events-none flex items-end">
         <Image
           src="/hero/hero-logo.svg"
           alt="Offground Logo"
           width={1920}
           height={400}
-          className="w-full h-auto opacity-20 mix-blend-overlay"
+          className="w-full h-auto opacity-20 mix-blend-overlay object-contain"
           priority
         />
       </div>

@@ -1,12 +1,14 @@
 'use client';
 
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 
 const vertexShader = `
 uniform float uTime;
 uniform float uProgress;
+uniform float uSphereRotY;
+uniform float uSphereRotX;
 
 attribute vec3 targetPosition;
 attribute float randomOffset;
@@ -25,7 +27,24 @@ void main() {
   float pProgress = clamp((uProgress - randomOffset * 0.2) / (1.0 - randomOffset * 0.2), 0.0, 1.0);
   float easedProgress = smoothstep(0.0, 1.0, pProgress);
 
-  vec3 finalPos = mix(wavePos, targetPosition, easedProgress);
+  // Rotate the sphere target positions based on accumulated rotation
+  float angleY = uSphereRotY;
+  float sy = sin(angleY);
+  float cy = cos(angleY);
+  mat2 rotY = mat2(cy, -sy, sy, cy);
+  
+  float angleX = uSphereRotX;
+  float sx = sin(angleX);
+  float cx = cos(angleX);
+  mat2 rotX = mat2(cx, -sx, sx, cx);
+
+  vec3 rotatedTarget = targetPosition;
+  // Apply Y axis rotation
+  rotatedTarget.xz = rotY * rotatedTarget.xz;
+  // Apply slight X axis tilt rotation
+  rotatedTarget.yz = rotX * rotatedTarget.yz;
+
+  vec3 finalPos = mix(wavePos, rotatedTarget, easedProgress);
 
   float flightArc = sin(easedProgress * 3.14159265);
   finalPos.y += flightArc * 2.0; 
@@ -74,7 +93,25 @@ export function Particles({ progressRef }: { progressRef: React.MutableRefObject
   const pointsRef = useRef<THREE.Points>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
+  const { size } = useThree();
+  const aspect = size.width / size.height;
+  // If the screen is portrait (mobile), scale down the mesh so it fits the narrow horizontal view
+  const meshScale = aspect < 1 ? Math.max(0.5, aspect * 1.6) : 1.0;
+
   const particleCount = 50000;
+
+  const sphereRotY = useRef(0);
+  const sphereRotX = useRef(0);
+
+  const uniforms = useMemo(
+    () => ({
+      uTime: { value: 0 },
+      uProgress: { value: 0 },
+      uSphereRotY: { value: 0 },
+      uSphereRotX: { value: 0 },
+    }),
+    []
+  );
 
   const [positions, targetPositions, randomOffsets] = useMemo(() => {
     const pos = new Float32Array(particleCount * 3);
@@ -113,7 +150,7 @@ export function Particles({ progressRef }: { progressRef: React.MutableRefObject
     return [pos, targetPos, randOffsets];
   }, [particleCount]);
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     if (materialRef.current) {
       materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
       // Faster lerp for immediate response on scroll
@@ -122,6 +159,15 @@ export function Particles({ progressRef }: { progressRef: React.MutableRefObject
         progressRef.current,
         0.2
       );
+      
+      // Only rotate the sphere when it's fully formed
+      if (progressRef.current > 0.95) {
+        sphereRotY.current += delta * 0.3;
+        sphereRotX.current += delta * 0.15;
+      }
+      
+      materialRef.current.uniforms.uSphereRotY.value = sphereRotY.current;
+      materialRef.current.uniforms.uSphereRotX.value = sphereRotX.current;
     }
     
     if (pointsRef.current) {
@@ -132,7 +178,7 @@ export function Particles({ progressRef }: { progressRef: React.MutableRefObject
   });
 
   return (
-    <points ref={pointsRef}>
+    <points ref={pointsRef} scale={meshScale}>
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
@@ -157,10 +203,7 @@ export function Particles({ progressRef }: { progressRef: React.MutableRefObject
         ref={materialRef}
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
-        uniforms={{
-          uTime: { value: 0 },
-          uProgress: { value: 0 },
-        }}
+        uniforms={uniforms}
         transparent
         depthWrite={false}
       />
