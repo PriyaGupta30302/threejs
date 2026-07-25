@@ -54,14 +54,16 @@ export default function Hero() {
         </Canvas>
       </div>
 
-      {/* Text Element */}
-      <div className="absolute bottom-12 left-0 right-0 z-20 flex justify-center pointer-events-none">
-        <h1 
-          className="text-6xl sm:text-8xl md:text-[10rem] font-medium tracking-[0.05em] text-white/90 drop-shadow-2xl"
-          style={{ fontFamily: 'var(--font-heading, sans-serif)' }}
-        >
-          OFFGROUND
-        </h1>
+      {/* Logo Element */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 w-full pointer-events-none flex items-end">
+        <Image
+          src="/hero/hero-logo.svg"
+          alt="Offground Logo"
+          width={1920}
+          height={400}
+          className="w-full h-auto opacity-20 mix-blend-overlay"
+          priority
+        />
       </div>
     </div>
   );
