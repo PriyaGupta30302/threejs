@@ -80,19 +80,19 @@ export default function ServicesSection() {
       }, 0);
 
       // Transition 2 (Time 1 to 2): Phase 1 (Web Dev) to Phase 2 (Design)
-      // Change background to Light Blue
+      // Change background to Light Blue faster
       masterTl.to(bgRef.current, {
         backgroundColor: "#E2E8F0",
-        duration: 1,
-        ease: "none",
-      }, 1);
+        duration: 0.4,
+        ease: "power2.inOut",
+      }, 1.2);
 
-      // Change Navigation text to black
+      // Change Navigation text to black faster
       masterTl.to(".nav-layer", {
         color: "#000000",
-        duration: 1,
-        ease: "none",
-      }, 1);
+        duration: 0.4,
+        ease: "power2.inOut",
+      }, 1.2);
 
       // Sphere moves further left during Web Dev -> Design ("back scroll")
       masterTl.to(p1SphereRef.current, {
@@ -111,19 +111,19 @@ export default function ServicesSection() {
       }, 2);
 
       // Transition 4 (Time 3 to 4): Phase 3 (Automation) to Phase 4 (Consulting)
-      // Change background to Dark Green
+      // Change background to Dark Green faster
       masterTl.to(bgRef.current, {
         backgroundColor: "#0E4A3C",
-        duration: 1,
-        ease: "none",
-      }, 3);
+        duration: 0.4,
+        ease: "power2.inOut",
+      }, 3.2);
 
-      // Change Navigation text back to white
-      masterTl.to(".nav-layer", {
+      // Change Navigation text and Phase 3 text back to white faster
+      masterTl.to([".nav-layer", ".phase-3-text"], {
         color: "#FFFFFF",
-        duration: 1,
-        ease: "none",
-      }, 3);
+        duration: 0.4,
+        ease: "power2.inOut",
+      }, 3.2);
 
       // Phase 2 Images floating continuously
       const p2Images = [
@@ -184,7 +184,7 @@ export default function ServicesSection() {
       // MotionPath animation for the orb
       if (orbRef.current && pathRef.current) {
         gsap.to(orbRef.current, {
-          duration: 6,
+          duration: 12,
           repeat: -1,
           ease: "none",
           motionPath: {
@@ -320,7 +320,7 @@ export default function ServicesSection() {
             </div>
 
             {/* Phase 3: Automation */}
-            <div className="w-[100vw] h-full flex items-center justify-between px-16 shrink-0 text-black relative pointer-events-auto">
+            <div className="w-[100vw] h-full flex items-center justify-between px-16 shrink-0 text-black phase-3-text relative pointer-events-auto">
                 <div className="w-[40%] z-10">
                     <h2 className="text-5xl leading-tight font-medium tracking-tight mb-8">
                         We automate the heavy lifting with intelligent background systems. From data flows to AI support, we ensure your business scales without friction.
@@ -353,13 +353,13 @@ export default function ServicesSection() {
                         </g>
                     </svg>
                     {/* Badges */}
-                    <div className="absolute top-[20%] left-[20%] badge bg-white px-4 py-2 rounded-full shadow-lg text-sm font-medium flex items-center gap-2">
+                    <div className="absolute top-[20%] left-[20%] badge bg-white px-4 py-2 rounded-full shadow-lg text-sm font-medium flex items-center gap-2 text-black">
                         <span className="w-4 h-4 bg-blue-500 rounded-sm"></span> lemlist
                     </div>
-                    <div className="absolute top-[30%] right-[20%] badge bg-white px-4 py-2 rounded-full shadow-lg text-sm font-medium flex items-center gap-2">
+                    <div className="absolute top-[30%] right-[20%] badge bg-white px-4 py-2 rounded-full shadow-lg text-sm font-medium flex items-center gap-2 text-black">
                         <span className="text-red-500 font-bold">n8n</span>
                     </div>
-                    <div className="absolute top-[50%] right-[30%] badge bg-white px-4 py-2 rounded-full shadow-lg text-sm font-medium flex items-center gap-2">
+                    <div className="absolute top-[50%] right-[30%] badge bg-white px-4 py-2 rounded-full shadow-lg text-sm font-medium flex items-center gap-2 text-black">
                         OpenAI
                     </div>
                     <div className="absolute bottom-[20%] right-[40%] badge bg-white px-4 py-2 rounded-full shadow-lg text-sm font-medium flex items-center gap-2 text-green-600">
@@ -372,7 +372,7 @@ export default function ServicesSection() {
                     {/* Expertise List aligned near the network */}
                     <div className="absolute -right-16 bottom-0 w-[60%]">
                         <h3 className="text-4xl font-medium mb-4">Our expertise</h3>
-                        <ul className="space-y-1 text-sm text-black/80">
+                        <ul className="space-y-1 text-sm opacity-80">
                             <li>Process automation with make/n8n</li>
                             <li>AI assistants and chatbots</li>
                             <li>AI phone systems</li>
@@ -396,7 +396,7 @@ export default function ServicesSection() {
                 </div>
                 
                 {/* SVG Diagram */}
-                <div className="absolute right-[10%] top-1/2 -translate-y-1/2 w-[600px] h-[600px] z-10">
+                <div className="absolute right-[2%] top-1/2 -translate-y-1/2 w-[850px] h-[850px] max-w-[55vw] max-h-[95vh] z-10">
                     <svg width="100%" height="100%" viewBox="0 0 600 600" ref={svgCirclesRef}>
                         <defs>
                             <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
@@ -404,29 +404,33 @@ export default function ServicesSection() {
                                 <feComposite in="SourceGraphic" in2="blur" operator="over" />
                             </filter>
                         </defs>
-                        <g stroke="rgba(255,255,255,0.4)" strokeWidth="1" fill="none">
-                            <path 
-                                ref={pathRef}
-                                id="circle-path-1"
-                                className="draw-circle"
-                                d="M300,100 A150,150 0 1,1 299.9,100" 
-                            />
+                        <g stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" fill="none">
+                            <circle cx="300" cy="250" r="150" className="draw-circle" />
                             <circle cx="300" cy="400" r="150" className="draw-circle" />
                         </g>
+                        
+                        {/* Invisible figure-8 path for the orb to trace BOTH circles (takkar path) */}
+                        <path 
+                            ref={pathRef}
+                            id="figure8-path"
+                            d="M 170.096, 325 A 150,150 0 1,1 429.904, 325 A 150,150 0 0,0 170.096, 325 A 150,150 0 0,0 429.904, 325 A 150,150 0 1,1 170.096, 325" 
+                            fill="none" 
+                            stroke="none" 
+                        />
                         
                         {/* Glowing Orb */}
                         <circle 
                             ref={orbRef}
-                            cx="0" cy="0" r="12" 
+                            cx="0" cy="0" r="14" 
                             fill="white" 
                             filter="url(#glow)"
-                            style={{ filter: "drop-shadow(0 0 10px rgba(255,255,255,0.8))" }}
+                            style={{ filter: "drop-shadow(0 0 15px rgba(255,255,255,1))" }}
                         />
                         
                         {/* Labels */}
-                        <text x="300" y="220" textAnchor="middle" fill="white" fontSize="24" className="font-medium">Business</text>
-                        <text x="300" y="350" textAnchor="middle" fill="white" fontSize="24" className="font-medium">Brand</text>
-                        <text x="300" y="470" textAnchor="middle" fill="white" fontSize="24" className="font-medium">Emotions</text>
+                        <text x="300" y="220" textAnchor="middle" fill="white" fontSize="32" className="font-medium tracking-wide">Business</text>
+                        <text x="300" y="340" textAnchor="middle" fill="white" fontSize="32" className="font-medium tracking-wide">Brand</text>
+                        <text x="300" y="470" textAnchor="middle" fill="white" fontSize="32" className="font-medium tracking-wide">Emotions</text>
                     </svg>
                 </div>
             </div>
