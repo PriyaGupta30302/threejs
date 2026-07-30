@@ -9,10 +9,12 @@ uniform float uTime;
 uniform float uProgress;
 uniform float uSphereRotY;
 uniform float uSphereRotX;
+uniform vec3 uMouse;
 
 attribute vec3 targetPosition;
 attribute float randomOffset;
 varying float vProgress;
+varying float vTwinkle;
 
 void main() {
   // Wave animation for base position
@@ -21,7 +23,14 @@ void main() {
   // Using lower frequencies for larger, smoother waves
   float waveHeight = sin(wavePos.x * 0.02 + wavePos.z * 0.02 + uTime * 0.5) * 3.0;
   waveHeight += sin(wavePos.x * 0.05 - wavePos.z * 0.01 + uTime * 0.8) * 1.5;
-  wavePos.y += waveHeight;
+  
+  // Interactive Mouse Ripple (Hover effect)
+  float distToMouse = distance(wavePos.xz, uMouse.xz);
+  float hoverArea = smoothstep(40.0, 0.0, distToMouse);
+  float mouseRipple = sin(distToMouse * 0.4 - uTime * 3.0) * 2.0;
+  float mouseEffect = mouseRipple * hoverArea;
+  
+  wavePos.y += waveHeight + mouseEffect;
 
   // Staggered progress (reduced stagger delay for faster start)
   float pProgress = clamp((uProgress - randomOffset * 0.2) / (1.0 - randomOffset * 0.2), 0.0, 1.0);
@@ -57,9 +66,18 @@ void main() {
   float keepParticle = step(randomOffset, 0.2); 
   float sizeMultiplier = mix(1.0, keepParticle, easedProgress);
   
+  // Twinkling effect based on time and randomOffset
+  float twinkleSpeed = mix(0.5, 2.0, randomOffset);
+  float twinkle = sin(uTime * twinkleSpeed + randomOffset * 100.0) * 0.5 + 0.5; // 0 to 1
+  vTwinkle = twinkle;
+
   // Vary the point size to make it look dotted and organic
-  float targetSize = mix(30.0, 120.0, randomOffset * 5.0);
-  float pointSize = mix(60.0, targetSize, easedProgress) * sizeMultiplier;
+  float targetSize = mix(50.0, 130.0, randomOffset * 5.0);
+  float baseSize = mix(100.0, targetSize, easedProgress) * sizeMultiplier;
+  
+  // Modulate point size with twinkle so they grow and shrink like stars
+  // Keep base size bigger so they remain clearly visible
+  float pointSize = mix(baseSize * 0.8, baseSize * 1.3, twinkle);
   
   gl_PointSize = (pointSize / -mvPosition.z);
   
@@ -69,6 +87,7 @@ void main() {
 
 const fragmentShader = `
 varying float vProgress;
+varying float vTwinkle;
 
 void main() {
   float distanceToCenter = distance(gl_PointCoord, vec2(0.5));
@@ -79,13 +98,14 @@ void main() {
   // Crisper edge instead of fuzzy glow
   float alpha = smoothstep(0.5, 0.2, distanceToCenter);
 
-  // Vibrant teal color matching the image
-  vec3 baseColor = vec3(0.2, 0.6, 0.5);
+  // Vibrant bright cyan/green color matching the image for clear visibility
+  vec3 baseColor = vec3(0.2, 0.8, 0.6);
   vec3 targetColor = vec3(0.2, 0.85, 0.7); 
   vec3 color = mix(baseColor, targetColor, vProgress);
 
-  // Higher opacity for clear distinct dots
-  gl_FragColor = vec4(color, alpha * mix(0.5, 0.85, vProgress)); 
+  // Higher opacity for clear distinct dots, modulated by twinkle effect for stars
+  float finalAlpha = alpha * mix(0.7, 1.0, vProgress) * mix(0.5, 1.0, vTwinkle);
+  gl_FragColor = vec4(color, finalAlpha); 
 }
 `;
 
@@ -109,9 +129,12 @@ export function Particles({ progressRef }: { progressRef: React.MutableRefObject
       uProgress: { value: 0 },
       uSphereRotY: { value: 0 },
       uSphereRotX: { value: 0 },
+      uMouse: { value: new THREE.Vector3(999, -6, 999) },
     }),
     []
   );
+
+  const targetMouse = useMemo(() => new THREE.Vector3(999, -6, 999), []);
 
   const [positions, targetPositions, randomOffsets] = useMemo(() => {
     const pos = new Float32Array(particleCount * 3);
@@ -125,11 +148,21 @@ export function Particles({ progressRef }: { progressRef: React.MutableRefObject
       const col = i % widthSegments;
       const row = Math.floor(i / widthSegments);
       
-      // Widen the grid and extend Z past the camera (z=30) so there's no blank space at the bottom
-      const x = (col / (widthSegments - 1)) * 180 - 90; 
-      const z = (row / (depthSegments - 1)) * 140 - 100; // from -100 to 40
-      // Set y slightly lower to give it a solid base
-      const y = -6; 
+      // Massive width to ensure the horizon (top of screen) stays perfectly straight and edges are off-screen
+      let x = (col / (widthSegments - 1)) * 400 - 200; 
+      // Extend Z past the camera (camera is at z=30) so there's NO empty space at the bottom
+      let z = (row / (depthSegments - 1)) * 200 - 150; // from -150 to 50
+      
+      // Add organic sine waves to make the horizontal lines wavy instead of a rigid straight grid
+      z += Math.sin(x * 0.05) * 5.0;
+      x += Math.sin(z * 0.05) * 2.0;
+      
+      // Create a downward slope (dhalan) at the front (bottom of screen)
+      let y = -6; 
+      if (z > 10) {
+         // As it gets closer to the camera, it drops down smoothly like a slope
+         y -= Math.pow((z - 10) * 0.15, 2.0);
+      } 
       pos[i * 3 + 0] = x;
       pos[i * 3 + 1] = y;
       pos[i * 3 + 2] = z;
@@ -168,6 +201,9 @@ export function Particles({ progressRef }: { progressRef: React.MutableRefObject
       
       materialRef.current.uniforms.uSphereRotY.value = sphereRotY.current;
       materialRef.current.uniforms.uSphereRotX.value = sphereRotX.current;
+      
+      // Smoothly lerp mouse position to target
+      materialRef.current.uniforms.uMouse.value.lerp(targetMouse, 0.1);
     }
     
     if (pointsRef.current) {
@@ -178,8 +214,22 @@ export function Particles({ progressRef }: { progressRef: React.MutableRefObject
   });
 
   return (
-    <points ref={pointsRef} scale={meshScale}>
-      <bufferGeometry>
+    <group>
+      <mesh 
+        position={[0, -6, 0]} 
+        rotation={[-Math.PI / 2, 0, 0]} 
+        visible={false}
+        onPointerMove={(e) => {
+          targetMouse.copy(e.point);
+        }}
+        onPointerOut={() => {
+          targetMouse.set(999, -6, 999);
+        }}
+      >
+        <planeGeometry args={[1000, 1000]} />
+      </mesh>
+      <points ref={pointsRef} scale={meshScale}>
+        <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
           count={particleCount}
@@ -208,5 +258,6 @@ export function Particles({ progressRef }: { progressRef: React.MutableRefObject
         depthWrite={false}
       />
     </points>
+    </group>
   );
 }

@@ -99,7 +99,7 @@ export default function Navbar() {
       start: "top top",
       end: 99999,
       onUpdate: (self) => {
-        if (self.direction === 1 && !isHidden && self.scrollY > 50) {
+        if (self.direction === 1 && !isHidden && self.scrollY > 5) {
           isHidden = true;
           gsap.to(linksRef.current, {
             y: -50,
@@ -160,7 +160,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav ref={containerRef} className="fixed top-8 left-0 right-0 z-[100] flex justify-between items-center w-full max-w-7xl mx-auto px-8 pointer-events-none [perspective:1000px]">
+      <nav ref={containerRef} className="absolute top-8 left-0 right-0 z-[100] flex justify-between items-center w-full max-w-7xl mx-auto px-8 pointer-events-none [perspective:1000px]">
         {/* Logo */}
         <div 
           ref={el => { linksRef.current[0] = el }}

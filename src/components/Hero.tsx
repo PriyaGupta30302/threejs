@@ -16,19 +16,38 @@ export default function Hero() {
     
     if (!containerRef.current) return;
 
-    const st = ScrollTrigger.create({
-      trigger: containerRef.current,
-      start: 'top top',
-      end: '+=300%',
-      pin: true,
-      scrub: 0.5, // Reduced from 1.5 for faster, immediate response
-      onUpdate: (self) => {
-        progressRef.current = self.progress;
-      },
+    let mm = gsap.matchMedia();
+
+    // Mobile: Requires much less physical scroll distance to form the circle
+    mm.add("(max-width: 767px)", () => {
+      ScrollTrigger.create({
+        trigger: containerRef.current,
+        start: 'top top',
+        end: '+=100%', 
+        pin: true,
+        scrub: 0.5,
+        onUpdate: (self) => {
+          progressRef.current = self.progress;
+        },
+      });
+    });
+
+    // Desktop: Original longer scroll distance
+    mm.add("(min-width: 768px)", () => {
+      ScrollTrigger.create({
+        trigger: containerRef.current,
+        start: 'top top',
+        end: '+=300%',
+        pin: true,
+        scrub: 0.5,
+        onUpdate: (self) => {
+          progressRef.current = self.progress;
+        },
+      });
     });
 
     return () => {
-      st.kill();
+      mm.revert();
     };
   }, []);
 
@@ -55,13 +74,13 @@ export default function Hero() {
       </div>
 
       {/* Logo Element */}
-      <div className="absolute bottom-4 md:bottom-0 left-0 right-0 z-20 w-full px-4 md:px-0 pointer-events-none flex items-end">
+      <div className="absolute bottom-24 md:bottom-0 left-0 right-0 z-20 w-full px-4 md:px-6 pointer-events-none flex items-end">
         <Image
           src="/hero/hero-logo.svg"
           alt="Offground Logo"
           width={1920}
           height={400}
-          className="w-full h-auto opacity-20 mix-blend-overlay object-contain"
+          className="w-full h-auto opacity-40 mix-blend-overlay object-contain"
           priority
         />
       </div>
