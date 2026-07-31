@@ -82,7 +82,7 @@ export function useServicesAnimation({
         ease: "none",
       }, 1.34);
 
-      // Time 1.95: Sphere fades out quickly when photo is about to touch Design tab
+      // Time 1.95: Sphere fades out quickly when Design phase starts entering
       masterTl.to(p1SphereRef.current, {
         opacity: 0,
         duration: 0.2,
@@ -91,10 +91,10 @@ export function useServicesAnimation({
 
       // Time 1.95: Change background to Light Blue
       masterTl.to(bgRef.current, {
-        backgroundColor: "#E2E8F0",
+        backgroundColor: "#dbe6ec",
         duration: 0.2,
         ease: "power2.inOut",
-      }, 1.75);
+      }, 1.95);
 
       // Time 1.95: Change Navigation text to black
       masterTl.to([".nav-layer", ".text-layer"], {
@@ -105,7 +105,7 @@ export function useServicesAnimation({
       // Time 4 to 5: Automation -> Consulting
       // Change background to Dark Green
       masterTl.to(bgRef.current, {
-        backgroundColor: "#0E4A3C",
+        backgroundColor: "#0f4134",
         duration: 0.4,
         ease: "power2.inOut",
       }, 4.2);
@@ -131,7 +131,6 @@ export function useServicesAnimation({
           gsap.to(img, {
             y: "random(-20, 20)",
             x: "random(-20, 20)",
-            rotationZ: "random(-5, 5)",
             duration: "random(3, 6)",
             repeat: -1,
             yoyo: true,

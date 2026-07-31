@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { useServicesAnimation } from "@/hooks/useServicesAnimation";
+import Network3D from "./Network3D";
 
 const TABS = ["Web Development", "Design", "Automation", "Consulting"];
 
@@ -116,7 +117,7 @@ export default function ServicesSection() {
         </div>
 
         {/* Phase 1 - Part 2: Web Development (Our focus) */}
-        <div className="w-[50vw] h-full flex items-end pb-24 shrink-0 relative pointer-events-auto pl-16">
+        <div className="w-auto h-full flex items-end pb-24 shrink-0 relative pointer-events-auto pl-16 pr-8">
             <div className="w-full max-w-[350px] ml-28 z-20">
                 <div className="flex flex-col items-start">
                     {/* Solid Chunky Arrow Icon */}
@@ -137,95 +138,69 @@ export default function ServicesSection() {
         </div>
 
         {/* Phase 2: Design */}
-        <div className="w-[100vw] h-full flex items-center shrink-0 relative pointer-events-auto">
-            <div className="px-16 flex items-center z-10 w-full h-full">
-                <div className="w-[40%] max-w-7xl mx-auto">
-                <div className="text-[12rem] leading-none mb-8 font-serif opacity-5 absolute top-[20%] left-16 z-0 pointer-events-none">Design</div>
-                <div className="relative z-10">
-                    <div className="text-3xl font-medium leading-tight mb-8">
-                    Years of experience working with top brands you've interacted with prove our expertise.
-                    </div>
-                    <p className="opacity-70 font-medium mb-6 text-lg">Tailored strategies, Guaranteed results</p>
-                    <p className="opacity-60 text-lg leading-relaxed">
-                        That's why we offer a full suite of services, each tailored to address your unique challenges and goals. Our team of experts combines creativity with data to build strategies that deliver results.
-                    </p>
-                </div>
-                </div>
+        <div className="w-[100vw] h-full shrink-0 relative pointer-events-auto phase-2-container">
+            {/* Text Content */}
+            <div className="absolute top-[18%] left-[28%] z-30 w-[50%] max-w-[700px]">
+                <h3 className="text-[35px] font-regular leading-[1] tracking-tight text-black">
+                    Years of experience working with<br/>
+                    brands you've interacted with backs up<br/>
+                    our expertise.
+                </h3>
             </div>
+
             {/* Images */}
             <div className="absolute inset-0 z-20 pointer-events-none">
-                <div ref={imgYfoodRef} className="absolute top-[10%] left-[-10%] w-64 h-64 overflow-hidden rounded-sm shadow-2xl">
+                <div ref={imgYfoodRef} className="absolute top-[13%] left-[0%] w-[260px] h-[260px] overflow-hidden rounded-sm shadow-xl">
                     <Image src="/sphereSection/imgi_4_sebastian_coelho-yfood.jpg" alt="yfood" fill className="object-cover" />
                 </div>
-                <div ref={imgEnphaseRef} className="absolute bottom-[10%] left-[0%] w-72 h-80 overflow-hidden rounded-sm shadow-2xl">
-                    <Image src="/sphereSection/imgi_5_Danijel_Radulovic-Enphase.jpg" alt="Enphase" fill className="object-cover" />
-                </div>
-                <div ref={imgNoiseRef} className="absolute top-[35%] left-[25%] w-80 h-56 overflow-hidden rounded-sm shadow-2xl">
+                
+                <div ref={imgNoiseRef} className="absolute top-[38%] left-[43%] w-[200px] h-[200px] overflow-hidden rounded-sm shadow-xl">
                     <Image src="/sphereSection/imgi_6_Jules_Toulmunde-Noise.jpg" alt="Noise" fill className="object-cover" />
                 </div>
-                <div ref={imgVinyasaRef} className="absolute bottom-[5%] left-[45%] w-56 h-72 overflow-hidden rounded-sm shadow-2xl">
+
+                <div ref={imgEnphaseRef} className="absolute top-[62%] left-[13%] w-[300px] h-[300px] overflow-hidden rounded-sm shadow-xl">
+                    <Image src="/sphereSection/imgi_5_Danijel_Radulovic-Enphase.jpg" alt="Enphase" fill className="object-cover" />
+                </div>
+                
+                <div ref={imgVinyasaRef} className="absolute top-[80%] left-[42%] w-[340px] h-[220px] overflow-hidden rounded-sm shadow-xl">
                     <Image src="/sphereSection/imgi_7_sebastian_coelho-vinyasa_flow.jpg" alt="Vinyasa" fill className="object-cover" />
                 </div>
-                <div ref={imgClarityRef} className="absolute bottom-[20%] left-[30%] w-64 h-56 overflow-hidden rounded-sm shadow-2xl">
+
+                <div ref={imgClarityRef} className="absolute top-[24%] right-[14%] w-[172px] h-[185px] overflow-hidden rounded-sm shadow-xl">
                     <Image src="/sphereSection/imgi_8_Jules_Toulmunde-Clarity.jpg" alt="Clarity" fill className="object-cover" />
+                </div>
+
+                <div className="absolute top-[64%] right-[4%] w-[320px] text-black">
+                    <h3 className="text-[40px] font-regular tracking-tight mb-4 font-sans leading-none">Our services</h3>
+                    <ul className="text-[18px] opacity-90 leading-[1.2] font-medium font-sans list-none m-0 p-0 space-y-1">
+                        <li>UX/UI design</li>
+                        <li>Brand identity and strategy</li>
+                        <li>Photography and video production</li>
+                        <li>CGI and motion design</li>
+                        <li>Trade fair design and construction</li>
+                    </ul>
                 </div>
             </div>
         </div>
 
         {/* Phase 3: Automation */}
-        <div className="w-[100vw] h-full flex items-center justify-between px-16 shrink-0 phase-3-text relative pointer-events-auto">
-            <div className="w-[40%] z-10 max-w-7xl mx-auto">
-                <h2 className="text-5xl leading-tight font-medium tracking-tight mb-8">
+        <div className="w-[100vw] h-full flex items-center justify-between px-0 shrink-0 phase-3-text relative pointer-events-auto">
+            <div className="w-[45%] z-10 max-w-[600px] mx-auto">
+                <h3 className="text-[35px] leading-tight font-medium tracking-tight mb-8">
                     We automate the heavy lifting with intelligent background systems. From data flows to AI support, we ensure your business scales without friction.
-                </h2>
+                </h3>
             </div>
             
-            {/* Network SVG */}
-            <div ref={p3NetworkRef} className="relative w-[50%] h-[70vh] z-10">
-                <svg width="100%" height="100%" viewBox="0 0 500 500" className="absolute inset-0">
-                    <defs>
-                        <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="#4A90E2" stopOpacity="0.2"/>
-                            <stop offset="100%" stopColor="#50E3C2" stopOpacity="0.8"/>
-                        </linearGradient>
-                    </defs>
-                    <g stroke="url(#lineGrad)" strokeWidth="1" opacity="0.6">
-                        <line x1="100" y1="200" x2="250" y2="150" />
-                        <line x1="250" y1="150" x2="400" y2="250" />
-                        <line x1="400" y1="250" x2="300" y2="400" />
-                        <line x1="300" y1="400" x2="150" y2="350" />
-                        <line x1="150" y1="350" x2="100" y2="200" />
-                        <line x1="250" y1="150" x2="300" y2="400" />
-                    </g>
-                    <g fill="#50E3C2">
-                        <circle cx="100" cy="200" r="4" />
-                        <circle cx="250" cy="150" r="6" />
-                        <circle cx="400" cy="250" r="5" />
-                        <circle cx="300" cy="400" r="4" />
-                        <circle cx="150" cy="350" r="5" />
-                    </g>
-                </svg>
-                {/* Badges */}
-                <div className="absolute top-[20%] left-[20%] badge bg-white px-4 py-2 rounded-full shadow-lg text-sm font-medium flex items-center gap-2 text-black">
-                    <span className="w-4 h-4 bg-blue-500 rounded-sm"></span> lemlist
-                </div>
-                <div className="absolute top-[30%] right-[20%] badge bg-white px-4 py-2 rounded-full shadow-lg text-sm font-medium flex items-center gap-2 text-black">
-                    <span className="text-red-500 font-bold">n8n</span>
-                </div>
-                <div className="absolute top-[50%] right-[30%] badge bg-white px-4 py-2 rounded-full shadow-lg text-sm font-medium flex items-center gap-2 text-black">
-                    OpenAI
-                </div>
-                <div className="absolute bottom-[20%] right-[40%] badge bg-white px-4 py-2 rounded-full shadow-lg text-sm font-medium flex items-center gap-2 text-green-600">
-                    pipedrive
-                </div>
-                <div className="absolute bottom-[30%] left-[25%] badge bg-white px-4 py-2 rounded-full shadow-lg text-sm font-medium flex items-center gap-2 text-purple-500">
-                    make
+            {/* 3D Network */}
+            <div ref={p3NetworkRef} className="relative w-[50%] h-[85vh] z-10 flex flex-col justify-end pb-4">
+                <div className="w-[110%] h-[85%] relative mb-6 mr-16 mt-12 -ml-44">
+                    <Network3D />
                 </div>
                 
                 {/* Expertise List aligned near the network */}
-                <div className="absolute -right-16 bottom-0 w-[60%]">
-                    <h3 className="text-4xl font-medium mb-4">Our expertise</h3>
-                    <ul className="space-y-1 text-sm opacity-80">
+                <div className="w-[75%] ml-auto z-20">
+                    <h3 className="text-[40px] font-medium tracking-tight mb-4 font-sans leading-none">Our expertise</h3>
+                    <ul className="text-[18px] opacity-90 leading-[1.4] font-medium font-sans list-none m-0 p-0 space-y-1">
                         <li>Process automation with make/n8n</li>
                         <li>AI assistants and chatbots</li>
                         <li>AI phone systems</li>
