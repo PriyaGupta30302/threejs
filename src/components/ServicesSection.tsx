@@ -12,7 +12,7 @@ export default function ServicesSection() {
   const bgRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState(-1);
 
-  const p1SphereRef = useRef<HTMLImageElement>(null);
+  const p1SphereRef = useRef<HTMLDivElement>(null);
 
   // Phase 2
   const imgYfoodRef = useRef<HTMLImageElement>(null);
@@ -51,9 +51,8 @@ export default function ServicesSection() {
       <div ref={bgRef} className="absolute inset-0 z-0 bg-[#161616]" />
 
       {/* The rotating sphere fixed at the bottom left touching the edge */}
-      <div className="absolute -bottom-[75vh] left-0 z-0 w-[150vh] h-[150vh] opacity-80 pointer-events-none mix-blend-screen">
+      <div ref={p1SphereRef} className="absolute -bottom-[75vh] left-0 z-0 w-[150vh] h-[150vh] opacity-80 pointer-events-none mix-blend-screen">
         <Image
-          ref={p1SphereRef}
           src="/sphereSection/imgi_3_sphere_offground_0.png"
           alt="Glowing Sphere"
           fill
@@ -70,7 +69,7 @@ export default function ServicesSection() {
             <div key={tab} className="flex items-center gap-3">
               <div 
                 className={`w-3 h-3 rounded-full transition-colors duration-300 ${
-                  activeTab === index ? 'bg-[#3AA89B]' : 'bg-white'
+                  activeTab === index ? 'bg-[#3AA89B]' : 'bg-current'
                 }`}
               />
               <span className={`text-[22px] font-medium tracking-wide ${activeTab === index ? 'text-[#3AA89B]' : ''}`}>{tab}</span>
@@ -117,17 +116,16 @@ export default function ServicesSection() {
         </div>
 
         {/* Phase 1 - Part 2: Web Development (Our focus) */}
-        <div className="w-[50vw] h-full flex items-center shrink-0 relative pointer-events-auto pl-16">
-            <div className="w-full max-w-[850px] z-20 mt-[25vh]">
-                <div className="flex flex-row items-start gap-6">
+        <div className="w-[50vw] h-full flex items-end pb-24 shrink-0 relative pointer-events-auto pl-16">
+            <div className="w-full max-w-[350px] ml-28 z-20">
+                <div className="flex flex-col items-start">
                     {/* Solid Chunky Arrow Icon */}
-                    <svg width="60" height="60" viewBox="0 0 24 24" fill="currentColor" className="mt-2 shrink-0">
-                        <path d="M5 21H21V5H16V16H5V21Z" />
-                        <path d="M19 19L3 3L6.5 0.5L22.5 16.5L19 19Z" />
+                    <svg width="72" height="72" viewBox="0 0 24 24" fill="currentColor" className="shrink-0 -ml-5">
+                        <path d="M 6 22 H 22 V 6 H 16 V 11.76 L 7.24 3 L 3 7.24 L 11.76 16 H 6 V 22 Z" />
                     </svg>
-                    <div>
-                        <h3 className="text-[40px] font-normal tracking-tight mb-2 font-sans whitespace-nowrap">Our focus</h3>
-                        <ul className="text-[28px] opacity-90 leading-[1.3] font-normal font-sans list-none m-0 p-0">
+                    <div className="ml-[50px] -mt-[6px]">
+                        <h3 className="text-[40px] font-medium tracking-tight mb-4 font-sans whitespace-nowrap leading-none">Our focus</h3>
+                        <ul className="text-[18px] opacity-90 leading-[1.2] font-medium font-sans list-none m-0 p-0 space-y-1">
                             <li>Unique corporate websites</li>
                             <li>Smart open source CMS.</li>
                             <li>E-commerce solutions</li>

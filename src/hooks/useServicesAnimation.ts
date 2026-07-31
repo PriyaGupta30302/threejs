@@ -20,7 +20,7 @@ export function useServicesAnimation({
   sectionRef: React.RefObject<HTMLDivElement | null>;
   sliderRef: React.RefObject<HTMLDivElement | null>;
   bgRef: React.RefObject<HTMLDivElement | null>;
-  p1SphereRef: React.RefObject<HTMLImageElement | null>;
+  p1SphereRef: React.RefObject<HTMLDivElement | null>;
   imgYfoodRef: React.RefObject<HTMLImageElement | null>;
   imgEnphaseRef: React.RefObject<HTMLImageElement | null>;
   imgNoiseRef: React.RefObject<HTMLImageElement | null>;
@@ -66,46 +66,42 @@ export function useServicesAnimation({
       }, 0);
 
       // Sphere rotation and movement
-      // Time 0 to 1.6: Intro -> Web Dev 1 -> Our focus
+      // Time 0 to 1.34: Intro -> Web Dev 1 -> Our focus
       masterTl.to(p1SphereRef.current, {
-        x: "-25vw",
+        x: "30vw",
         rotationZ: 180,
-        duration: 1.6,
+        duration: 1.34,
         ease: "none",
       }, 0);
 
-      // Time 1.6 to 3.0: Our focus -> Design
-      // Sphere moves further left and rotates left (back scroll)
+      // Time 1.34 to 2.2: Sphere rolls back to the left
       masterTl.to(p1SphereRef.current, {
-        x: "-65vw",
+        x: "-50vw",
         rotationZ: 0,
-        duration: 1.4,
+        duration: 0.86,
         ease: "none",
-      }, 1.6);
+      }, 1.34);
 
-      // Change background to Light Blue earlier (when Design phase images enter)
+      // Time 1.95: Sphere fades out quickly when photo is about to touch Design tab
+      masterTl.to(p1SphereRef.current, {
+        opacity: 0,
+        duration: 0.2,
+        ease: "power2.inOut",
+      }, 1.95);
+
+      // Time 1.95: Change background to Light Blue
       masterTl.to(bgRef.current, {
         backgroundColor: "#E2E8F0",
-        duration: 0.4,
+        duration: 0.2,
         ease: "power2.inOut",
-      }, 1.7);
+      }, 1.75);
 
-      // Change Navigation text to black
+      // Time 1.95: Change Navigation text to black
       masterTl.to([".nav-layer", ".text-layer"], {
         color: "#000000",
-        duration: 0.4,
+        duration: 0.2,
         ease: "power2.inOut",
-      }, 1.7);
-
-      // Time 3 to 4: Design -> Automation
-      // Hide the sphere completely
-      masterTl.to(p1SphereRef.current, {
-        x: "-100vw",
-        opacity: 0,
-        duration: 1,
-        ease: "none",
-      }, 3);
-
+      }, 1.95);
       // Time 4 to 5: Automation -> Consulting
       // Change background to Dark Green
       masterTl.to(bgRef.current, {
