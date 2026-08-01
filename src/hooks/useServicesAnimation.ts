@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import MotionPathPlugin from "gsap/MotionPathPlugin";
+
+gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 
 export function useServicesAnimation({
   sectionRef,
@@ -150,6 +153,7 @@ export function useServicesAnimation({
             path: pathRef.current,
             align: pathRef.current,
             alignOrigin: [0.5, 0.5],
+            autoRotate: true
           },
         });
       }

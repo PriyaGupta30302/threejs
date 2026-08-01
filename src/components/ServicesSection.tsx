@@ -27,7 +27,7 @@ export default function ServicesSection() {
 
   // Phase 4
   const svgCirclesRef = useRef<SVGSVGElement>(null);
-  const orbRef = useRef<SVGCircleElement>(null);
+  const orbRef = useRef<SVGGElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
 
   useServicesAnimation({
@@ -184,16 +184,16 @@ export default function ServicesSection() {
         </div>
 
         {/* Phase 3: Automation */}
-        <div className="w-[100vw] h-full flex items-center justify-between px-0 shrink-0 phase-3-text relative pointer-events-auto">
-            <div className="w-[45%] z-10 max-w-[600px] mx-auto">
+        <div className="w-[90vw] h-full flex items-center justify-between px-0 shrink-0 phase-3-text relative pointer-events-auto">
+            <div className="w-[45%] z-10 max-w-[600px] ml-16">
                 <h3 className="text-[35px] leading-tight font-medium tracking-tight mb-8">
                     We automate the heavy lifting with intelligent background systems. From data flows to AI support, we ensure your business scales without friction.
                 </h3>
             </div>
             
             {/* 3D Network */}
-            <div ref={p3NetworkRef} className="relative w-[50%] h-[85vh] z-10 flex flex-col justify-end pb-4">
-                <div className="w-[110%] h-[85%] relative mb-6 mr-16 mt-12 -ml-44">
+            <div ref={p3NetworkRef} className="relative w-[50%] h-[95vh] z-10 flex flex-col justify-end">
+                <div className="w-[110%] h-[85%] relative -mb-20 mr-16  -ml-40">
                     <Network3D />
                 </div>
                 
@@ -213,9 +213,9 @@ export default function ServicesSection() {
         </div>
 
         {/* Phase 4: Consulting */}
-        <div className="w-[100vw] h-full flex items-center px-16 shrink-0 relative pointer-events-auto">
-            <div className="w-[50%] z-20 max-w-7xl mx-auto">
-                <h2 className="text-[7rem] leading-[1.1] tracking-tight font-serif mb-8">
+        <div className="w-[85vw] h-full flex items-center pl-16 pr-8 shrink-0 relative pointer-events-auto">
+            <div className="w-[45%] z-20">
+                <h2 className="text-[7rem] leading-[0.9] tracking-tight font-serif mb-8">
                     Your all in<br />one agency
                 </h2>
                 <p className="text-xl opacity-90 leading-relaxed max-w-lg font-medium">
@@ -231,6 +231,10 @@ export default function ServicesSection() {
                             <feGaussianBlur stdDeviation="8" result="blur" />
                             <feComposite in="SourceGraphic" in2="blur" operator="over" />
                         </filter>
+                        <linearGradient id="comet-tail" x1="1" y1="0" x2="0" y2="0">
+                            <stop offset="0%" stopColor="white" stopOpacity="1" />
+                            <stop offset="100%" stopColor="white" stopOpacity="0" />
+                        </linearGradient>
                     </defs>
                     <g stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" fill="none">
                         <circle cx="300" cy="250" r="150" className="draw-circle" />
@@ -246,14 +250,29 @@ export default function ServicesSection() {
                         stroke="none" 
                     />
                     
-                    {/* Glowing Orb */}
-                    <circle 
-                        ref={orbRef}
-                        cx="0" cy="0" r="14" 
-                        fill="white" 
-                        filter="url(#glow)"
-                        style={{ filter: "drop-shadow(0 0 15px rgba(255,255,255,1))" }}
-                    />
+                    {/* Glowing Comet Orb (Multiple Circles) */}
+                    <g ref={orbRef}>
+                        {/* Invisible bounding box to keep the group perfectly centered at (0,0) for GSAP motionPath */}
+                        <circle cx="0" cy="0" r="45" fill="rgba(0,0,0,0)" />
+                        
+                        {/* Tail circles (all solid white except the very last ones) */}
+                        <circle cx="-40" cy="0" r="1.5" fill="white" opacity="0.1" />
+                        <circle cx="-35" cy="0" r="2.5" fill="white" opacity="0.3" />
+                        <circle cx="-30" cy="0" r="4" fill="white" opacity="1" />
+                        <circle cx="-25" cy="0" r="5.5" fill="white" opacity="1" />
+                        <circle cx="-20" cy="0" r="7" fill="white" opacity="1" />
+                        <circle cx="-15" cy="0" r="8.5" fill="white" opacity="1" />
+                        <circle cx="-10" cy="0" r="10" fill="white" opacity="1" />
+                        <circle cx="-5" cy="0" r="11.5" fill="white" opacity="1" />
+                        
+                        {/* Glowing Head (centered at 0,0) */}
+                        <circle 
+                            cx="0" cy="0" r="13" 
+                            fill="white" 
+                            filter="url(#glow)"
+                            style={{ filter: "drop-shadow(0 0 15px rgba(255,255,255,1))" }}
+                        />
+                    </g>
                     
                     {/* Labels */}
                     <text x="300" y="220" textAnchor="middle" fill="currentColor" fontSize="32" className="font-medium tracking-wide">Business</text>
