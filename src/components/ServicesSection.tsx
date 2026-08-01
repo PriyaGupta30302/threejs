@@ -253,7 +253,7 @@ export default function ServicesSection() {
                     {/* Glowing Comet Orb (Multiple Circles) */}
                     <g ref={orbRef}>
                         {/* Invisible bounding box to keep the group perfectly centered at (0,0) for GSAP motionPath */}
-                        <circle cx="0" cy="0" r="45" fill="rgba(0,0,0,0)" />
+                        <circle cx="0" cy="0" r="45" fill="white" opacity="0.01" />
                         
                         {/* Tail circles (all solid white except the very last ones) */}
                         <circle cx="-40" cy="0" r="1.5" fill="white" opacity="0.1" />
