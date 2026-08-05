@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -16,7 +16,7 @@ export default function Hero() {
     
     if (!containerRef.current) return;
 
-    let mm = gsap.matchMedia();
+    const mm = gsap.matchMedia();
 
     // Mobile: Requires much less physical scroll distance to form the circle
     mm.add("(max-width: 767px)", () => {

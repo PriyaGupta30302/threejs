@@ -31,13 +31,13 @@ export function useServicesAnimation({
   imgClarityRef: React.RefObject<HTMLImageElement | null>;
   svgCirclesRef: React.RefObject<SVGSVGElement | null>;
   pathRef: React.RefObject<SVGPathElement | null>;
-  orbRef: React.RefObject<SVGCircleElement | null>;
+  orbRef: React.RefObject<SVGGElement | null>;
   setActiveTab: (tab: number) => void;
 }) {
   useEffect(() => {
     if (!sectionRef.current || !sliderRef.current || !bgRef.current) return;
 
-    let ctx = gsap.context(() => {
+    const ctx = gsap.context(() => {
       const panels = gsap.utils.toArray(sliderRef.current!.children);
 
       const masterTl = gsap.timeline({

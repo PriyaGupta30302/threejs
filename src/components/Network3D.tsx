@@ -72,8 +72,7 @@ function BackgroundDots() {
             <bufferAttribute
               attach="attributes-position"
               count={2}
-              array={new Float32Array([line[0].x, line[0].y, line[0].z, line[1].x, line[1].y, line[1].z])}
-              itemSize={3}
+              args={[new Float32Array([line[0].x, line[0].y, line[0].z, line[1].x, line[1].y, line[1].z]), 3]}
             />
           </bufferGeometry>
           <lineBasicMaterial color="#3AA89B" transparent opacity={0.5} />
@@ -117,8 +116,7 @@ function NetworkScene() {
             <bufferAttribute
               attach="attributes-position"
               count={2}
-              array={new Float32Array([...line[0], ...line[1]])}
-              itemSize={3}
+              args={[new Float32Array([...line[0], ...line[1]]), 3]}
             />
           </bufferGeometry>
           <lineBasicMaterial color="#3AA89B" transparent opacity={0.8} />

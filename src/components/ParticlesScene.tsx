@@ -233,20 +233,17 @@ export function Particles({ progressRef }: { progressRef: React.MutableRefObject
         <bufferAttribute
           attach="attributes-position"
           count={particleCount}
-          array={positions}
-          itemSize={3}
+          args={[positions, 3]}
         />
         <bufferAttribute
           attach="attributes-targetPosition"
           count={particleCount}
-          array={targetPositions}
-          itemSize={3}
+          args={[targetPositions, 3]}
         />
         <bufferAttribute
           attach="attributes-randomOffset"
           count={particleCount}
-          array={randomOffsets}
-          itemSize={1}
+          args={[randomOffsets, 1]}
         />
       </bufferGeometry>
       <shaderMaterial

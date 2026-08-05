@@ -99,7 +99,7 @@ export default function Navbar() {
       start: "top top",
       end: 99999,
       onUpdate: (self) => {
-        if (self.direction === 1 && !isHidden && self.scrollY > 5) {
+        if (self.direction === 1 && !isHidden && self.scroll() > 5) {
           isHidden = true;
           gsap.to(linksRef.current, {
             y: -50,

@@ -98,7 +98,7 @@ export default function ServicesSection() {
                         Tailored strategies, Guaranteed results
                     </h2>
                     <p className="opacity-90 text-[28px] leading-[1.3] font-normal font-sans">
-                        That's why we offer a full suite of services, each tailored to address your unique challenges and goals. Our team of experts combines creativity with data to build strategies that deliver results.
+                        That&apos;s why we offer a full suite of services, each tailored to address your unique challenges and goals. Our team of experts combines creativity with data to build strategies that deliver results.
                     </p>
                 </div>
             </div>
@@ -143,7 +143,7 @@ export default function ServicesSection() {
             <div className="absolute top-[18%] left-[28%] z-30 w-[50%] max-w-[700px]">
                 <h3 className="text-[35px] font-regular leading-[1] tracking-tight text-black">
                     Years of experience working with<br/>
-                    brands you've interacted with backs up<br/>
+                    brands you&apos;ve interacted with backs up<br/>
                     our expertise.
                 </h3>
             </div>
@@ -285,3 +285,5 @@ export default function ServicesSection() {
     </section>
   );
 }
+
+// test
