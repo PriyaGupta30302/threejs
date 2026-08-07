@@ -1,0 +1,55 @@
+{
+  "tabs": [
+    "Web Development",
+    "Design",
+    "Automation",
+    "Consulting"
+  ],
+  "introduction": {
+    "heading": "We specialize in\ncustomer happiness.",
+    "subheading": "Tailored strategies, Guaranteed results",
+    "paragraph": "That's why we offer a full suite of services, each tailored to address your unique challenges and goals. Our team of experts combines creativity with data to build strategies that deliver results."
+  },
+  "webDevelopment": {
+    "part1": {
+      "heading": "We love to code.",
+      "paragraph": "Animated panels, lovely transitions and beautiful designs. But what is good design, without function?"
+    },
+    "part2": {
+      "heading": "Our focus",
+      "list": [
+        "Unique corporate websites",
+        "Smart open source CMS.",
+        "E-commerce solutions",
+        "Web app development"
+      ]
+    }
+  },
+  "design": {
+    "heading": "Years of experience working with\nbrands you've interacted with backs up\nour expertise.",
+    "servicesHeading": "Our services",
+    "servicesList": [
+      "UX/UI design",
+      "Brand identity and strategy",
+      "Photography and video production",
+      "CGI and motion design",
+      "Trade fair design and construction"
+    ]
+  },
+  "automation": {
+    "heading": "We automate the heavy lifting with intelligent background systems. From data flows to AI support, we ensure your business scales without friction.",
+    "expertiseHeading": "Our expertise",
+    "expertiseList": [
+      "Process automation with make/n8n",
+      "AI assistants and chatbots",
+      "AI phone systems",
+      "Social media automation",
+      "Lead research and cold outreach",
+      "CRM and synchronization of multiple systems"
+    ]
+  },
+  "consulting": {
+    "heading": "Your all in\none agency",
+    "paragraph": "We guide your complete digital transformation. From strategy and branding to complex automation, we are your single point of contact from concept to execution."
+  }
+}
