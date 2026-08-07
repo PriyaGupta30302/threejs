@@ -17,7 +17,7 @@ const NODES = [
   { id: 'voiceflow', label: 'Voiceflow', position: [1.2, -1.8, 1], color: '#000000', icon: 'V' },
   { id: 'phantom', label: 'phantom', position: [3, -1, -1.5], color: '#000000', icon: '👻' },
   { id: 'clay', label: 'clay', position: [-2, -2.5, 0], color: '#000000', icon: 'C' },
-  
+
   // Frontend Tech Stack
   { id: 'react', label: 'React', position: [0, 1.5, 1], color: '#61DAFB', icon: '⚛️' },
   { id: 'nextjs', label: 'Next.js', position: [-2, -0.5, -1], color: '#000000', icon: 'N' },
@@ -108,7 +108,7 @@ function NetworkScene() {
   return (
     <group ref={groupRef} scale={0.75}>
       <BackgroundDots />
-      
+
       {/* Main connections */}
       {mainConnections.map((line, i) => (
         <line key={`conn-${i}`}>
@@ -135,7 +135,7 @@ function NetworkScene() {
               {node.icon === '👻' || node.icon === '⚛️' ? (
                 <span className="text-xl leading-none">{node.icon}</span>
               ) : (
-                <div 
+                <div
                   className="w-5 h-5 rounded flex items-center justify-center text-white text-[10px] font-bold shadow-sm"
                   style={{ backgroundColor: node.color }}
                 >
