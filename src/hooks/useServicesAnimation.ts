@@ -16,8 +16,10 @@ export function useServicesAnimation({
   imgVinyasaRef,
   imgClarityRef,
   svgCirclesRef,
-  pathRef,
-  orbRef,
+  topPathRef,
+  bottomPathRef,
+  topOrbRef,
+  bottomOrbRef,
   setActiveTab,
 }: {
   sectionRef: React.RefObject<HTMLDivElement | null>;
@@ -30,8 +32,10 @@ export function useServicesAnimation({
   imgVinyasaRef: React.RefObject<HTMLImageElement | null>;
   imgClarityRef: React.RefObject<HTMLImageElement | null>;
   svgCirclesRef: React.RefObject<SVGSVGElement | null>;
-  pathRef: React.RefObject<SVGPathElement | null>;
-  orbRef: React.RefObject<SVGGElement | null>;
+  topPathRef: React.RefObject<SVGPathElement | null>;
+  bottomPathRef: React.RefObject<SVGPathElement | null>;
+  topOrbRef: React.RefObject<SVGGElement | null>;
+  bottomOrbRef: React.RefObject<SVGGElement | null>;
   setActiveTab: (tab: number) => void;
 }) {
   useEffect(() => {
@@ -143,15 +147,31 @@ export function useServicesAnimation({
         }
       });
 
-      // Phase 4 SVG Orb Animation along the path
-      if (orbRef.current && pathRef.current) {
-        gsap.to(orbRef.current, {
-          duration: 12,
+      // Phase 4 SVG Orbs Animation along paths
+      if (topOrbRef.current && topPathRef.current) {
+        gsap.to(topOrbRef.current, {
+          duration: 6,
           repeat: -1,
+          yoyo: true, // Bounce back at the ends of the path
           ease: "none",
           motionPath: {
-            path: pathRef.current,
-            align: pathRef.current,
+            path: topPathRef.current,
+            align: topPathRef.current,
+            alignOrigin: [0.5, 0.5],
+            autoRotate: true
+          },
+        });
+      }
+
+      if (bottomOrbRef.current && bottomPathRef.current) {
+        gsap.to(bottomOrbRef.current, {
+          duration: 6,
+          repeat: -1,
+          yoyo: true, // Bounce back at the ends of the path
+          ease: "none",
+          motionPath: {
+            path: bottomPathRef.current,
+            align: bottomPathRef.current,
             alignOrigin: [0.5, 0.5],
             autoRotate: true
           },
