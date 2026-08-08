@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
@@ -30,11 +30,13 @@ const NODES = [
 ];
 
 // Helper to generate lots of background dots
-function BackgroundDots() {
-  const points = useMemo(() => {
-    const pts = [];
+function BackgroundDots({ isMobile }: { isMobile: boolean }) {
+  const meshRef = useRef<THREE.InstancedMesh>(null);
+
+  const { points, linePositions } = useMemo(() => {
+    const vecPoints = [];
     for (let i = 0; i < 150; i++) {
-      pts.push(
+      vecPoints.push(
         new THREE.Vector3(
           (Math.random() - 0.5) * 7,
           (Math.random() - 0.5) * 7,
@@ -42,48 +44,53 @@ function BackgroundDots() {
         )
       );
     }
-    return pts;
-  }, []);
-
-  const lines = useMemo(() => {
+    
     const lns = [];
     for (let i = 0; i < 80; i++) {
-      const p1 = points[Math.floor(Math.random() * points.length)];
-      let p2 = points[Math.floor(Math.random() * points.length)];
+      const p1 = vecPoints[Math.floor(Math.random() * vecPoints.length)];
+      let p2 = vecPoints[Math.floor(Math.random() * vecPoints.length)];
       while (p1.distanceTo(p2) > 3) {
-        p2 = points[Math.floor(Math.random() * points.length)];
+        p2 = vecPoints[Math.floor(Math.random() * vecPoints.length)];
       }
-      lns.push([p1, p2]);
+      lns.push(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z);
     }
-    return lns;
+    return { points: vecPoints, linePositions: new Float32Array(lns) };
+  }, []);
+
+  useEffect(() => {
+    if (meshRef.current) {
+      const dummy = new THREE.Object3D();
+      points.forEach((p, i) => {
+        dummy.position.copy(p);
+        dummy.updateMatrix();
+        meshRef.current!.setMatrixAt(i, dummy.matrix);
+      });
+      meshRef.current.instanceMatrix.needsUpdate = true;
+    }
   }, [points]);
 
   return (
     <group>
-      {points.map((p, i) => (
-        <mesh key={i} position={p}>
-          <sphereGeometry args={[0.06, 8, 8]} />
-          <meshBasicMaterial color="#3AA89B" transparent opacity={0.8} />
-        </mesh>
-      ))}
-      {lines.map((line, i) => (
-        <line key={i}>
-          <bufferGeometry>
-            <bufferAttribute
-              attach="attributes-position"
-              count={2}
-              args={[new Float32Array([line[0].x, line[0].y, line[0].z, line[1].x, line[1].y, line[1].z]), 3]}
-            />
-          </bufferGeometry>
-          <lineBasicMaterial color="#3AA89B" transparent opacity={0.5} />
-        </line>
-      ))}
+      <instancedMesh ref={meshRef} args={[undefined, undefined, 150]}>
+        <sphereGeometry args={[0.06, 6, 6]} />
+        <meshBasicMaterial color="#3AA89B" transparent opacity={0.8} />
+      </instancedMesh>
+      <lineSegments>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            count={linePositions.length / 3}
+            args={[linePositions, 3]}
+          />
+        </bufferGeometry>
+        <lineBasicMaterial color="#3AA89B" transparent opacity={isMobile ? 0.25 : 0.5} />
+      </lineSegments>
     </group>
   );
 }
 
 // Scene component to rotate slowly
-function NetworkScene() {
+function NetworkScene({ isMobile }: { isMobile: boolean }) {
   const groupRef = useRef<THREE.Group>(null);
 
   useFrame(() => {
@@ -98,40 +105,38 @@ function NetworkScene() {
     for (let i = 0; i < NODES.length; i++) {
       for (let j = i + 1; j < NODES.length; j++) {
         if (Math.random() > 0.6) {
-          lns.push([NODES[i].position, NODES[j].position]);
+          lns.push(...NODES[i].position, ...NODES[j].position);
         }
       }
     }
-    return lns;
+    return new Float32Array(lns);
   }, []);
 
   return (
     <group ref={groupRef} scale={0.75}>
-      <BackgroundDots />
+      <BackgroundDots isMobile={isMobile} />
 
       {/* Main connections */}
-      {mainConnections.map((line, i) => (
-        <line key={`conn-${i}`}>
-          <bufferGeometry>
-            <bufferAttribute
-              attach="attributes-position"
-              count={2}
-              args={[new Float32Array([...line[0], ...line[1]]), 3]}
-            />
-          </bufferGeometry>
-          <lineBasicMaterial color="#3AA89B" transparent opacity={0.8} />
-        </line>
-      ))}
+      <lineSegments>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            count={mainConnections.length / 3}
+            args={[mainConnections, 3]}
+          />
+        </bufferGeometry>
+        <lineBasicMaterial color="#3AA89B" transparent opacity={isMobile ? 0.4 : 0.8} />
+      </lineSegments>
 
       {/* Main Nodes */}
       {NODES.map((node) => (
         <group key={node.id} position={new THREE.Vector3(...node.position)}>
           <mesh>
-            <sphereGeometry args={[0.1, 16, 16]} />
+            <sphereGeometry args={[0.1, 12, 12]} />
             <meshBasicMaterial color="#3AA89B" />
           </mesh>
-          <Html center distanceFactor={7.5} zIndexRange={[100, 0]}>
-            <div className="flex items-center gap-1.5 bg-white/95 backdrop-blur-md px-2.5 py-1.5 rounded-full shadow-lg border border-white/40 whitespace-nowrap" style={{ pointerEvents: 'none' }}>
+          <Html center sprite distanceFactor={7.5} zIndexRange={[100, 0]}>
+            <div className="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-full shadow-lg border border-gray-200 whitespace-nowrap" style={{ pointerEvents: 'none' }}>
               {node.icon === '👻' || node.icon === '⚛️' ? (
                 <span className="text-xl leading-none">{node.icon}</span>
               ) : (
@@ -151,12 +156,12 @@ function NetworkScene() {
   );
 }
 
-export default function Network3D() {
+export default function Network3D({ isMobile = false }: { isMobile?: boolean }) {
   return (
     <div className="w-full h-full relative cursor-grab active:cursor-grabbing select-none [&>div]:!overflow-visible">
-      <Canvas camera={{ position: [0, 0, 11], fov: 45 }} style={{ overflow: 'visible' }}>
+      <Canvas camera={{ position: [0, 0, 11], fov: 45 }} style={{ overflow: 'visible' }} dpr={isMobile ? [1, 2] : [1, 1.5]} performance={{ min: 0.5 }}>
         <OrbitControls enableZoom={false} enablePan={false} />
-        <NetworkScene />
+        <NetworkScene isMobile={isMobile} />
       </Canvas>
     </div>
   );

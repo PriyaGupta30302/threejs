@@ -4,10 +4,11 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import MotionPathPlugin from "gsap/MotionPathPlugin";
 import Network3D from "./Network3D";
 import textData from "../data/servicesText.json";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 
 export default function ServicesSectionMobile() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -17,6 +18,13 @@ export default function ServicesSectionMobile() {
   const card4Ref = useRef<HTMLDivElement>(null);
   const sphere1Ref = useRef<HTMLDivElement>(null);
   const sphere2Ref = useRef<HTMLDivElement>(null);
+  
+  // Phase 5 SVG Refs
+  const svgCirclesRef = useRef<SVGSVGElement>(null);
+  const topPathRef = useRef<SVGPathElement>(null);
+  const bottomPathRef = useRef<SVGPathElement>(null);
+  const topOrbRef = useRef<SVGGElement>(null);
+  const bottomOrbRef = useRef<SVGGElement>(null);
 
   useEffect(() => {
     if (!card2Ref.current || !sphere2Ref.current) return;
@@ -87,6 +95,37 @@ export default function ServicesSectionMobile() {
           }
         );
       }
+
+      // Phase 5 SVG Orbs Animation along paths
+      if (topOrbRef.current && topPathRef.current) {
+        gsap.to(topOrbRef.current, {
+          duration: 6,
+          repeat: -1,
+          yoyo: true, // Bounce back at the ends of the path
+          ease: "none",
+          motionPath: {
+            path: topPathRef.current,
+            align: topPathRef.current,
+            alignOrigin: [0.5, 0.5],
+            autoRotate: true
+          },
+        });
+      }
+
+      if (bottomOrbRef.current && bottomPathRef.current) {
+        gsap.to(bottomOrbRef.current, {
+          duration: 6,
+          repeat: -1,
+          yoyo: true, // Bounce back at the ends of the path
+          ease: "none",
+          motionPath: {
+            path: bottomPathRef.current,
+            align: bottomPathRef.current,
+            alignOrigin: [0.5, 0.5],
+            autoRotate: true
+          },
+        });
+      }
     });
 
     return () => ctx.revert();
@@ -97,7 +136,7 @@ export default function ServicesSectionMobile() {
       {/* ================= PHASE 1: INTRODUCTION ================= */}
       <div className="sticky top-0 h-[100dvh] w-full overflow-hidden flex flex-col justify-between p-6 bg-[#161616] z-10 shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
         {/* Sphere 1 - Positioned on right, ~40% visible. 85dvh width * 0.5 = 42.5dvh to offset center to right edge */}
-        <div ref={sphere1Ref} className="absolute bottom-0 -right-[42.5dvh] w-[85dvh] h-[85dvh] opacity-80 pointer-events-none mix-blend-screen">
+        <div ref={sphere1Ref} className="absolute bottom-0 -right-[42.5dvh] w-[85dvh] h-[85dvh] opacity-80 pointer-events-none mix-blend-screen will-change-transform">
           <Image
             src="/sphereSection/imgi_3_sphere_offground_0.png"
             alt="Glowing Sphere"
@@ -139,7 +178,7 @@ export default function ServicesSectionMobile() {
         {/* Sphere 2 - Positioned on left, ~30% visible. 85dvh width * 0.7 = 59.5dvh to offset */}
         <div
           ref={sphere2Ref}
-          className="absolute bottom-0 -left-[59.5dvh] w-[85dvh] h-[85dvh] opacity-80 pointer-events-none mix-blend-screen"
+          className="absolute bottom-0 -left-[59.5dvh] w-[85dvh] h-[85dvh] opacity-80 pointer-events-none mix-blend-screen will-change-transform"
         >
           <Image
             src="/sphereSection/imgi_3_sphere_offground_0.png"
@@ -200,7 +239,7 @@ export default function ServicesSectionMobile() {
         </div>
 
         {/* Horizontal Scrolling Images */}
-        <div className="design-img-container absolute top-[14%] left-0 w-[350vw] h-[60%] pointer-events-none z-10 flex items-center">
+        <div className="design-img-container absolute top-[14%] left-0 w-[350vw] h-[60%] pointer-events-none z-10 flex items-center will-change-transform">
           
           {/* Images placed in a continuous stream with visible gaps to match the order: Girl -> House -> Cream -> Purple -> Clarity */}
           
@@ -247,10 +286,12 @@ export default function ServicesSectionMobile() {
         </div>
 
         {/* 3D Network in the Center */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[60vh] pointer-events-auto z-10 flex items-center justify-center automation-slide-item">
-            <div className="w-[120%] h-[120%] scale-90  ml-5 origin-center">
-              <Network3D />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[60vh] pointer-events-auto z-10 flex items-center justify-center">
+          <div className="automation-slide-item w-full h-full flex items-center justify-center will-change-transform">
+            <div className="w-[120%] h-[120%] scale-90 ml-5 origin-center">
+              <Network3D isMobile={true} />
             </div>
+          </div>
         </div>
 
         <div className="relative z-20 mb-4 automation-slide-item">
@@ -262,6 +303,119 @@ export default function ServicesSectionMobile() {
               <li key={index}>{item}</li>
             ))}
           </ul>
+        </div>
+      </div>
+
+      {/* ================= PHASE 5: CONSULTING ================= */}
+      <div className="sticky top-0 h-[100dvh] w-full flex flex-col justify-start p-6 bg-[#0f4134] text-[#FFFFFF] z-50 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] rounded-t-[40px]">
+        {/* Top Text Content */}
+        <div className="w-full mt-4 md:mt-8 z-20">
+          <h2 className="text-[42px] leading-[1.05] tracking-tight font-serif mb-5">
+            {textData.consulting.heading.split('\n').map((line, i) => (
+              <span key={i}>
+                {line}
+                <br />
+              </span>
+            ))}
+          </h2>
+          <p className="text-[17px] opacity-90 leading-[1.5] font-medium max-w-[95%]">
+            {textData.consulting.paragraph}
+          </p>
+        </div>
+
+        {/* Bottom SVG Diagram */}
+        <div className="relative w-full aspect-square mt-16 md:mt-24 z-10 flex items-center justify-center">
+          <svg
+            width="100%"
+            height="100%"
+            viewBox="0 0 600 600"
+            ref={svgCirclesRef}
+            className="overflow-visible scale-[1.35]"
+          >
+            <defs>
+              <filter id="glow-mobile" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="8" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
+            <g stroke="rgba(255,255,255,0.4)" strokeWidth="2" fill="none">
+              <circle cx="300" cy="250" r="150" />
+              <circle cx="300" cy="400" r="150" />
+            </g>
+
+            {/* Invisible paths for the comets */}
+            <path
+              ref={topPathRef}
+              d="M 170.096, 325 A 150,150 0 1,1 429.904, 325 A 150,150 0 0,1 170.096, 325"
+              fill="none"
+              stroke="none"
+            />
+            <path
+              ref={bottomPathRef}
+              d="M 170.096, 325 A 150,150 0 1,0 429.904, 325 A 150,150 0 0,0 170.096, 325"
+              fill="none"
+              stroke="none"
+            />
+
+            {/* Top Comet */}
+            <g ref={topOrbRef}>
+              <circle cx="0" cy="0" r="45" fill="white" opacity="0.01" />
+              <circle
+                cx="0"
+                cy="0"
+                r="14"
+                fill="white"
+                filter="url(#glow-mobile)"
+                style={{
+                  filter: "drop-shadow(0 0 15px rgba(255,255,255,1))",
+                }}
+              />
+            </g>
+
+            {/* Bottom Comet */}
+            <g ref={bottomOrbRef}>
+              <circle cx="0" cy="0" r="45" fill="white" opacity="0.01" />
+              <circle
+                cx="0"
+                cy="0"
+                r="14"
+                fill="white"
+                filter="url(#glow-mobile)"
+                style={{
+                  filter: "drop-shadow(0 0 15px rgba(255,255,255,1))",
+                }}
+              />
+            </g>
+
+            {/* Labels */}
+            <text
+              x="300"
+              y="220"
+              textAnchor="middle"
+              fill="currentColor"
+              className="text-[26px] font-medium tracking-wide"
+            >
+              Business
+            </text>
+            <text
+              x="300"
+              y="340"
+              textAnchor="middle"
+              fill="currentColor"
+              className="text-[26px] font-medium tracking-wide"
+            >
+              Brand
+            </text>
+            <text
+              x="300"
+              y="470"
+              textAnchor="middle"
+              fill="currentColor"
+              className="text-[26px] font-medium tracking-wide"
+            >
+              Emotions
+            </text>
+          </svg>
         </div>
       </div>
     </section>

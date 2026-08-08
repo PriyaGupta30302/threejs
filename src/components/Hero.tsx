@@ -68,7 +68,7 @@ export default function Hero() {
 
       {/* 3D Canvas */}
       <div className="absolute inset-0 z-10">
-        <Canvas camera={{ position: [0, 2, 30], fov: 45 }}>
+        <Canvas camera={{ position: [0, 2, 30], fov: 45 }} dpr={[1, 1.5]} performance={{ min: 0.5 }}>
           <Particles progressRef={progressRef} />
         </Canvas>
       </div>

@@ -202,5 +202,6 @@ export function useServicesAnimation({
     }, sectionRef);
 
     return () => ctx.revert();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setActiveTab]);
 }
