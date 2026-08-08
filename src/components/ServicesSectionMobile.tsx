@@ -240,24 +240,24 @@ export default function ServicesSectionMobile() {
         ref={card4Ref}
         className="sticky top-0 h-[100dvh] w-full overflow-hidden flex flex-col justify-between p-6 bg-[#E8EDEC] text-[#111] z-40 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] rounded-t-[40px]"
       >
-        <div className="relative z-20 mt-12 w-[95%] automation-slide-item">
-          <h3 className="text-3xl font-medium tracking-tight mb-4 font-sans leading-tight">
+        <div className="relative z-20 mt-4 w-[95%] automation-slide-item">
+          <h3 className="text-[22px] font-medium tracking-tight font-sans leading-[1.2]">
             {textData.automation.heading}
           </h3>
         </div>
 
-        {/* 3D Network Background */}
-        <div className="absolute bottom-0 left-0 w-full h-[50vh] opacity-60 pointer-events-none z-10 flex items-end justify-center automation-slide-item">
-            <div className="w-[150%] h-[150%] scale-75 origin-bottom">
+        {/* 3D Network in the Center */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[60vh] pointer-events-auto z-10 flex items-center justify-center automation-slide-item">
+            <div className="w-[120%] h-[120%] scale-90  ml-5 origin-center">
               <Network3D />
             </div>
         </div>
 
-        <div className="relative z-20 mb-12 automation-slide-item">
-          <h3 className="text-3xl font-medium tracking-tight mb-4 font-sans">
+        <div className="relative z-20 mb-4 automation-slide-item">
+          <h3 className="text-[22px] font-medium tracking-tight mb-3 font-sans">
             {textData.automation.expertiseHeading}
           </h3>
-          <ul className="opacity-90 text-base leading-relaxed font-medium font-sans space-y-1">
+          <ul className="opacity-90 text-[14px] leading-[1.4] font-medium font-sans space-y-[4px]">
             {textData.automation.expertiseList.map((item, index) => (
               <li key={index}>{item}</li>
             ))}

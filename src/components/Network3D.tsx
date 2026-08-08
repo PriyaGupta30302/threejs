@@ -153,8 +153,8 @@ function NetworkScene() {
 
 export default function Network3D() {
   return (
-    <div className="w-full h-full relative cursor-grab active:cursor-grabbing select-none">
-      <Canvas camera={{ position: [0, 0, 11], fov: 45 }}>
+    <div className="w-full h-full relative cursor-grab active:cursor-grabbing select-none [&>div]:!overflow-visible">
+      <Canvas camera={{ position: [0, 0, 11], fov: 45 }} style={{ overflow: 'visible' }}>
         <OrbitControls enableZoom={false} enablePan={false} />
         <NetworkScene />
       </Canvas>
