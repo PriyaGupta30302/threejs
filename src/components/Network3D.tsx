@@ -4,6 +4,7 @@ import React, { useRef, useMemo, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
+import { useInView } from 'framer-motion';
 
 // Define the nodes based on the screenshot
 const NODES = [
@@ -32,10 +33,13 @@ const NODES = [
 // Helper to generate lots of background dots
 function BackgroundDots({ isMobile }: { isMobile: boolean }) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
+  
+  const dotCount = isMobile ? 50 : 150;
+  const lineCount = isMobile ? 30 : 80;
 
   const { points, linePositions } = useMemo(() => {
     const vecPoints = [];
-    for (let i = 0; i < 150; i++) {
+    for (let i = 0; i < dotCount; i++) {
       vecPoints.push(
         new THREE.Vector3(
           (Math.random() - 0.5) * 7,
@@ -46,7 +50,7 @@ function BackgroundDots({ isMobile }: { isMobile: boolean }) {
     }
     
     const lns = [];
-    for (let i = 0; i < 80; i++) {
+    for (let i = 0; i < lineCount; i++) {
       const p1 = vecPoints[Math.floor(Math.random() * vecPoints.length)];
       let p2 = vecPoints[Math.floor(Math.random() * vecPoints.length)];
       while (p1.distanceTo(p2) > 3) {
@@ -55,7 +59,7 @@ function BackgroundDots({ isMobile }: { isMobile: boolean }) {
       lns.push(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z);
     }
     return { points: vecPoints, linePositions: new Float32Array(lns) };
-  }, []);
+  }, [dotCount, lineCount]);
 
   useEffect(() => {
     if (meshRef.current) {
@@ -71,7 +75,7 @@ function BackgroundDots({ isMobile }: { isMobile: boolean }) {
 
   return (
     <group>
-      <instancedMesh ref={meshRef} args={[undefined, undefined, 150]}>
+      <instancedMesh ref={meshRef} args={[undefined, undefined, dotCount]}>
         <sphereGeometry args={[0.06, 6, 6]} />
         <meshBasicMaterial color="#3AA89B" transparent opacity={0.8} />
       </instancedMesh>
@@ -102,15 +106,16 @@ function NetworkScene({ isMobile }: { isMobile: boolean }) {
 
   const mainConnections = useMemo(() => {
     const lns = [];
+    const probability = isMobile ? 0.75 : 0.6; // Less connections on mobile for performance
     for (let i = 0; i < NODES.length; i++) {
       for (let j = i + 1; j < NODES.length; j++) {
-        if (Math.random() > 0.6) {
+        if (Math.random() > probability) {
           lns.push(...NODES[i].position, ...NODES[j].position);
         }
       }
     }
     return new Float32Array(lns);
-  }, []);
+  }, [isMobile]);
 
   return (
     <group ref={groupRef} scale={0.75}>
@@ -156,10 +161,16 @@ function NetworkScene({ isMobile }: { isMobile: boolean }) {
   );
 }
 
-export default function Network3D({ isMobile = false }: { isMobile?: boolean }) {
+export default function Network3D({ isMobile = false, isActive }: { isMobile?: boolean, isActive?: boolean }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { margin: "200px" });
+  
+  // If isActive is explicitly passed (e.g. pinned desktop sections), use it. Otherwise rely on native scroll visibility.
+  const shouldRender = isActive !== undefined ? isActive : isInView;
+
   return (
-    <div className="w-full h-full relative cursor-grab active:cursor-grabbing select-none [&>div]:!overflow-visible">
-      <Canvas camera={{ position: [0, 0, 11], fov: 45 }} style={{ overflow: 'visible' }} dpr={isMobile ? [1, 2] : [1, 1.5]} performance={{ min: 0.5 }}>
+    <div ref={containerRef} className="w-full h-full relative cursor-grab active:cursor-grabbing select-none [&>div]:!overflow-visible">
+      <Canvas frameloop={shouldRender ? 'always' : 'demand'} camera={{ position: [0, 0, 11], fov: 45 }} style={{ overflow: 'visible' }} dpr={isMobile ? 1 : [1, 1.5]} performance={{ min: 0.5 }}>
         <OrbitControls enableZoom={false} enablePan={false} />
         <NetworkScene isMobile={isMobile} />
       </Canvas>

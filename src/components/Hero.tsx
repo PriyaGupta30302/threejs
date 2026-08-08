@@ -4,11 +4,13 @@ import { useEffect, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useInView } from 'framer-motion';
 import { Particles } from './ParticlesScene';
 import Image from 'next/image';
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { margin: "200px" });
   const progressRef = useRef(0);
 
   useEffect(() => {
@@ -68,7 +70,7 @@ export default function Hero() {
 
       {/* 3D Canvas */}
       <div className="absolute inset-0 z-10">
-        <Canvas camera={{ position: [0, 2, 30], fov: 45 }} dpr={[1, 1.5]} performance={{ min: 0.5 }}>
+        <Canvas frameloop={isInView ? 'always' : 'demand'} camera={{ position: [0, 2, 30], fov: 45 }} dpr={[1, 1.5]} performance={{ min: 0.5 }}>
           <Particles progressRef={progressRef} />
         </Canvas>
       </div>

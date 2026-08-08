@@ -268,7 +268,7 @@ export default function ServicesSectionDesktop() {
             className="relative w-[58%] lg:w-[50%] h-[95vh] z-10 flex flex-col justify-end"
           >
             <div className="w-[120%] lg:w-[110%] h-[85%] relative -mb-20 mr-16 -ml-20 md:-ml-12 lg:-ml-16 xl:-ml-40 scale-[0.5] md:scale-[0.95] lg:scale-[1] xl:scale-100 origin-bottom-right">
-              <Network3D />
+              <Network3D isActive={activeTab === 2} />
             </div>
 
             {/* Expertise List aligned near the network */}
