@@ -21,5 +21,4 @@ html, body {
   font-family: var(--font-dm-sans), sans-serif;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
 }

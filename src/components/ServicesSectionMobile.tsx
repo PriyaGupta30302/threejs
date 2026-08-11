@@ -14,8 +14,13 @@ export default function ServicesSectionMobile() {
   const sectionRef = useRef<HTMLElement>(null);
   const card2Ref = useRef<HTMLDivElement>(null);
   const card3Ref = useRef<HTMLDivElement>(null);
-  const phase3SpacerRef = useRef<HTMLDivElement>(null);
   const card4Ref = useRef<HTMLDivElement>(null);
+  const card5Ref = useRef<HTMLDivElement>(null);
+  
+  const overlay1Ref = useRef<HTMLDivElement>(null);
+  const overlay2Ref = useRef<HTMLDivElement>(null);
+  const overlay3Ref = useRef<HTMLDivElement>(null);
+  const overlay4Ref = useRef<HTMLDivElement>(null);
   const sphere1Ref = useRef<HTMLDivElement>(null);
   const sphere2Ref = useRef<HTMLDivElement>(null);
   
@@ -34,46 +39,68 @@ export default function ServicesSectionMobile() {
       if (sphere1Ref.current) {
         gsap.to(sphere1Ref.current, {
           x: "100vw", // roll completely off-screen to the right
-          rotationZ: 90, // natural rolling rotation for this distance
+          rotationZ: 120, // natural rolling rotation for this distance
           scrollTrigger: {
             trigger: card2Ref.current,
             start: "top bottom", // starts when card 2 enters from bottom
-            end: "top 10%", // ends near the top, giving it a longer scroll distance to roll slower
-            scrub: 1.5, // changed from true to 1.5 to add smooth momentum
+            end: "top top", // ends when card 2 reaches the top
+            scrub: 1.5,
           },
         });
       }
 
-      // Sphere 2: Rolls to the left and hides as we scroll past Card 2
+      // Sphere 2: Rolls IN from the left as Card 2 slides up
       if (sphere2Ref.current) {
-        gsap.to(sphere2Ref.current, {
-          x: "-100vw", // roll completely off-screen to the left
-          rotationZ: -90, // natural rolling counter-clockwise
-          scrollTrigger: {
-            trigger: card2Ref.current,
-            start: "top top", // starts when card 2 reaches the top and becomes sticky
-            end: "+=100%", // roll away over 100vh of scroll for a smoother, longer roll
-            scrub: 1.5, // add smooth momentum
-          },
-        });
-      }
-
-      // Phase 3 Horizontal Image Scroll
-      if (card3Ref.current && phase3SpacerRef.current) {
         gsap.fromTo(
-          ".design-img-container",
-          { x: "-300vw" }, // Start with the Girl image (at 300vw) at the left edge of the screen
+          sphere2Ref.current,
           {
-            x: "0vw", // End with the Clarity image (at 10vw) on the screen
-            ease: "none",
+            x: "-100vw", // start completely off-screen to the left
+            rotationZ: -120, // start rotated back
+          },
+          {
+            x: "0vw", // roll into its original CSS position
+            rotationZ: 0,
             scrollTrigger: {
-              trigger: card3Ref.current,
-              start: "top 50%", // Start early when Design phase is 50% visible
-              end: () => `+=${window.innerHeight * 0.5 + phase3SpacerRef.current!.offsetHeight}`,
+              trigger: card2Ref.current,
+              start: "top bottom", // starts when card 2 enters from bottom
+              end: "top top", // ends when card 2 reaches the top
               scrub: 1.5,
             },
           }
         );
+      }
+
+      // Phase 3 Horizontal Image Scroll
+      if (card3Ref.current) {
+        gsap.fromTo(
+          ".design-img-container",
+          { x: "-140vw" }, // Start with Girl image entering from the left edge
+          {
+            x: "0vw", // Stop when Clarity arrives
+            ease: "none",
+            scrollTrigger: {
+              trigger: card3Ref.current,
+              start: "top bottom", 
+              end: "top top", // End exactly when Phase 3 is fully on screen
+              scrub: 1.5,
+            },
+          }
+        );
+      }
+
+      // Overlay Animations for each phase
+      // Added ease: "none" so the opacity scales linearly with scroll (e.g. 10% scroll = 10% opacity)
+      if (overlay1Ref.current && card2Ref.current) {
+        gsap.fromTo(overlay1Ref.current, { opacity: 0 }, { opacity: 0.5, ease: "none", scrollTrigger: { trigger: card2Ref.current, start: "top 70%", end: "top top", scrub: true } });
+      }
+      if (overlay2Ref.current && card3Ref.current) {
+        gsap.fromTo(overlay2Ref.current, { opacity: 0 }, { opacity: 0.5, ease: "none", scrollTrigger: { trigger: card3Ref.current, start: "top 70%", end: "top top", scrub: true } });
+      }
+      if (overlay3Ref.current && card4Ref.current) {
+        gsap.fromTo(overlay3Ref.current, { opacity: 0 }, { opacity: 0.5, ease: "none", scrollTrigger: { trigger: card4Ref.current, start: "top 70%", end: "top top", scrub: true } });
+      }
+      if (overlay4Ref.current && card5Ref.current) {
+        gsap.fromTo(overlay4Ref.current, { opacity: 0 }, { opacity: 0.5, ease: "none", scrollTrigger: { trigger: card5Ref.current, start: "top 70%", end: "top top", scrub: true } });
       }
 
       // Phase 4 Automation Slide Animation
@@ -135,8 +162,9 @@ export default function ServicesSectionMobile() {
     <section ref={sectionRef} className="relative w-full bg-[#161616] text-white pb-[100dvh]">
       {/* ================= PHASE 1: INTRODUCTION ================= */}
       <div className="sticky top-0 h-[100dvh] w-full overflow-hidden flex flex-col justify-between p-6 bg-[#161616] z-10 shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
-        {/* Sphere 1 - Positioned on right, ~40% visible. 85dvh width * 0.5 = 42.5dvh to offset center to right edge */}
-        <div ref={sphere1Ref} className="absolute bottom-0 -right-[42.5dvh] w-[85dvh] h-[85dvh] opacity-80 pointer-events-none mix-blend-screen will-change-transform">
+        <div ref={overlay1Ref} className="absolute inset-0 bg-black pointer-events-none z-[100] opacity-0" />
+        {/* Sphere 1 - Positioned on right, 40% visible. 85dvh width * 0.6 = 51dvh to offset center to right edge */}
+        <div ref={sphere1Ref} className="absolute bottom-0 -right-[51dvh] w-[85dvh] h-[85dvh] opacity-80 pointer-events-none mix-blend-screen will-change-transform">
           <Image
             src="/sphereSection/imgi_3_sphere_offground_0.png"
             alt="Glowing Sphere"
@@ -175,7 +203,8 @@ export default function ServicesSectionMobile() {
         ref={card2Ref}
         className="sticky top-0 h-[100dvh] w-full overflow-hidden flex flex-col justify-between p-6 bg-[#161616] z-20 shadow-[0_-20px_50px_rgba(0,0,0,0.5)]"
       >
-        {/* Sphere 2 - Positioned on left, ~30% visible. 85dvh width * 0.7 = 59.5dvh to offset */}
+        <div ref={overlay2Ref} className="absolute inset-0 bg-black pointer-events-none z-[100] opacity-0" />
+        {/* Sphere 2 - Positioned on left, 30% visible. 85dvh width * 0.7 = 59.5dvh to offset */}
         <div
           ref={sphere2Ref}
           className="absolute bottom-0 -left-[59.5dvh] w-[85dvh] h-[85dvh] opacity-80 pointer-events-none mix-blend-screen will-change-transform"
@@ -218,6 +247,7 @@ export default function ServicesSectionMobile() {
         ref={card3Ref}
         className="sticky top-0 h-[100dvh] w-full bg-[#DDE3E3] text-[#111] z-30 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] rounded-t-[30px] overflow-hidden"
       >
+        <div ref={overlay3Ref} className="absolute inset-0 bg-black pointer-events-none z-[100] opacity-0" />
         {/* Sticky Content */}
         <div className="absolute inset-0 flex flex-col justify-between p-6 pointer-events-none z-20">
           <div className="relative mt-8 w-full max-w-[350px]">
@@ -239,46 +269,45 @@ export default function ServicesSectionMobile() {
         </div>
 
         {/* Horizontal Scrolling Images */}
-        <div className="design-img-container absolute top-[14%] left-0 w-[350vw] h-[60%] pointer-events-none z-10 flex items-center will-change-transform">
+        <div className="design-img-container absolute top-[14%] left-0 w-[200vw] h-[60%] pointer-events-none z-10 flex items-center will-change-transform">
           
-          {/* Images placed in a continuous stream with visible gaps to match the order: Girl -> House -> Cream -> Purple -> Clarity */}
+          {/* Images entering from Left to Right, perfectly spaced to avoid touching */}
           
-          {/* 1. yfood (Girl) - First to appear */}
-          <div className="absolute top-[30%] left-[300vw] w-[170px] h-[170px] shadow-2xl rounded-[4px] overflow-hidden">
+          {/* 1. yfood (Girl) - First to enter from left */}
+          <div className="absolute top-[15%] left-[130vw] w-[130px] h-[130px] shadow-2xl rounded-[4px] overflow-hidden">
             <Image src="/sphereSection/imgi_4_sebastian_coelho-yfood.jpg" fill className="object-cover" alt="yfood" />
           </div>
           
           {/* 2. Enphase (House) */}
-          <div className="absolute top-[50%] left-[220vw] w-[190px] h-[190px] shadow-2xl rounded-[4px] overflow-hidden">
+          <div className="absolute top-[55%] left-[100vw] w-[150px] h-[150px] shadow-2xl rounded-[4px] overflow-hidden">
             <Image src="/sphereSection/imgi_5_Danijel_Radulovic-Enphase.jpg" fill className="object-cover" alt="Enphase" />
           </div>
           
           {/* 3. Silky (Cream brick) */}
-          <div className="absolute top-[10%] left-[150vw] w-[170px] h-[170px] shadow-2xl rounded-[4px] overflow-hidden">
+          <div className="absolute top-[10%] left-[70vw] w-[130px] h-[130px] shadow-2xl rounded-[4px] overflow-hidden">
             <Image src="/sphereSection/imgi_6_Jules_Toulmunde-Noise.jpg" fill className="object-cover" alt="Silky" />
           </div>
 
           {/* 4. Vinyasa (Purple phones) */}
-          <div className="absolute top-[50%] left-[80vw] w-[180px] h-[180px] shadow-2xl rounded-[4px] overflow-hidden">
+          <div className="absolute top-[60%] left-[45vw] w-[140px] h-[140px] shadow-2xl rounded-[4px] overflow-hidden">
             <Image src="/sphereSection/imgi_7_sebastian_coelho-vinyasa_flow.jpg" fill className="object-cover" alt="Vinyasa" />
           </div>
           
-          {/* 5. Clarity (Dark block) - Last to appear, stops here */}
-          <div className="absolute top-[20%] left-[10vw] w-[180px] h-[180px] shadow-2xl rounded-[4px] overflow-hidden">
+          {/* 5. Clarity (Dark block) - Last to enter */}
+          <div className="absolute top-[15%] left-[10vw] w-[140px] h-[140px] shadow-2xl rounded-[4px] overflow-hidden">
             <Image src="/sphereSection/imgi_8_Jules_Toulmunde-Clarity.jpg" fill className="object-cover" alt="Clarity" />
           </div>
 
         </div>
       </div>
 
-      {/* Spacer to provide scroll duration for Phase 3 horizontal scroll */}
-      <div ref={phase3SpacerRef} className="h-[150dvh] w-full pointer-events-none" />
-
+      
       {/* ================= PHASE 4: AUTOMATION ================= */}
       <div
         ref={card4Ref}
         className="sticky top-0 h-[100dvh] w-full overflow-hidden flex flex-col justify-between p-6 bg-[#E8EDEC] text-[#111] z-40 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] rounded-t-[40px]"
       >
+        <div ref={overlay4Ref} className="absolute inset-0 bg-black pointer-events-none z-[100] opacity-0" />
         <div className="relative z-20 mt-4 w-[95%] automation-slide-item">
           <h3 className="text-[22px] font-medium tracking-tight font-sans leading-[1.2]">
             {textData.automation.heading}
@@ -307,7 +336,7 @@ export default function ServicesSectionMobile() {
       </div>
 
       {/* ================= PHASE 5: CONSULTING ================= */}
-      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden flex flex-col justify-start p-6 bg-[#0f4134] text-[#FFFFFF] z-50 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] rounded-t-[40px]">
+      <div ref={card5Ref} className="sticky top-0 h-[100dvh] w-full overflow-hidden flex flex-col justify-start p-6 bg-[#0f4134] text-[#FFFFFF] z-50 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] rounded-t-[40px]">
         {/* Top Text Content */}
         <div className="w-full mt-4 md:mt-8 z-20">
           <h2 className="text-[42px] leading-[1.05] tracking-tight font-serif mb-5">
