@@ -35,8 +35,8 @@ function BackgroundDots({ isMobile }: { isMobile: boolean }) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   
   // DRASITCALLY reduced count for performance
-  const dotCount = isMobile ? 20 : 60;
-  const lineCount = isMobile ? 10 : 30;
+  const dotCount = isMobile ? 50 : 150;
+  const lineCount = isMobile ? 30 : 80;
 
   const { points, linePositions } = useMemo(() => {
     const vecPoints = [];
@@ -107,7 +107,7 @@ function NetworkScene({ isMobile }: { isMobile: boolean }) {
 
   const mainConnections = useMemo(() => {
     const lns = [];
-    const probability = isMobile ? 0.85 : 0.75; // Less connections on mobile for performance
+    const probability = isMobile ? 0.75 : 0.6; // Higher probability for more connections
     for (let i = 0; i < NODES.length; i++) {
       for (let j = i + 1; j < NODES.length; j++) {
         if (Math.random() > probability) {
@@ -138,17 +138,16 @@ function NetworkScene({ isMobile }: { isMobile: boolean }) {
       {NODES.map((node) => (
         <group key={node.id} position={new THREE.Vector3(...node.position)}>
           <mesh>
-            <sphereGeometry args={[0.1, 8, 8]} /> {/* Reduced segments for perf */}
+            <sphereGeometry args={[0.1, 12, 12]} />
             <meshBasicMaterial color="#3AA89B" />
           </mesh>
           <Html center sprite distanceFactor={7.5} zIndexRange={[100, 0]}>
-            {/* Removed expensive shadow-lg and shadow-sm classes */}
-            <div className="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-full border border-gray-200 whitespace-nowrap" style={{ pointerEvents: 'none' }}>
+            <div className={`flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-full border border-gray-200 whitespace-nowrap ${!isMobile ? 'shadow-lg' : ''}`} style={{ pointerEvents: 'none' }}>
               {node.icon === '👻' || node.icon === '⚛️' ? (
                 <span className="text-xl leading-none">{node.icon}</span>
               ) : (
                 <div
-                  className="w-5 h-5 rounded flex items-center justify-center text-white text-[10px] font-bold"
+                  className={`w-5 h-5 rounded flex items-center justify-center text-white text-[10px] font-bold ${!isMobile ? 'shadow-sm' : ''}`}
                   style={{ backgroundColor: node.color }}
                 >
                   {node.icon}
