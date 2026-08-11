@@ -30,6 +30,10 @@ const NODES = [
   { id: 'vercel', label: 'Vercel', position: [1, 3, 0.5], color: '#000000', icon: '▲' },
 ];
 
+// Shared geometry and material for main nodes to drastically save memory and draw calls
+const nodeGeometry = new THREE.SphereGeometry(0.1, 12, 12);
+const nodeMaterial = new THREE.MeshBasicMaterial({ color: '#3AA89B', depthWrite: true });
+
 // Helper to generate lots of background dots
 function BackgroundDots({ isMobile }: { isMobile: boolean }) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
@@ -78,7 +82,7 @@ function BackgroundDots({ isMobile }: { isMobile: boolean }) {
     <group>
       <instancedMesh ref={meshRef} args={[undefined, undefined, dotCount]}>
         <sphereGeometry args={[0.06, 6, 6]} />
-        <meshBasicMaterial color="#3AA89B" transparent opacity={0.8} />
+        <meshBasicMaterial color="#61B9AF" transparent={false} depthWrite={true} />
       </instancedMesh>
       <lineSegments>
         <bufferGeometry>
@@ -88,7 +92,7 @@ function BackgroundDots({ isMobile }: { isMobile: boolean }) {
             args={[linePositions, 3]}
           />
         </bufferGeometry>
-        <lineBasicMaterial color="#3AA89B" transparent opacity={isMobile ? 0.25 : 0.5} />
+        <lineBasicMaterial color={isMobile ? "#CEEAE7" : "#9DD0CA"} transparent={false} depthWrite={true} />
       </lineSegments>
     </group>
   );
@@ -131,18 +135,15 @@ function NetworkScene({ isMobile }: { isMobile: boolean }) {
             args={[mainConnections, 3]}
           />
         </bufferGeometry>
-        <lineBasicMaterial color="#3AA89B" transparent opacity={isMobile ? 0.4 : 0.8} />
+        <lineBasicMaterial color={isMobile ? "#B0DCD7" : "#61B9AF"} transparent={false} depthWrite={true} />
       </lineSegments>
 
       {/* Main Nodes */}
       {NODES.map((node) => (
         <group key={node.id} position={new THREE.Vector3(...node.position)}>
-          <mesh>
-            <sphereGeometry args={[0.1, 12, 12]} />
-            <meshBasicMaterial color="#3AA89B" />
-          </mesh>
+          <mesh geometry={nodeGeometry} material={nodeMaterial} />
           <Html center sprite distanceFactor={7.5} zIndexRange={[100, 0]}>
-            <div className={`flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-full border border-gray-200 whitespace-nowrap ${!isMobile ? 'shadow-lg' : ''}`} style={{ pointerEvents: 'none' }}>
+            <div className={`flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-full border border-gray-200 whitespace-nowrap ${!isMobile ? 'shadow-lg' : ''}`} style={{ pointerEvents: 'none', willChange: 'transform' }}>
               {node.icon === '👻' || node.icon === '⚛️' ? (
                 <span className="text-xl leading-none">{node.icon}</span>
               ) : (
