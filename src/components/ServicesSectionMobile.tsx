@@ -307,7 +307,7 @@ export default function ServicesSectionMobile() {
       </div>
 
       {/* ================= PHASE 5: CONSULTING ================= */}
-      <div className="sticky top-0 h-[100dvh] w-full flex flex-col justify-start p-6 bg-[#0f4134] text-[#FFFFFF] z-50 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] rounded-t-[40px]">
+      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden flex flex-col justify-start p-6 bg-[#0f4134] text-[#FFFFFF] z-50 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] rounded-t-[40px]">
         {/* Top Text Content */}
         <div className="w-full mt-4 md:mt-8 z-20">
           <h2 className="text-[42px] leading-[1.05] tracking-tight font-serif mb-5">

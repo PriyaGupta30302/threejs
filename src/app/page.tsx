@@ -3,7 +3,7 @@ import ServicesSection from "@/components/ServicesSection";
 
 export default function Home() {
   return (
-    <main className="bg-black min-h-screen">
+    <main className="bg-black min-h-screen w-full" style={{ clipPath: 'inset(0)' }}>
       <Hero />
       <ServicesSection />
       {/* Some extra content to scroll past the services section */}

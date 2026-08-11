@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${dmSans.variable} ${lateef.variable} font-sans antialiased bg-black`}
+        className={`${dmSans.variable} ${lateef.variable} font-sans antialiased bg-black overflow-x-hidden`}
       >
         <LenisProvider>
           <Navbar />

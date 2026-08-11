@@ -15,7 +15,7 @@ h1, h2{
   --foreground: #ffffff;
 }
 
-body {
+html, body {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-dm-sans), sans-serif;
