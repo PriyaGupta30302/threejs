@@ -34,8 +34,9 @@ const NODES = [
 function BackgroundDots({ isMobile }: { isMobile: boolean }) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   
-  const dotCount = isMobile ? 50 : 150;
-  const lineCount = isMobile ? 30 : 80;
+  // DRASITCALLY reduced count for performance
+  const dotCount = isMobile ? 20 : 60;
+  const lineCount = isMobile ? 10 : 30;
 
   const { points, linePositions } = useMemo(() => {
     const vecPoints = [];
@@ -106,7 +107,7 @@ function NetworkScene({ isMobile }: { isMobile: boolean }) {
 
   const mainConnections = useMemo(() => {
     const lns = [];
-    const probability = isMobile ? 0.75 : 0.6; // Less connections on mobile for performance
+    const probability = isMobile ? 0.85 : 0.75; // Less connections on mobile for performance
     for (let i = 0; i < NODES.length; i++) {
       for (let j = i + 1; j < NODES.length; j++) {
         if (Math.random() > probability) {
@@ -137,16 +138,17 @@ function NetworkScene({ isMobile }: { isMobile: boolean }) {
       {NODES.map((node) => (
         <group key={node.id} position={new THREE.Vector3(...node.position)}>
           <mesh>
-            <sphereGeometry args={[0.1, 12, 12]} />
+            <sphereGeometry args={[0.1, 8, 8]} /> {/* Reduced segments for perf */}
             <meshBasicMaterial color="#3AA89B" />
           </mesh>
           <Html center sprite distanceFactor={7.5} zIndexRange={[100, 0]}>
-            <div className="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-full shadow-lg border border-gray-200 whitespace-nowrap" style={{ pointerEvents: 'none' }}>
+            {/* Removed expensive shadow-lg and shadow-sm classes */}
+            <div className="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-full border border-gray-200 whitespace-nowrap" style={{ pointerEvents: 'none' }}>
               {node.icon === '👻' || node.icon === '⚛️' ? (
                 <span className="text-xl leading-none">{node.icon}</span>
               ) : (
                 <div
-                  className="w-5 h-5 rounded flex items-center justify-center text-white text-[10px] font-bold shadow-sm"
+                  className="w-5 h-5 rounded flex items-center justify-center text-white text-[10px] font-bold"
                   style={{ backgroundColor: node.color }}
                 >
                   {node.icon}
@@ -169,9 +171,9 @@ export default function Network3D({ isMobile = false, isActive }: { isMobile?: b
   const shouldRender = isActive !== undefined ? isActive : isInView;
 
   return (
-    <div ref={containerRef} className="w-full h-full relative cursor-grab active:cursor-grabbing select-none [&>div]:!overflow-visible">
-      <Canvas frameloop={shouldRender ? 'always' : 'demand'} camera={{ position: [0, 0, 11], fov: 45 }} style={{ overflow: 'visible' }} dpr={isMobile ? 1 : [1, 1.5]} performance={{ min: 0.5 }}>
-        <OrbitControls enableZoom={false} enablePan={false} />
+    <div ref={containerRef} className={`w-full h-full relative cursor-grab active:cursor-grabbing select-none [&>div]:!overflow-visible ${isMobile ? 'pointer-events-none' : ''}`}>
+      <Canvas frameloop={shouldRender ? 'always' : 'demand'} camera={{ position: [0, 0, 11], fov: 45 }} style={{ overflow: 'visible', touchAction: 'auto', pointerEvents: isMobile ? 'none' : 'auto' }} dpr={isMobile ? 1 : [1, 1.5]} performance={{ min: 0.5 }}>
+        <OrbitControls enableZoom={false} enablePan={false} enableRotate={!isMobile} autoRotate={true} autoRotateSpeed={1} />
         <NetworkScene isMobile={isMobile} />
       </Canvas>
     </div>
