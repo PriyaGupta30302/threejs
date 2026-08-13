@@ -353,13 +353,13 @@ export default function ServicesSectionMobile() {
         </div>
 
         {/* Bottom SVG Diagram */}
-        <div className="relative w-full aspect-square mt-16 md:mt-24 z-10 flex items-center justify-center">
+        <div className="relative w-full md:max-w-[500px] mx-auto aspect-square mt-16 md:mt-12 z-10 flex items-center justify-center">
           <svg
             width="100%"
             height="100%"
             viewBox="0 0 600 600"
             ref={svgCirclesRef}
-            className="overflow-visible scale-[1.35]"
+            className="overflow-visible scale-[1.35] md:scale-[1.1]"
           >
             <defs>
               <filter id="glow-mobile" x="-20%" y="-20%" width="140%" height="140%">
