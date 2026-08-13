@@ -159,7 +159,7 @@ export default function ServicesSectionMobile() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative w-full bg-[#161616] text-white pb-[100dvh]">
+    <section ref={sectionRef} className="relative w-full bg-[#161616] text-white pb-0">
       {/* ================= PHASE 1: INTRODUCTION ================= */}
       <div className="sticky top-0 h-[100dvh] w-full overflow-hidden flex flex-col justify-between p-6 bg-[#161616] z-10 shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
         <div ref={overlay1Ref} className="absolute inset-0 bg-black pointer-events-none z-[100] opacity-0" />
