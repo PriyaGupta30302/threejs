@@ -175,7 +175,7 @@ export default function Navbar() {
         </div>
 
         {/* Desktop Links */}
-        <div className="hidden md:flex items-center gap-12 pointer-events-auto">
+        <div className="hidden lg:flex items-center gap-12 pointer-events-auto">
           {navItems.map((item, index) => (
             <div key={item.name} ref={el => { linksRef.current[index + 1] = el }}>
               <Magnetic>
@@ -199,7 +199,7 @@ export default function Navbar() {
         {/* Mobile Toggle */}
         <div 
           ref={el => { linksRef.current[6] = el }}
-          className="md:hidden pointer-events-auto z-[110]"
+          className="lg:hidden pointer-events-auto z-[110]"
         >
           <Magnetic>
             <button 
@@ -217,7 +217,7 @@ export default function Navbar() {
       {/* Mobile Menu Overlay */}
       <div 
         ref={menuRef}
-        className="fixed inset-0 z-[90] flex flex-col items-center justify-center bg-black/95 backdrop-blur-2xl md:hidden overflow-hidden"
+        className="fixed inset-0 z-[90] flex flex-col items-center justify-center bg-black/95 backdrop-blur-2xl lg:hidden overflow-hidden"
         style={{ clipPath: 'circle(0% at 90% 10%)' }}
       >
         <div className="flex flex-col items-center gap-12 text-3xl font-light tracking-widest text-white uppercase">

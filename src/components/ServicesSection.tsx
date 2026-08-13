@@ -10,7 +10,7 @@ const ServicesSectionMobile = dynamic(() => import("./ServicesSectionMobile"), {
 
 export default function ServicesSection() {
   const [mounted, setMounted] = useState(false);
-  const isMobile = useMediaQuery("(max-width: 767px)");
+  const isMobile = useMediaQuery("(max-width: 1024px)");
 
   useEffect(() => {
     setMounted(true);

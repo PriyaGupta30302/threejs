@@ -76,17 +76,17 @@ export default function ServicesSectionDesktop() {
       </div>
 
       {/* Fixed Header / Tabs */}
-      <div className="absolute top-12 left-0 right-0 z-50 flex justify-between items-center w-full max-w-[90rem] mx-auto px-8 md:px-16 pointer-events-none">
+      <div className="absolute top-12 left-0 right-0 z-50 flex justify-between items-center w-full px-8 xl:px-16 pointer-events-none">
         <div className="flex justify-between w-full nav-layer">
           {TABS.map((tab, index) => (
-            <div key={tab} className="flex items-center gap-2 md:gap-3">
+            <div key={tab} className="flex items-center gap-2 xl:gap-3">
               <div
-                className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-colors duration-300 ${
+                className={`rounded-full transition-colors duration-300 w-[clamp(8px,0.8vw,14px)] h-[clamp(8px,0.8vw,14px)] ${
                   activeTab === index ? "bg-[#3AA89B]" : "bg-current"
                 }`}
               />
               <span
-                className={`text-[12px] md:text-[16px] xl:text-[22px] font-medium tracking-wide ${activeTab === index ? "text-[#3AA89B]" : ""}`}
+                className={`font-medium tracking-wide text-[clamp(14px,1.5vw,26px)] ${activeTab === index ? "text-[#3AA89B]" : ""}`}
               >
                 {tab}
               </span>
