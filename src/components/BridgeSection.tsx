@@ -64,8 +64,8 @@ export default function BridgeSection() {
         {/* 3:1 Grid Ratio for main text */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-8">
           <div className="md:col-span-3">
-            {/* Desktop Heading */}
-            <h2 className="hidden md:block font-serif text-[#1a1a1a] tracking-tight text-[150px] leading-[135px]">
+            {/* Desktop / Tablet Heading */}
+            <h2 className="hidden md:block font-serif text-[#1a1a1a] tracking-tight md:text-[90px] md:leading-[95px] lg:text-[100px] lg:leading-[105px] xl:text-[150px] xl:leading-[135px]">
               we fast forward<br />
               companies to<br />
               their best future<br />
