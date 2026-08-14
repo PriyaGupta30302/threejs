@@ -1,14 +1,12 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import { motion, useInView, Variants, useScroll, useMotionValueEvent } from 'framer-motion';
+import { motion, useScroll, useMotionValueEvent, useTransform, useSpring } from 'framer-motion';
 
 export default function NurturingSection() {
   const sectionRef = useRef<HTMLElement>(null);
   
-  // Trigger when 20% of the section is visible
-  const isInView = useInView(sectionRef, { once: false, amount: 0.2 });
-
+  // Background color logic
   const { scrollY } = useScroll();
   const [isDark, setIsDark] = useState(false);
 
@@ -17,9 +15,8 @@ export default function NurturingSection() {
       const rect = sectionRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
       
-      // If the top of the section is above 75% of the viewport height, turn dark.
-      // This means it stays dark when scrolling down past it.
-      if (rect.top <= windowHeight * 0.75) {
+      // When the section is roughly 30% visible from the bottom (top reaches 70% of viewport)
+      if (rect.top <= windowHeight * 0.70) {
         setIsDark(true);
       } else {
         setIsDark(false);
@@ -27,31 +24,52 @@ export default function NurturingSection() {
     }
   });
 
-  // Animation variants (Time-based)
-  const leftVariant: Variants = {
-    hidden: { opacity: 0, x: "-50vw", transition: { duration: 0.6, ease: "easeIn" } },
-    visible: (i: number) => ({
-      opacity: 1, 
-      x: 0,
-      // SLOWED DOWN: Changed duration from 1s to 1.8s, and increased stagger delay
-      transition: { duration: 1.8, delay: i * 0.3, ease: [0.16, 1, 0.3, 1] } // Using a very smooth custom easing
-    })
-  };
+  // Scroll Progress for text animations
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    // Tracks from when the top of the section enters the bottom of viewport
+    // until the bottom of the section leaves the top of the viewport
+    offset: ["start end", "end start"]
+  });
 
-  const rightVariant: Variants = {
-    hidden: { opacity: 0, x: "50vw", transition: { duration: 0.6, ease: "easeIn" } },
-    visible: (i: number) => ({
-      opacity: 1, 
-      x: 0,
-      // SLOWED DOWN
-      transition: { duration: 1.8, delay: i * 0.3, ease: [0.16, 1, 0.3, 1] } 
-    })
-  };
+  // Apply a spring to smooth out the raw scroll value
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 60,
+    damping: 20,
+    restDelta: 0.001
+  });
 
-  const fadeVariant: Variants = {
-    hidden: { opacity: 0, y: 20, transition: { duration: 0.5 } },
-    visible: { opacity: 1, y: 0, transition: { duration: 1, ease: "easeOut" } }
-  };
+  // Intro Text ("By nurturing") - Now it only fades in, doesn't fade out
+  const opacityIntro = useTransform(smoothProgress, [0, 0.2], [0, 1]);
+  const yIntro = useTransform(smoothProgress, [0, 0.2], [20, 0]);
+
+  // Text sliding mappings: [IN_START, IN_END]
+  // The mapping stops halfway, so it stays centered when scrolling down to KnowledgeSection.
+  // It will only slide back out when scrolling UP (reverse).
+
+  // Line 0
+  const xLeft0 = useTransform(smoothProgress, [0.0, 0.35], ["-25vw", "0vw"]);
+  const xRight0 = useTransform(smoothProgress, [0.0, 0.35], ["25vw", "0vw"]);
+  const opacity0 = useTransform(smoothProgress, [0.0, 0.25], [0, 1]);
+
+  // Line 1
+  const xLeft1 = useTransform(smoothProgress, [0.05, 0.4], ["-25vw", "0vw"]);
+  const xRight1 = useTransform(smoothProgress, [0.05, 0.4], ["25vw", "0vw"]);
+  const opacity1 = useTransform(smoothProgress, [0.05, 0.3], [0, 1]);
+
+  // Line 2
+  const xRight2 = useTransform(smoothProgress, [0.1, 0.45], ["25vw", "0vw"]);
+  const opacity2 = useTransform(smoothProgress, [0.1, 0.35], [0, 1]);
+
+  // Line 3
+  const xLeft3 = useTransform(smoothProgress, [0.15, 0.5], ["-25vw", "0vw"]);
+  const opacity3 = useTransform(smoothProgress, [0.15, 0.4], [0, 1]);
+
+  // Line 4
+  const xLeft4 = useTransform(smoothProgress, [0.2, 0.55], ["-25vw", "0vw"]);
+  const xRight4 = useTransform(smoothProgress, [0.2, 0.55], ["25vw", "0vw"]);
+  const opacity4 = useTransform(smoothProgress, [0.2, 0.45], [0, 1]);
+
 
   return (
     <motion.section 
@@ -61,13 +79,11 @@ export default function NurturingSection() {
         backgroundColor: isDark ? '#151515' : '#ffffff',
         color: isDark ? '#F7F7F7' : '#000000'
       }}
-      transition={{ duration: 1 }}
+      transition={{ duration: 1.2, ease: "easeInOut" }}
     >
       <motion.p 
         className="font-['DM_Sans',_sans-serif] text-[16px] md:text-[20px] mb-6 md:mb-10"
-        variants={fadeVariant}
-        initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
+        style={{ opacity: opacityIntro, y: yIntro }}
       >
         By nurturing
       </motion.p>
@@ -76,44 +92,44 @@ export default function NurturingSection() {
         
         {/* Line 1 */}
         <div className="overflow-hidden mb-2 w-full flex justify-center">
-          <motion.span custom={0} variants={leftVariant} initial="hidden" animate={isInView ? "visible" : "hidden"} className="inline-block whitespace-pre">
+          <motion.span style={{ x: xLeft0, opacity: opacity0 }} className="inline-block whitespace-pre">
             Pattern{' '}
           </motion.span>
-          <motion.span custom={0} variants={rightVariant} initial="hidden" animate={isInView ? "visible" : "hidden"} className="inline-block whitespace-pre">
+          <motion.span style={{ x: xRight0, opacity: opacity0 }} className="inline-block whitespace-pre">
             breakers,
           </motion.span>
         </div>
 
         {/* Line 2 */}
         <div className="overflow-hidden mb-2 w-full flex justify-center">
-          <motion.span custom={1} variants={leftVariant} initial="hidden" animate={isInView ? "visible" : "hidden"} className="inline-block whitespace-pre">
+          <motion.span style={{ x: xLeft1, opacity: opacity1 }} className="inline-block whitespace-pre">
             Builders of{' '}
           </motion.span>
-          <motion.span custom={1} variants={rightVariant} initial="hidden" animate={isInView ? "visible" : "hidden"} className="inline-block whitespace-pre">
+          <motion.span style={{ x: xRight1, opacity: opacity1 }} className="inline-block whitespace-pre">
             brands,
           </motion.span>
         </div>
 
         {/* Line 3 */}
         <div className="overflow-hidden mb-2 w-full flex justify-center">
-          <motion.span custom={2} variants={rightVariant} initial="hidden" animate={isInView ? "visible" : "hidden"} className="inline-block whitespace-pre">
+          <motion.span style={{ x: xRight2, opacity: opacity2 }} className="inline-block whitespace-pre">
             Strategic designers,
           </motion.span>
         </div>
 
         {/* Line 4 */}
         <div className="overflow-hidden mb-2 w-full flex justify-center">
-          <motion.span custom={3} variants={leftVariant} initial="hidden" animate={isInView ? "visible" : "hidden"} className="inline-block whitespace-pre">
+          <motion.span style={{ x: xLeft3, opacity: opacity3 }} className="inline-block whitespace-pre">
             Shapers of interfaces,
           </motion.span>
         </div>
 
         {/* Line 5 */}
         <div className="overflow-hidden w-full flex justify-center">
-          <motion.span custom={4} variants={leftVariant} initial="hidden" animate={isInView ? "visible" : "hidden"} className="inline-block whitespace-pre">
+          <motion.span style={{ x: xLeft4, opacity: opacity4 }} className="inline-block whitespace-pre">
             Coders with{' '}
           </motion.span>
-          <motion.span custom={4} variants={rightVariant} initial="hidden" animate={isInView ? "visible" : "hidden"} className="inline-block whitespace-pre">
+          <motion.span style={{ x: xRight4, opacity: opacity4 }} className="inline-block whitespace-pre">
             taste.
           </motion.span>
         </div>
