@@ -1,13 +1,31 @@
 'use client';
 
-import React, { useRef } from 'react';
-import { motion, useInView, Variants } from 'framer-motion';
+import React, { useRef, useState } from 'react';
+import { motion, useInView, Variants, useScroll, useMotionValueEvent } from 'framer-motion';
 
 export default function NurturingSection() {
   const sectionRef = useRef<HTMLElement>(null);
   
   // Trigger when 20% of the section is visible
   const isInView = useInView(sectionRef, { once: false, amount: 0.2 });
+
+  const { scrollY } = useScroll();
+  const [isDark, setIsDark] = useState(false);
+
+  useMotionValueEvent(scrollY, "change", () => {
+    if (sectionRef.current) {
+      const rect = sectionRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      
+      // If the top of the section is above 75% of the viewport height, turn dark.
+      // This means it stays dark when scrolling down past it.
+      if (rect.top <= windowHeight * 0.75) {
+        setIsDark(true);
+      } else {
+        setIsDark(false);
+      }
+    }
+  });
 
   // Animation variants (Time-based)
   const leftVariant: Variants = {
@@ -38,15 +56,15 @@ export default function NurturingSection() {
   return (
     <motion.section 
       ref={sectionRef} 
-      className="w-full py-10 md:py-20 flex flex-col items-center justify-center text-center px-6 overflow-hidden"
+      className="w-full py-20 md:py-20 flex flex-col items-center justify-center text-center px-6 overflow-hidden"
       animate={{
-        backgroundColor: isInView ? '#000000' : '#ffffff',
-        color: isInView ? '#F7F7F7' : '#000000'
+        backgroundColor: isDark ? '#151515' : '#ffffff',
+        color: isDark ? '#F7F7F7' : '#000000'
       }}
       transition={{ duration: 1 }}
     >
       <motion.p 
-        className="font-['DM_Sans',_sans-serif] text-[16px] md:text-[20px] mb-12 md:mb-16"
+        className="font-['DM_Sans',_sans-serif] text-[16px] md:text-[20px] mb-6 md:mb-10"
         variants={fadeVariant}
         initial="hidden"
         animate={isInView ? "visible" : "hidden"}
@@ -54,7 +72,7 @@ export default function NurturingSection() {
         By nurturing
       </motion.p>
       
-      <h2 className="w-full tracking-tight text-[40px] leading-[45px] md:text-[70px] md:leading-[80px] lg:text-[95px] lg:leading-[109px] font-[300] font-serif" style={{ fontFamily: '"Gestura Headline", sans-serif' }}>
+      <h2 className="w-full tracking-tight text-[40px] leading-[45px] md:text-[50px] md:leading-[60px] lg:text-[95px] lg:leading-[109px] font-[300] font-serif" style={{ fontFamily: '"Gestura Headline", sans-serif' }}>
         
         {/* Line 1 */}
         <div className="overflow-hidden mb-2 w-full flex justify-center">
