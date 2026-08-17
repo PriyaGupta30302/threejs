@@ -378,7 +378,7 @@ export default function ServicesSectionDesktop() {
                 fill="currentColor"
                 className="text-[16px] md:text-[20px] lg:text-[24px] xl:text-[28px] font-medium tracking-wide"
               >
-                Business
+                Speed
               </text>
               <text
                 x="300"
@@ -387,7 +387,7 @@ export default function ServicesSectionDesktop() {
                 fill="currentColor"
                 className="text-[16px] md:text-[20px] lg:text-[24px] xl:text-[28px] font-medium tracking-wide"
               >
-                Brand
+                Conversion
               </text>
               <text
                 x="300"
@@ -396,7 +396,7 @@ export default function ServicesSectionDesktop() {
                 fill="currentColor"
                 className="text-[16px] md:text-[20px] lg:text-[24px] xl:text-[28px] font-medium tracking-wide"
               >
-                Emotions
+                Design
               </text>
             </svg>
           </div>

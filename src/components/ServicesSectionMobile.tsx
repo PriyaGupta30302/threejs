@@ -424,7 +424,7 @@ export default function ServicesSectionMobile() {
               fill="currentColor"
               className="text-[26px] font-medium tracking-wide"
             >
-              Business
+              Speed
             </text>
             <text
               x="300"
@@ -433,7 +433,7 @@ export default function ServicesSectionMobile() {
               fill="currentColor"
               className="text-[26px] font-medium tracking-wide"
             >
-              Brand
+              Conversion
             </text>
             <text
               x="300"
@@ -442,7 +442,7 @@ export default function ServicesSectionMobile() {
               fill="currentColor"
               className="text-[26px] font-medium tracking-wide"
             >
-              Emotions
+              Design
             </text>
           </svg>
         </div>
