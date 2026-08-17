@@ -27,7 +27,7 @@ export default function Footer() {
               </span>
             </a>
             <p className="text-white/70 text-base md:text-lg font-['DM_Sans',_sans-serif] md:text-right">
-              Frontend Developer specialized in crafting immersive, interactive, and pixel-perfect web experiences.
+              Frontend Developer specialized in crafting immersive, interactive, and polished web experiences.
             </p>
           </div>
         </div>

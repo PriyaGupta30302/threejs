@@ -3,17 +3,17 @@
     "Development",
     "UI / UX Design",
     "Animation & 3D",
-    "Shopify & E-commerce"
+    "Business Impact"
   ],
   "introduction": {
-    "heading": "I specialize in\npixel-perfect UIs.",
-    "subheading": "Responsive, Fast, and Accessible",
-    "paragraph": "I build production-grade interfaces across e-commerce, education, and Shopify platforms. With 2+ years of experience, I focus on creating reusable component architectures and scalable web applications."
+    "heading": "Crafting digital experiences\nthat drive results.",
+    "subheading": "Optimized, Interactive, and Reliable",
+    "paragraph": "I build production-grade interfaces across e-commerce and corporate platforms. With 2+ years of experience, I focus on delivering seamless UI/UX, optimizing heavy assets, and building architectures that scale."
   },
   "webDevelopment": {
     "part1": {
-      "heading": "I love to code.",
-      "paragraph": "Animated panels, seamless transitions, and beautiful designs. But a good design is nothing without robust, maintainable architecture behind it."
+      "heading": "I engineer solutions.",
+      "paragraph": "A beautiful design needs a robust foundation. I architect scalable codebases and continuously master new tech stacks to build faster, highly-optimized websites that drive company growth and client success."
     },
     "part2": {
       "heading": "My Core Stack",
@@ -26,18 +26,18 @@
     }
   },
   "design": {
-    "heading": "Translating complex Figma files into working, maintainable interfaces on tight delivery timelines.",
-    "servicesHeading": "UI / UX Expertise",
+    "heading": "Transforming complex Figma designs into high-performance interfaces. I focus on intuitive UI/UX that builds user trust, encourages inquiries, and drives conversions.",
+    "servicesHeading": "My Approach to UI/UX",
     "servicesList": [
-      "Pixel-perfect translation",
-      "Cross-browser compatibility",
+      "Strategic UI/UX implementation",
+      "Asset & animation optimization",
       "Mobile-first responsive design",
-      "Clean, component-driven architecture",
-      "End-to-end quality ownership"
+      "On-time project delivery",
+      "Clean, component-driven architecture"
     ]
   },
   "automation": {
-    "heading": "I bring websites to life with premium, optimized animations that run smoothly across all devices.",
+    "heading": "I bring websites to life with premium animations that never compromise on performance or load speed.",
     "expertiseHeading": "Animation & 3D",
     "expertiseList": [
       "GSAP (GreenSock) animations",
@@ -49,7 +49,7 @@
     ]
   },
   "consulting": {
-    "heading": "Shopify\nDevelopment",
-    "paragraph": "From reusable component systems to full production storefronts. I build custom Shopify themes using Liquid, improving site speed and driving higher sales for e-commerce clients."
+    "heading": "Driving\nConversions",
+    "paragraph": "A beautiful website is only effective if it performs. By combining blazing-fast Speed with premium, user-centric Design, I create digital experiences that build trust and ultimately drive Conversions—whether that means skyrocketing sales for an e-commerce brand, or generating high-quality leads for a corporate business."
   }
 }

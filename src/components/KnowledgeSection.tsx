@@ -65,7 +65,7 @@ export default function KnowledgeSection() {
           </p>
           <p>
             From Meiosis Publication to Rabbit Autocare,<br className="hidden lg:block" />
-            I aim to bring premium quality to every build.
+            I deliver highly optimized, premium experiences on time.
           </p>
           <p>
             Currently showcasing 2 featured projects,<br className="hidden lg:block" />

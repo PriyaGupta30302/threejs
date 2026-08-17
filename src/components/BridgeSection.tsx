@@ -83,15 +83,15 @@ export default function BridgeSection() {
           <div className="md:col-span-3">
             {/* Desktop / Tablet Heading */}
             <h2 className="hidden md:block font-serif text-[#1a1a1a] tracking-tight md:text-[110px] md:leading-[95px] lg:text-[100px] lg:leading-[105px] xl:text-[140px] xl:leading-[120px] lg:-mt-12">
-              i translate figma<br />
-              into pixel-perfect<br />
+              i engineer seamless<br />
+              high-performance<br />
               cross-browser<br />
               UIs...
             </h2>
             {/* Mobile Heading */}
             <h2 className="block md:hidden font-serif text-[#1a1a1a] tracking-tight text-[55px] leading-[58px]">
-              i translate figma<br />
-              into pixel-perfect<br />
+              i engineer seamless<br />
+              high-performance<br />
               cross-browser UIs...
             </h2>
           </div>

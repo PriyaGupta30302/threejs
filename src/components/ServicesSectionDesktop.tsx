@@ -169,7 +169,7 @@ export default function ServicesSectionDesktop() {
         <div className="w-[100vw] h-full shrink-0 relative pointer-events-auto phase-2-container">
           {/* Text Content */}
           <div className="absolute top-[18%] left-[28%] z-30 w-[50%] max-w-[350px] md:max-w-[450px] lg:max-w-[600px] xl:max-w-[700px]">
-            <h3 className="text-[18px] md:text-[22px] lg:text-[26px] xl:text-[35px] font-regular leading-[1] tracking-tight text-black">
+            <h3 className="text-[16px] md:text-[20px] lg:text-[24px] xl:text-[28px] font-regular leading-[1.1] tracking-tight text-black">
               {textData.design.heading.split('\n').map((line, i) => (
                 <span key={i}>
                   {line}
@@ -242,7 +242,7 @@ export default function ServicesSectionDesktop() {
             </div>
 
             <div className="absolute top-[64%] right-[1%] lg:right-[4%] w-[180px] md:w-[220px] lg:w-[250px] xl:w-[320px] text-black">
-              <h3 className="text-[20px] md:text-[24px] lg:text-[28px] xl:text-[40px] font-regular tracking-tight mb-2 xl:mb-4 font-sans leading-none">
+              <h3 className="text-[18px] md:text-[22px] lg:text-[26px] xl:text-[32px] font-regular tracking-tight mb-2 xl:mb-4 font-sans leading-none">
                 {textData.design.servicesHeading}
               </h3>
               <ul className="text-[12px] md:text-[14px] lg:text-[15px] xl:text-[18px] opacity-90 leading-[1.2] font-medium font-sans list-none m-0 p-0 space-y-1">

@@ -11,7 +11,7 @@ export default function AboutPage() {
         <section className="mb-16">
           <h2 className="text-3xl font-sans mb-6 text-[#3AA89B]">Professional Summary</h2>
           <p className="text-xl md:text-2xl font-light leading-relaxed opacity-90">
-            Frontend Developer with 2+ years building production-grade, responsive interfaces across e-commerce, education, and Shopify platforms. Specialized in React.js, Next.js, and JavaScript (ES6+) with TypeScript — translating Figma into pixel perfect, cross-browser UIs, building reusable component architecture, and optimizing animation-heavy pages (GSAP, Framer Motion) to load noticeably faster and run smoothly across devices.
+            Frontend Developer with 2+ years building production-grade, responsive interfaces across e-commerce, education, and corporate platforms. Specialized in React.js, Next.js, and JavaScript (ES6+) with TypeScript. I engineer scalable architectures and optimize heavy assets and animations (GSAP, Framer Motion) to ensure lightning-fast load times. I focus on building trust through intuitive UI/UX, driving higher conversions for e-commerce, and increasing lead generation for business sites. I continuously master new tech stacks to deliver on-time, high-performance solutions that fuel business growth.
           </p>
         </section>
 

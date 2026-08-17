@@ -251,13 +251,13 @@ export default function ServicesSectionMobile() {
         {/* Sticky Content */}
         <div className="absolute inset-0 flex flex-col justify-between p-6 pointer-events-none z-20">
           <div className="relative mt-8 w-full max-w-[350px]">
-            <h3 className="text-[26px] font-medium tracking-tight mb-4 font-sans leading-[1.1]">
+            <h3 className="text-[22px] font-medium tracking-tight mb-4 font-sans leading-[1.1]">
               {textData.design.heading.replace(/\n/g, ' ')}
             </h3>
           </div>
 
           <div className="relative mb-6">
-            <h3 className="text-[20px] font-medium tracking-tight mb-2 font-sans">
+            <h3 className="text-[18px] font-medium tracking-tight mb-2 font-sans">
               {textData.design.servicesHeading}
             </h3>
             <ul className="opacity-90 text-[14px] leading-[1.3] font-medium font-sans space-y-[2px]">
