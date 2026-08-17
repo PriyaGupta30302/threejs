@@ -34,8 +34,8 @@ export default function NurturingSection() {
 
   // Apply a spring to smooth out the raw scroll value
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 60,
-    damping: 20,
+    stiffness: 150,
+    damping: 25,
     restDelta: 0.001
   });
 
@@ -48,26 +48,26 @@ export default function NurturingSection() {
   // It will only slide back out when scrolling UP (reverse).
 
   // Line 0
-  const xLeft0 = useTransform(smoothProgress, [0.0, 0.35], ["-25vw", "0vw"]);
-  const xRight0 = useTransform(smoothProgress, [0.0, 0.35], ["25vw", "0vw"]);
+  const xLeft0 = useTransform(smoothProgress, [0.0, 0.55], ["-50vw", "0vw"]);
+  const xRight0 = useTransform(smoothProgress, [0.0, 0.55], ["50vw", "0vw"]);
   const opacity0 = useTransform(smoothProgress, [0.0, 0.25], [0, 1]);
 
   // Line 1
-  const xLeft1 = useTransform(smoothProgress, [0.05, 0.4], ["-25vw", "0vw"]);
-  const xRight1 = useTransform(smoothProgress, [0.05, 0.4], ["25vw", "0vw"]);
+  const xLeft1 = useTransform(smoothProgress, [0.05, 0.6], ["-50vw", "0vw"]);
+  const xRight1 = useTransform(smoothProgress, [0.05, 0.6], ["50vw", "0vw"]);
   const opacity1 = useTransform(smoothProgress, [0.05, 0.3], [0, 1]);
 
   // Line 2
-  const xRight2 = useTransform(smoothProgress, [0.1, 0.45], ["25vw", "0vw"]);
+  const xRight2 = useTransform(smoothProgress, [0.1, 0.65], ["50vw", "0vw"]);
   const opacity2 = useTransform(smoothProgress, [0.1, 0.35], [0, 1]);
 
   // Line 3
-  const xLeft3 = useTransform(smoothProgress, [0.15, 0.5], ["-25vw", "0vw"]);
+  const xLeft3 = useTransform(smoothProgress, [0.15, 0.7], ["-50vw", "0vw"]);
   const opacity3 = useTransform(smoothProgress, [0.15, 0.4], [0, 1]);
 
   // Line 4
-  const xLeft4 = useTransform(smoothProgress, [0.2, 0.55], ["-25vw", "0vw"]);
-  const xRight4 = useTransform(smoothProgress, [0.2, 0.55], ["25vw", "0vw"]);
+  const xLeft4 = useTransform(smoothProgress, [0.2, 0.75], ["-50vw", "0vw"]);
+  const xRight4 = useTransform(smoothProgress, [0.2, 0.75], ["50vw", "0vw"]);
   const opacity4 = useTransform(smoothProgress, [0.2, 0.45], [0, 1]);
 
 
