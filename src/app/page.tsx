@@ -3,6 +3,7 @@ import ServicesSection from "@/components/ServicesSection";
 import BridgeSection from "@/components/BridgeSection";
 import NurturingSection from "@/components/NurturingSection";
 import KnowledgeSection from "@/components/KnowledgeSection";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <BridgeSection />
       <NurturingSection />
       <KnowledgeSection />
+      <Footer />
     </main>
   );
 }
