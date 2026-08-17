@@ -75,16 +75,14 @@ export default function Hero() {
         </Canvas>
       </div>
 
-      {/* Logo Element */}
-      <div className="absolute bottom-24 md:bottom-0 left-0 right-0 z-20 w-full px-4 md:px-6 pointer-events-none flex items-end">
-        <Image
-          src="/hero/hero-logo.svg"
-          alt="Offground Logo"
-          width={1920}
-          height={400}
-          className="w-full h-auto opacity-40 mix-blend-overlay object-contain"
-          priority
-        />
+      {/* Logo Text Element */}
+      <div className="absolute bottom-24 md:bottom-12 left-0 right-0 z-20 w-full px-4 md:px-8 pointer-events-none flex flex-col items-center justify-end text-center">
+        <h1 className="text-[12vw] leading-none font-bold tracking-tighter text-white opacity-40 mix-blend-overlay uppercase font-sans">
+          PRIYA GUPTA
+        </h1>
+        <p className="text-xl md:text-3xl font-medium tracking-wide text-white opacity-60 mt-4 mix-blend-overlay">
+          Frontend Developer
+        </p>
       </div>
     </div>
   );

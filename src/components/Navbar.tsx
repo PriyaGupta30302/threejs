@@ -152,10 +152,10 @@ export default function Navbar() {
   }, [isMobileMenuOpen]);
 
   const navItems = [
-    { name: "Work", href: "#work" },
-    { name: "Services", href: "#services" },
-    { name: "About", href: "#about" },
-    { name: "Contact", href: "#contact" }
+    { name: "Home", href: "/" },
+    { name: "Projects", href: "/projects" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" }
   ];
 
   return (
@@ -169,7 +169,7 @@ export default function Navbar() {
           <Magnetic>
             <Link href="/" className="text-xl font-bold tracking-widest text-white uppercase flex items-center gap-3 group">
               <span className="w-3 h-3 bg-[#34d399] rounded-full shadow-[0_0_15px_#34d399] group-hover:scale-150 transition-transform"></span>
-              <ScrambleText text="OFFGROUND" />
+              <ScrambleText text="PRIYA" />
             </Link>
           </Magnetic>
         </div>
@@ -190,7 +190,7 @@ export default function Navbar() {
           <div ref={el => { linksRef.current[navItems.length + 1] = el }}>
             <Magnetic>
               <button className="px-7 py-3 text-xs tracking-widest font-bold uppercase text-black bg-white rounded-full hover:bg-[#34d399] hover:shadow-[0_0_20px_rgba(52,211,153,0.5)] transition-all duration-300">
-                Start Project
+                Hire Me
               </button>
             </Magnetic>
           </div>
@@ -233,7 +233,7 @@ export default function Navbar() {
             </Link>
           ))}
           <button className="mt-8 px-10 py-4 text-sm font-bold tracking-widest text-black bg-[#34d399] rounded-full shadow-[0_0_30px_rgba(52,211,153,0.4)]">
-            Start Project
+            Hire Me
           </button>
         </div>
       </div>

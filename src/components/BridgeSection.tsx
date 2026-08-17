@@ -74,7 +74,7 @@ export default function BridgeSection() {
         {/* Top small text */}
         <div className="mb-6 md:mb-8">
           <p className="text-black font-['DM_Sans',_sans-serif] text-[20px] md:text-[28px] leading-[26px] md:leading-[34px] lg:-mt-20">
-            To say it simply
+            The Goal
           </p>
         </div>
 
@@ -83,16 +83,16 @@ export default function BridgeSection() {
           <div className="md:col-span-3">
             {/* Desktop / Tablet Heading */}
             <h2 className="hidden md:block font-serif text-[#1a1a1a] tracking-tight md:text-[110px] md:leading-[95px] lg:text-[100px] lg:leading-[105px] xl:text-[140px] xl:leading-[120px] lg:-mt-12">
-              we fast forward<br />
-              companies to<br />
-              their best future<br />
-              selves...
+              i translate figma<br />
+              into pixel-perfect<br />
+              cross-browser<br />
+              UIs...
             </h2>
             {/* Mobile Heading */}
             <h2 className="block md:hidden font-serif text-[#1a1a1a] tracking-tight text-[55px] leading-[58px]">
-              we fast forward<br />
-              companies to their<br />
-              best future selves...
+              i translate figma<br />
+              into pixel-perfect<br />
+              cross-browser UIs...
             </h2>
           </div>
           <div className="hidden md:block md:col-span-1">
@@ -103,7 +103,7 @@ export default function BridgeSection() {
         {/* Bottom Button */}
         <div className="absolute bottom-12 left-6 md:left-12">
           <button className="px-8 py-3 rounded-full border border-black text-black text-sm hover:bg-black hover:text-white transition-colors duration-300">
-            Who are we?
+            View Experience
           </button>
         </div>
       </div>

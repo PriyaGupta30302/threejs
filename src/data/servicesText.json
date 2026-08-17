@@ -1,55 +1,55 @@
 {
   "tabs": [
-    "Web Development",
-    "Design",
-    "Automation",
-    "Consulting"
+    "Introduction",
+    "Core Stack",
+    "Animation & UI",
+    "Shopify & E-commerce"
   ],
   "introduction": {
-    "heading": "We specialize in\ncustomer happiness.",
-    "subheading": "Tailored strategies, Guaranteed results",
-    "paragraph": "That's why we offer a full suite of services, each tailored to address your unique challenges and goals. Our team of experts combines creativity with data to build strategies that deliver results."
+    "heading": "I specialize in\npixel-perfect UIs.",
+    "subheading": "Responsive, Fast, and Accessible",
+    "paragraph": "I build production-grade interfaces across e-commerce, education, and Shopify platforms. With 2+ years of experience, I focus on creating reusable component architectures and scalable web applications."
   },
   "webDevelopment": {
     "part1": {
-      "heading": "We love to code.",
-      "paragraph": "Animated panels, lovely transitions and beautiful designs. But what is good design, without function?"
+      "heading": "I love to code.",
+      "paragraph": "Animated panels, seamless transitions, and beautiful designs. But a good design is nothing without robust, maintainable architecture behind it."
     },
     "part2": {
-      "heading": "Our focus",
+      "heading": "My Core Stack",
       "list": [
-        "Unique corporate websites",
-        "Smart open source CMS.",
-        "E-commerce solutions",
-        "Web app development"
+        "React.js & Next.js",
+        "JavaScript (ES6+) & TypeScript",
+        "Tailwind CSS & HTML5",
+        "Git & GitHub Version Control"
       ]
     }
   },
   "design": {
-    "heading": "Years of experience working with\nbrands you've interacted with backs up\nour expertise.",
-    "servicesHeading": "Our services",
+    "heading": "Translating complex Figma files into working, maintainable interfaces on tight delivery timelines.",
+    "servicesHeading": "UI / UX Expertise",
     "servicesList": [
-      "UX/UI design",
-      "Brand identity and strategy",
-      "Photography and video production",
-      "CGI and motion design",
-      "Trade fair design and construction"
+      "Pixel-perfect translation",
+      "Cross-browser compatibility",
+      "Mobile-first responsive design",
+      "Clean, component-driven architecture",
+      "End-to-end quality ownership"
     ]
   },
   "automation": {
-    "heading": "We automate the heavy lifting with intelligent background systems. From data flows to AI support, we ensure your business scales without friction.",
-    "expertiseHeading": "Our expertise",
+    "heading": "I bring websites to life with premium, optimized animations that run smoothly across all devices.",
+    "expertiseHeading": "Animation & 3D",
     "expertiseList": [
-      "Process automation with make/n8n",
-      "AI assistants and chatbots",
-      "AI phone systems",
-      "Social media automation",
-      "Lead research and cold outreach",
-      "CRM and synchronization of multiple systems"
+      "GSAP (GreenSock) animations",
+      "Scroll-triggered interactions",
+      "Framer Motion transitions",
+      "Three.js 3D web experiences",
+      "Lighthouse performance optimization",
+      "Asset loading optimization"
     ]
   },
   "consulting": {
-    "heading": "Your all in\none agency",
-    "paragraph": "We guide your complete digital transformation. From strategy and branding to complex automation, we are your single point of contact from concept to execution."
+    "heading": "Shopify\nDevelopment",
+    "paragraph": "From reusable component systems to full production storefronts. I build custom Shopify themes using Liquid, improving site speed and driving higher sales for e-commerce clients."
   }
 }

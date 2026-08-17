@@ -85,7 +85,7 @@ export default function NurturingSection() {
         className="font-['DM_Sans',_sans-serif] text-[16px] md:text-[20px] mb-6 md:mb-10"
         style={{ opacity: opacityIntro, y: yIntro }}
       >
-        By nurturing
+        My Experience
       </motion.p>
       
       <h2 className="w-full tracking-tight text-[40px] leading-[45px] md:text-[50px] md:leading-[60px] lg:text-[95px] lg:leading-[109px] font-[300] font-serif" style={{ fontFamily: '"Gestura Headline", sans-serif' }}>
@@ -93,44 +93,44 @@ export default function NurturingSection() {
         {/* Line 1 */}
         <div className="overflow-hidden mb-2 w-full flex justify-center">
           <motion.span style={{ x: xLeft0, opacity: opacity0 }} className="inline-block whitespace-pre">
-            Pattern{' '}
+            Frontend{' '}
           </motion.span>
           <motion.span style={{ x: xRight0, opacity: opacity0 }} className="inline-block whitespace-pre">
-            breakers,
+            Developer,
           </motion.span>
         </div>
 
         {/* Line 2 */}
         <div className="overflow-hidden mb-2 w-full flex justify-center">
           <motion.span style={{ x: xLeft1, opacity: opacity1 }} className="inline-block whitespace-pre">
-            Builders of{' '}
+            At{' '}
           </motion.span>
           <motion.span style={{ x: xRight1, opacity: opacity1 }} className="inline-block whitespace-pre">
-            brands,
+            Indiefluence,
           </motion.span>
         </div>
 
         {/* Line 3 */}
         <div className="overflow-hidden mb-2 w-full flex justify-center">
           <motion.span style={{ x: xRight2, opacity: opacity2 }} className="inline-block whitespace-pre">
-            Strategic designers,
+            Building components,
           </motion.span>
         </div>
 
         {/* Line 4 */}
         <div className="overflow-hidden mb-2 w-full flex justify-center">
           <motion.span style={{ x: xLeft3, opacity: opacity3 }} className="inline-block whitespace-pre">
-            Shapers of interfaces,
+            Improving site speed,
           </motion.span>
         </div>
 
         {/* Line 5 */}
         <div className="overflow-hidden w-full flex justify-center">
           <motion.span style={{ x: xLeft4, opacity: opacity4 }} className="inline-block whitespace-pre">
-            Coders with{' '}
+            Owning{' '}
           </motion.span>
           <motion.span style={{ x: xRight4, opacity: opacity4 }} className="inline-block whitespace-pre">
-            taste.
+            frontend builds.
           </motion.span>
         </div>
 

@@ -60,17 +60,16 @@ export default function KnowledgeSection() {
         {/* Left Column - Text */}
         <div className="order-2 md:order-1 md:col-span-5 flex flex-col gap-6 md:gap-8 text-[24px] md:text-[22px] lg:text-[28px] leading-[30px] md:leading-[28px] lg:leading-[34px] font-medium font-['DM_Sans',_sans-serif]">
           <p>
-            Knowledge is built on experience.<br className="hidden lg:block" />
-            And we&apos;ve got a ton.
+            My portfolio is built on real-world projects.<br className="hidden lg:block" />
+            And I&apos;ve shipped many.
           </p>
           <p>
-            And with OffGROUND, we aim to bring<br className="hidden lg:block" />
-            Apple level quality, for everybody.
+            From Meiosis Publication to Rabbit Autocare,<br className="hidden lg:block" />
+            I aim to bring premium quality to every build.
           </p>
           <p>
-            To prove this, we secured 2/2 awards for<br className="hidden lg:block" />
-            our website, and are aiming to increase<br className="hidden lg:block" />
-            this number with our clients.
+            Currently showcasing 2 featured projects,<br className="hidden lg:block" />
+            with more to be added very soon.
           </p>
         </div>
 
