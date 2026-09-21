@@ -5,8 +5,8 @@ import Image from "next/image";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import MotionPathPlugin from "gsap/MotionPathPlugin";
-import Network3D from "./Network3D";
-import textData from "../data/servicesText.json";
+import Network3D from "../Network3D";
+import textData from "../../data/servicesText.json";
 
 gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 

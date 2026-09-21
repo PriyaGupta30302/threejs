@@ -3,9 +3,9 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { useServicesAnimation } from "@/hooks/useServicesAnimation";
-import Network3D from "./Network3D";
+import Network3D from "../Network3D";
 
-import textData from "../data/servicesText.json";
+import textData from "../../data/servicesText.json";
 
 const TABS = textData.tabs;
 

@@ -5,7 +5,7 @@ import { Canvas } from '@react-three/fiber';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useInView } from 'framer-motion';
-import { Particles } from './ParticlesScene';
+import { Particles } from '../ParticlesScene';
 import Image from 'next/image';
 
 export default function Hero() {
