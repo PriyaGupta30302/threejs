@@ -67,7 +67,7 @@ export default function ContactCTA() {
       <div className="flex flex-col md:flex-row gap-12 md:gap-24 items-center md:items-end relative z-10">
         {/* Left Side */}
         <div className="w-full md:w-1/2">
-          <h3 className="cta-item text-xs tracking-[0.2em] text-white/50 uppercase mb-6">Let's Connect</h3>
+          <h3 className="cta-item text-xs tracking-[0.2em] text-white/50 uppercase mb-6">Let&apos;s Connect</h3>
           <h2 className="cta-item text-5xl md:text-7xl font-serif tracking-tight leading-tight">
             Have a <span className="italic text-[#3AA89B] drop-shadow-[0_0_15px_rgba(58,168,155,0.4)]">project</span><br />
             in mind?
@@ -77,7 +77,7 @@ export default function ContactCTA() {
         {/* Right side */}
         <div className="w-full md:w-1/2 md:pl-24">
           <p className="cta-item text-sm font-light text-white/80 leading-relaxed mb-8 max-w-sm">
-            I'm always open to exciting opportunities, collaborations or just a friendly chat about technology, design or new ideas.
+            I&apos;m always open to exciting opportunities, collaborations or just a friendly chat about technology, design or new ideas.
           </p>
           <div className="cta-item">
             <a href="mailto:hello@example.com" className="cta-btn inline-flex items-center gap-4 border border-white/30 rounded-full px-8 py-3 text-sm hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-[0_0_0_rgba(58,168,155,0)] hover:shadow-[0_0_20px_rgba(58,168,155,0.4)] relative">

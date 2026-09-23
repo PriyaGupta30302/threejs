@@ -11,7 +11,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 function CinematicCore({ progressRef, isMobile }: { progressRef: React.MutableRefObject<number>, isMobile: boolean }) {
   const coreGroup = useRef<THREE.Group>(null);
   const materialRef = useRef<THREE.MeshStandardMaterial>(null);
-  const wireframeRef = useRef<THREE.MeshBasicMaterial>(null);
   
   useFrame((state, delta) => {
     if (coreGroup.current) {
@@ -114,8 +113,8 @@ export default function AboutHero() {
                 gsap.set(textRef.current, { opacity: Math.max(0, textOpacity) });
               }
               if (bottomTextRef.current) {
-                // Stays fully visible until 40%, then completely hides by 80%
-                const bottomOpacity = 1 - Math.max(0, (self.progress - 0.4) * 2.5); 
+                // Hides almost immediately as soon as the user starts scrolling
+                const bottomOpacity = 1 - (self.progress * 5); 
                 gsap.set(bottomTextRef.current, { opacity: Math.max(0, bottomOpacity) });
               }
             }
@@ -139,8 +138,8 @@ export default function AboutHero() {
                 gsap.set(textRef.current, { opacity: Math.max(0, textOpacity) });
               }
               if (bottomTextRef.current) {
-                // Stays fully visible until 40%, then completely hides by 80%
-                const bottomOpacity = 1 - Math.max(0, (self.progress - 0.4) * 2.5); 
+                // Hides almost immediately as soon as the user starts scrolling
+                const bottomOpacity = 1 - (self.progress * 5); 
                 gsap.set(bottomTextRef.current, { opacity: Math.max(0, bottomOpacity) });
               }
             }

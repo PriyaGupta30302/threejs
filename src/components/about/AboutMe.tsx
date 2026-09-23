@@ -91,10 +91,10 @@ export default function AboutMe() {
           
           <div className="space-y-6 text-lg font-light text-white/70">
             <p className="about-p">
-              I'm a Frontend Developer who enjoys turning ideas into clean, functional and visually engaging websites. I love working at the intersection of design and technology, where creativity meets logic.
+              I&apos;m a Frontend Developer who enjoys turning ideas into clean, functional and visually engaging websites. I love working at the intersection of design and technology, where creativity meets logic.
             </p>
             <p className="about-p">
-              Over the past 2+ years, I've worked on a variety of projects — from business websites and educational platforms to eCommerce stores — helping brands bring their ideas to life on the web.
+              Over the past 2+ years, I&apos;ve worked on a variety of projects — from business websites and educational platforms to eCommerce stores — helping brands bring their ideas to life on the web.
             </p>
           </div>
         </div>

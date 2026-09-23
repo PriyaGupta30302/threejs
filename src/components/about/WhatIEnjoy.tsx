@@ -79,7 +79,7 @@ export default function WhatIEnjoy() {
         <div className="enjoy-top w-full md:w-1/4">
           <p className="text-sm font-light text-white/60 leading-relaxed border-l border-[#3AA89B]/30 pl-6 relative">
             <span className="absolute left-[-1px] top-0 bottom-0 w-[2px] bg-gradient-to-b from-[#3AA89B] to-transparent"></span>
-            I enjoy working on interactive UI, smooth animations and digital experiences that feel different. Whether it's a pixel-perfect layout, a scroll animation or a complex interaction — I love the process of making it all work.
+            I enjoy working on interactive UI, smooth animations and digital experiences that feel different. Whether it&apos;s a pixel-perfect layout, a scroll animation or a complex interaction — I love the process of making it all work.
           </p>
         </div>
       </div>
