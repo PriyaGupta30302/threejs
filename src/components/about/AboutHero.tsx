@@ -115,10 +115,10 @@ export default function AboutHero() {
 
       {/* Top Text Content (No Overlap) */}
       <div ref={textRef} className="relative z-20 w-full pt-16 md:pt-24 flex flex-col items-center justify-center text-center pointer-events-none select-none">
-        <h2 className="cinematic-sub text-xs md:text-sm tracking-[0.5em] uppercase text-white/50 mb-4 font-mono font-bold">
+        {/* <h2 className="cinematic-sub text-xs md:text-sm tracking-[0.5em] uppercase text-white/50 mb-4 font-mono font-bold">
           The Journey
-        </h2>
-        <div className="flex flex-col items-center justify-center leading-[0.9]">
+        </h2> */}
+        <div className="flex flex-col items-center justify-center leading-[0.9] pt-14">
           <h1 className="cinematic-text text-6xl md:text-8xl lg:text-[10vw] font-serif font-bold text-white tracking-tighter">
             ABOUT <span className="italic text-[#3AA89B] font-light">PRIYA</span>
           </h1>
