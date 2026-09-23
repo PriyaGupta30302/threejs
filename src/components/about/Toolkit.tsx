@@ -1,5 +1,9 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
 const tools = [
   { name: 'React.js', icon: '⚛️' },
   { name: 'Next.js', icon: 'N' },
@@ -14,8 +18,53 @@ const tools = [
 ];
 
 export default function Toolkit() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    
+    if (!containerRef.current) return;
+
+    const ctx = gsap.context(() => {
+      // Heading reveal
+      gsap.fromTo('.toolkit-heading',
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: '.toolkit-heading',
+            start: 'top 85%',
+          }
+        }
+      );
+
+      // Grid items stagger
+      gsap.fromTo('.toolkit-item',
+        { y: 30, opacity: 0, scale: 0.95 },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.6,
+          stagger: 0.05,
+          ease: 'back.out(1.2)',
+          scrollTrigger: {
+            trigger: '.toolkit-grid',
+            start: 'top 80%',
+          }
+        }
+      );
+
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className="py-24 px-8 md:px-16 border-t border-white/10 relative">
+    <section ref={containerRef} className="py-12 px-8 md:px-16 border-t border-white/10 relative">
       <div className="flex flex-col md:flex-row gap-12 md:gap-24 mb-16">
         {/* Section Identifier */}
         <div className="w-full md:w-1/4">
@@ -25,7 +74,7 @@ export default function Toolkit() {
 
         {/* Content */}
         <div className="w-full md:w-2/4 flex flex-col justify-center">
-          <h2 className="text-4xl md:text-5xl font-serif tracking-tight leading-tight">
+          <h2 className="toolkit-heading text-4xl md:text-5xl font-serif tracking-tight leading-tight">
             Tools I work with.
           </h2>
         </div>
@@ -36,11 +85,11 @@ export default function Toolkit() {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-8 max-w-6xl mx-auto">
+      <div className="toolkit-grid grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-8 max-w-6xl mx-auto">
         {tools.map((tool, idx) => (
-          <div key={idx} className="flex items-center gap-4 py-4 px-6 border border-white/10 rounded hover:border-white/30 transition-colors bg-white/[0.02]">
-            <span className="text-2xl opacity-80 grayscale">{tool.icon}</span>
-            <span className="text-sm font-light text-white/80">{tool.name}</span>
+          <div key={idx} className="toolkit-item flex items-center gap-4 py-4 px-6 border border-white/5 rounded-xl hover:border-[#3AA89B]/50 transition-all duration-300 bg-white/[0.01] hover:bg-[#3AA89B]/[0.02] hover:shadow-[0_0_20px_rgba(58,168,155,0.1)] group">
+            <span className="text-2xl opacity-80 grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-300">{tool.icon}</span>
+            <span className="text-sm font-light text-white/80 group-hover:text-white transition-colors">{tool.name}</span>
           </div>
         ))}
       </div>

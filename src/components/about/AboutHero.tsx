@@ -1,94 +1,151 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Torus } from '@react-three/drei';
+import { Icosahedron, Float, Stars } from '@react-three/drei';
 import * as THREE from 'three';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-function RotatingRings() {
-  const groupRef = useRef<THREE.Group>(null);
+// The Cinematic 3D Core
+function CinematicCore({ progressRef }: { progressRef: React.MutableRefObject<number> }) {
+  const coreGroup = useRef<THREE.Group>(null);
+  const materialRef = useRef<THREE.MeshStandardMaterial>(null);
   
   useFrame((state, delta) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.x += delta * 0.1;
-      groupRef.current.rotation.y += delta * 0.15;
+    if (coreGroup.current) {
+      coreGroup.current.rotation.x += delta * 0.2;
+      coreGroup.current.rotation.y += delta * 0.3;
+      
+      const p = progressRef.current;
+      
+      // Smoothly zoom in on scroll (scale up drastically)
+      const scale = THREE.MathUtils.lerp(1, 15, p);
+      coreGroup.current.scale.setScalar(scale);
+      
+      // Fade out as it gets massive so it doesn't block the screen entirely
+      if (materialRef.current) {
+        materialRef.current.opacity = THREE.MathUtils.lerp(0.8, 0.0, p * p); 
+      }
     }
   });
 
   return (
-    <group ref={groupRef}>
-      {/* Outer rings */}
-      {[...Array(5)].map((_, i) => (
-        <Torus
-          key={i}
-          args={[2 + i * 0.2, 0.01, 16, 100]}
-          rotation={[Math.PI / 4 * i, Math.PI / 3 * i, 0]}
-        >
-          <meshBasicMaterial color="#3AA89B" wireframe transparent opacity={0.3 + (i * 0.1)} />
-        </Torus>
-      ))}
-      {/* Inner sphere outline representation */}
-      <Torus args={[1.5, 0.01, 16, 100]} rotation={[Math.PI / 2, 0, 0]}>
-         <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.2} />
-      </Torus>
-      <Torus args={[1.5, 0.01, 16, 100]} rotation={[0, Math.PI / 2, 0]}>
-         <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.2} />
-      </Torus>
+    <group ref={coreGroup}>
+      <Float speed={1.5} rotationIntensity={1} floatIntensity={1}>
+        {/* Subtle wireframe matching home page elegance */}
+        <Icosahedron args={[1.8, 3]}>
+          <meshStandardMaterial 
+            ref={materialRef}
+            color="#ffffff" 
+            emissive="#3AA89B" 
+            emissiveIntensity={0.5} 
+            wireframe={true} 
+            transparent 
+            opacity={0.8} 
+          />
+        </Icosahedron>
+        {/* Inner glow core */}
+        <Icosahedron args={[1.2, 2]}>
+          <meshBasicMaterial 
+            color="#3AA89B" 
+            transparent 
+            opacity={0.1} 
+          />
+        </Icosahedron>
+      </Float>
     </group>
   );
 }
 
 export default function AboutHero() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef(0);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    gsap.registerPlugin(ScrollTrigger);
+    
+    const ctx = gsap.context(() => {
+      // Entry Animation
+      const tl = gsap.timeline();
+      
+      tl.fromTo('.cinematic-text',
+        { y: 50, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1.2, ease: "power3.out", stagger: 0.1, delay: 0.2 }
+      );
+      
+      tl.fromTo('.cinematic-sub',
+        { opacity: 0 },
+        { opacity: 1, duration: 1 },
+        "-=0.5"
+      );
+
+      // The Pinned Zoom-In Scroll
+      if (containerRef.current) {
+        ScrollTrigger.create({
+          trigger: containerRef.current,
+          start: 'top top',
+          end: '+=200%', 
+          pin: true,
+          scrub: 0.5,
+          onUpdate: (self) => {
+            progressRef.current = self.progress;
+            
+            // Fade out the text as we scroll down
+            if (textRef.current) {
+              const textOpacity = 1 - (self.progress * 3); 
+              gsap.set(textRef.current, { opacity: Math.max(0, textOpacity), y: self.progress * -100 });
+            }
+          }
+        });
+      }
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className="relative min-h-[80vh] flex flex-col md:flex-row items-center pt-32 pb-16 px-8 md:px-16 overflow-hidden">
-      {/* Text Content */}
-      <div className="w-full md:w-1/2 z-10 relative">
-        <h2 className="text-sm tracking-[0.2em] uppercase text-white/50 mb-8 flex items-center gap-4">
-          About <span className="w-12 h-[1px] bg-white/20"></span>
+    <div ref={containerRef} className="relative h-screen w-full bg-black overflow-hidden flex flex-col">
+      
+      {/* Background Dark Vignette */}
+      <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_center,_transparent_10%,_rgba(0,0,0,1)_80%)] pointer-events-none"></div>
+
+      {/* Top Text Content (No Overlap) */}
+      <div ref={textRef} className="relative z-20 w-full pt-16 md:pt-24 flex flex-col items-center justify-center text-center pointer-events-none select-none">
+        <h2 className="cinematic-sub text-xs md:text-sm tracking-[0.5em] uppercase text-white/50 mb-4 font-mono font-bold">
+          The Journey
         </h2>
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif tracking-tighter mb-8 leading-[1.1]">
-          Turning<br />
-          ideas into<br />
-          <span className="italic text-[#3AA89B]">real</span> experiences.
-        </h1>
-        <p className="text-lg md:text-xl font-light text-white/80 max-w-md leading-relaxed mb-12">
-          I'm Priya Gupta, a Frontend Developer based in India, focused on building modern, interactive and user-centric web experiences.
-        </p>
-        
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center relative">
-            <div className="w-2 h-2 bg-white rounded-full"></div>
-            <svg className="absolute -inset-4 w-20 h-20 animate-[spin_10s_linear_infinite] opacity-50" viewBox="0 0 100 100">
-              <path id="circlePath" d="M 50, 50 m -35, 0 a 35,35 0 1,1 70,0 a 35,35 0 1,1 -70,0" fill="transparent" />
-              <text fontSize="10">
-                <textPath href="#circlePath" startOffset="0%">SCROLL TO KNOW MORE • </textPath>
-              </text>
-            </svg>
-          </div>
+        <div className="flex flex-col items-center justify-center leading-[0.9]">
+          <h1 className="cinematic-text text-6xl md:text-8xl lg:text-[10vw] font-serif font-bold text-white tracking-tighter">
+            ABOUT <span className="italic text-[#3AA89B] font-light">PRIYA</span>
+          </h1>
         </div>
       </div>
 
-      {/* 3D Element Area */}
-      <div className="w-full md:w-1/2 h-[50vh] md:h-[80vh] absolute md:relative right-0 opacity-40 md:opacity-100 pointer-events-none md:pointer-events-auto">
-        <div className="absolute inset-0 cursor-grab active:cursor-grabbing">
-          <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
+      {/* 3D Canvas (Bottom Area) */}
+      <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+        {isMounted && (
+          <Canvas camera={{ position: [0, 0, 10], fov: 45 }} dpr={[1, 1.5]}>
             <ambientLight intensity={0.5} />
-            <RotatingRings />
-            <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={0.5} />
+            <pointLight position={[10, 10, 10]} intensity={1.5} color="#3AA89B" />
+            <Stars radius={50} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
+            <group position={[0, -1, 0]}>
+              <CinematicCore progressRef={progressRef} />
+            </group>
           </Canvas>
-        </div>
-        
-        {/* Right side floating text */}
-        <div className="hidden md:flex flex-col gap-12 absolute right-0 top-1/2 -translate-y-1/2 text-right text-xs tracking-[0.2em] uppercase text-white/40">
-          <div>
-            Code<br/>Design<br/>Animate<br/>Repeat
-          </div>
-          <div className="w-[1px] h-12 bg-white/20 ml-auto"></div>
-          <div>
-            Ideas<br/>Into<br/>Interaction
-          </div>
-        </div>
+        )}
       </div>
-    </section>
+
+      {/* Bottom Subtitle */}
+      <div className="absolute bottom-12 left-0 right-0 z-20 flex justify-center pointer-events-none">
+         <p className="cinematic-sub text-sm md:text-lg font-light text-white/60 max-w-lg px-4 text-center">
+          Scroll to smoothly dive into the core.
+        </p>
+      </div>
+
+    </div>
   );
 }
