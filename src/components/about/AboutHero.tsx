@@ -8,9 +8,10 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 // The Cinematic 3D Core
-function CinematicCore({ progressRef }: { progressRef: React.MutableRefObject<number> }) {
+function CinematicCore({ progressRef, isMobile }: { progressRef: React.MutableRefObject<number>, isMobile: boolean }) {
   const coreGroup = useRef<THREE.Group>(null);
   const materialRef = useRef<THREE.MeshStandardMaterial>(null);
+  const wireframeRef = useRef<THREE.MeshBasicMaterial>(null);
   
   useFrame((state, delta) => {
     if (coreGroup.current) {
@@ -20,20 +21,23 @@ function CinematicCore({ progressRef }: { progressRef: React.MutableRefObject<nu
       const p = progressRef.current;
       
       // Smoothly zoom in on scroll (scale up drastically)
-      const scale = THREE.MathUtils.lerp(1, 15, p);
+      // Using quadratic easing (p * p) so the first scroll feels extremely gentle and slow, avoiding a sudden rough jump
+      const easedP = p * p;
+      const scale = THREE.MathUtils.lerp(1, 15, easedP);
       coreGroup.current.scale.setScalar(scale);
       
       // Fade out as it gets massive so it doesn't block the screen entirely
       if (materialRef.current) {
-        materialRef.current.opacity = THREE.MathUtils.lerp(0.8, 0.0, p * p); 
+        // Fade out mostly at the very end
+        materialRef.current.opacity = THREE.MathUtils.lerp(0.8, 0.0, Math.pow(p, 3)); 
       }
     }
   });
 
   return (
-    <group ref={coreGroup}>
+    <group ref={coreGroup} position={[0, isMobile ? 0 : -1, 0]}>
       <Float speed={1.5} rotationIntensity={1} floatIntensity={1}>
-        {/* Subtle wireframe matching home page elegance */}
+        {/* Subtle wireframe matching home page elegance - keep it perfectly round on all devices */}
         <Icosahedron args={[1.8, 3]}>
           <meshStandardMaterial 
             ref={materialRef}
@@ -61,11 +65,19 @@ function CinematicCore({ progressRef }: { progressRef: React.MutableRefObject<nu
 export default function AboutHero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
+  const bottomTextRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef(0);
   const [isMounted, setIsMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
+    
+    // Check if mobile for initial render to position canvas and optimize detail
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    // Prevent GSAP from recalculating positions and causing jumps when mobile address bar hides
     gsap.registerPlugin(ScrollTrigger);
     
     const ctx = gsap.context(() => {
@@ -83,28 +95,66 @@ export default function AboutHero() {
         "-=0.5"
       );
 
-      // The Pinned Zoom-In Scroll
-      if (containerRef.current) {
-        ScrollTrigger.create({
-          trigger: containerRef.current,
-          start: 'top top',
-          end: '+=200%', 
-          pin: true,
-          scrub: 0.5,
-          onUpdate: (self) => {
-            progressRef.current = self.progress;
-            
-            // Fade out the text as we scroll down
-            if (textRef.current) {
-              const textOpacity = 1 - (self.progress * 3); 
-              gsap.set(textRef.current, { opacity: Math.max(0, textOpacity), y: self.progress * -100 });
+      // MatchMedia for responsive scroll distances
+      const mm = gsap.matchMedia();
+
+      // Mobile setup
+      mm.add("(max-width: 767px)", () => {
+        if (containerRef.current) {
+          ScrollTrigger.create({
+            trigger: containerRef.current,
+            start: 'top top',
+            end: '+=120%', 
+            pin: true,
+            scrub: 0.5, 
+            onUpdate: (self) => {
+              progressRef.current = self.progress;
+              if (textRef.current) {
+                const textOpacity = 1 - (self.progress * 3); 
+                gsap.set(textRef.current, { opacity: Math.max(0, textOpacity) });
+              }
+              if (bottomTextRef.current) {
+                // Stays fully visible until 40%, then completely hides by 80%
+                const bottomOpacity = 1 - Math.max(0, (self.progress - 0.4) * 2.5); 
+                gsap.set(bottomTextRef.current, { opacity: Math.max(0, bottomOpacity) });
+              }
             }
-          }
-        });
-      }
+          });
+        }
+      });
+
+      // Desktop setup
+      mm.add("(min-width: 768px)", () => {
+        if (containerRef.current) {
+          ScrollTrigger.create({
+            trigger: containerRef.current,
+            start: 'top top',
+            end: '+=200%', 
+            pin: true,
+            scrub: 0.5,
+            onUpdate: (self) => {
+              progressRef.current = self.progress;
+              if (textRef.current) {
+                const textOpacity = 1 - (self.progress * 3); 
+                gsap.set(textRef.current, { opacity: Math.max(0, textOpacity) });
+              }
+              if (bottomTextRef.current) {
+                // Stays fully visible until 40%, then completely hides by 80%
+                const bottomOpacity = 1 - Math.max(0, (self.progress - 0.4) * 2.5); 
+                gsap.set(bottomTextRef.current, { opacity: Math.max(0, bottomOpacity) });
+              }
+            }
+          });
+        }
+      });
+      
+      return () => mm.revert();
     }, containerRef);
 
-    return () => ctx.revert();
+    return () => {
+      ctx.revert();
+      window.removeEventListener('resize', checkMobile);
+    };
   }, []);
 
   return (
@@ -118,7 +168,7 @@ export default function AboutHero() {
         {/* <h2 className="cinematic-sub text-xs md:text-sm tracking-[0.5em] uppercase text-white/50 mb-4 font-mono font-bold">
           The Journey
         </h2> */}
-        <div className="flex flex-col items-center justify-center leading-[0.9] pt-14">
+        <div className="flex flex-col items-center justify-center leading-[0.9] pt-14 md:pt-14">
           <h1 className="cinematic-text text-6xl md:text-8xl lg:text-[10vw] font-serif font-bold text-white tracking-tighter">
             ABOUT <span className="italic text-[#3AA89B] font-light">PRIYA</span>
           </h1>
@@ -128,19 +178,29 @@ export default function AboutHero() {
       {/* 3D Canvas (Bottom Area) */}
       <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
         {isMounted && (
-          <Canvas camera={{ position: [0, 0, 10], fov: 45 }} dpr={[1, 1.5]}>
+          <Canvas 
+            camera={{ position: [0, 0, 10], fov: 45 }} 
+            dpr={[1, isMobile ? 1 : 1.5]} // Restrict pixel ratio on mobile for performance
+            performance={{ min: 0.5 }} // Allow three.js to drop quality to maintain framerate
+          >
             <ambientLight intensity={0.5} />
             <pointLight position={[10, 10, 10]} intensity={1.5} color="#3AA89B" />
-            <Stars radius={50} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
-            <group position={[0, -1, 0]}>
-              <CinematicCore progressRef={progressRef} />
-            </group>
+            <Stars 
+              radius={50} 
+              depth={50} 
+              count={isMobile ? 2000 : 3000} // Increased for mobile
+              factor={isMobile ? 5 : 4} // Bigger stars for mobile visibility
+              saturation={0} 
+              fade 
+              speed={1} 
+            />
+            <CinematicCore progressRef={progressRef} isMobile={isMobile} />
           </Canvas>
         )}
       </div>
 
       {/* Bottom Subtitle */}
-      <div className="absolute bottom-12 left-0 right-0 z-20 flex justify-center pointer-events-none">
+      <div ref={bottomTextRef} className="absolute bottom-24 md:bottom-12 left-0 right-0 z-20 flex justify-center pointer-events-none">
          <p className="cinematic-sub text-sm md:text-lg font-light text-white/60 max-w-lg px-4 text-center">
           Scroll to smoothly dive into the core.
         </p>
