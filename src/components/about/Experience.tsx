@@ -4,152 +4,116 @@ import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+const timeline = [
+  {
+    year: "2024",
+    role: "Frontend Developer (Intern to Full-Time)",
+    company: "Indiefluence",
+    description: "Started as an intern and transitioned into a permanent role within the exact same year. I built complete storefronts from scratch, transformed outdated interfaces into modern UIs, and established robust, reusable component systems for e-commerce and educational platforms.",
+    tags: ["Internship", "Full-Time", "UI/UX"]
+  },
+  {
+    year: "2025",
+    role: "Senior Frontend Developer",
+    company: "Indiefluence",
+    description: "Promoted to a senior role. Alongside developing full-scale platforms, I took on the responsibility of guiding junior developers, solving their technical doubts, and efficiently distributing tasks to ensure smooth project delivery.",
+    tags: ["Mentorship", "Architecture", "Delegation"]
+  },
+  {
+    year: "2026",
+    role: "Senior Frontend Developer",
+    company: "Indiefluence",
+    description: "Continuing to spearhead frontend builds, maintaining strict quality standards, and optimizing complex, animation-heavy applications to ensure flawless performance and zero bugs before client handoff.",
+    tags: ["Optimization", "Quality Assurance"]
+  },
+  {
+    year: "Freelance",
+    role: "Independent Web Developer",
+    company: "Creative Clients",
+    description: "Collaborated directly with creatives to engineer custom digital experiences. Designed and developed 2 premium, highly interactive portfolio websites tailored to showcase client work with immersive scroll animations.",
+    tags: ["Portfolios", "Creative Development"]
+  }
+];
+
 export default function Experience() {
   const containerRef = useRef<HTMLDivElement>(null);
-
+  
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     
     if (!containerRef.current) return;
-
-    const ctx = gsap.context(() => {
-      // Main Heading
-      gsap.fromTo('.exp-heading',
-        { y: 50, opacity: 0 },
+    
+    // Animate cards stacking
+    const cards = gsap.utils.toArray('.stack-card');
+    
+    cards.forEach((card: any, i) => {
+      gsap.fromTo(card, 
+        { y: 100, opacity: 0 },
         {
           y: 0,
           opacity: 1,
           duration: 1,
           ease: 'power3.out',
           scrollTrigger: {
-            trigger: '.exp-heading',
+            trigger: card,
             start: 'top 85%',
           }
         }
       );
+    });
 
-      // Timeline reveal
-      gsap.fromTo('.exp-timeline',
-        { scaleY: 0, transformOrigin: 'top' },
-        {
-          scaleY: 1,
-          duration: 1.5,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: '.exp-timeline-container',
-            start: 'top 75%',
-          }
-        }
-      );
-
-      // Dot glow animation
-      gsap.fromTo('.exp-dot',
-        { scale: 0, opacity: 0 },
-        {
-          scale: 1,
-          opacity: 1,
-          duration: 0.5,
-          ease: 'back.out(2)',
-          scrollTrigger: {
-            trigger: '.exp-timeline-container',
-            start: 'top 75%',
-          }
-        }
-      );
-
-      // Content fade in
-      gsap.fromTo('.exp-content > *',
-        { x: -20, opacity: 0 },
-        {
-          x: 0,
-          opacity: 1,
-          duration: 0.8,
-          stagger: 0.15,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: '.exp-timeline-container',
-            start: 'top 70%',
-          }
-        }
-      );
-
-      // Right text
-      gsap.fromTo('.exp-right-text',
-        { opacity: 0, y: 20 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          stagger: 0.2,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: '.exp-right-text',
-            start: 'top 85%',
-          }
-        }
-      );
-
-    }, containerRef);
-
-    return () => ctx.revert();
+    return () => {
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
   }, []);
 
   return (
-    <section ref={containerRef} className="py-12 px-8 md:px-16 border-t border-white/10 relative">
-      <div className="flex flex-col md:flex-row gap-12 md:gap-24">
-        {/* Section Identifier */}
-        <div className="w-full md:w-1/4">
-          <h3 className="text-xs tracking-[0.2em] text-white/50 uppercase mb-2">02</h3>
-          <h2 className="text-sm tracking-[0.2em] text-white/80 uppercase">Experience</h2>
+    <section ref={containerRef} className="py-16 md:py-32 w-full border-t border-[#3AA89B]/10 relative bg-gradient-to-b from-[#041514] to-black">
+      <div className="max-w-[1280px] mx-auto px-6 md:px-12 flex flex-col md:flex-row gap-8 md:gap-16">
+        
+        {/* Section Identifier - Sticky */}
+        <div className="w-full md:w-1/4 shrink-0">
+          <div className="sticky top-32">
+            <h3 className="text-xs tracking-[0.2em] text-[#3AA89B] font-semibold uppercase mb-2">03</h3>
+            <h2 className="text-3xl md:text-4xl font-serif tracking-tight text-white mb-6">Experience</h2>
+            <p className="text-sm font-light text-white/60 leading-relaxed max-w-xs">
+              My journey of building, guiding, and constantly learning.
+            </p>
+          </div>
         </div>
 
-        {/* Content */}
-        <div className="w-full md:w-2/4">
-          <h2 className="exp-heading text-4xl md:text-5xl font-serif tracking-tight mb-16 leading-tight">
-            2+ years of<br />
-            building for the web.
-          </h2>
+        {/* Stacking Cards Content */}
+        <div className="w-full md:w-3/4 flex flex-col gap-8 pb-20">
           
-          <div className="exp-timeline-container relative pl-8">
-            {/* Timeline Line */}
-            <div className="exp-timeline absolute left-0 top-2 bottom-0 w-[1px] bg-gradient-to-b from-[#3AA89B] to-transparent opacity-50"></div>
-            
-            {/* Timeline Dot */}
-            <div className="exp-dot absolute w-3 h-3 bg-[#3AA89B] rounded-full left-[-5.5px] top-2 shadow-[0_0_15px_#3AA89B]">
-              <div className="absolute inset-0 rounded-full bg-[#3AA89B] animate-ping opacity-50"></div>
-            </div>
-            
-            <div className="exp-content">
-              <div className="mb-2">
-                <span className="text-xs tracking-[0.1em] text-white/50 uppercase">2024 — Present</span>
+          {timeline.map((item, idx) => (
+            <div 
+              key={idx} 
+              className="stack-card sticky w-full p-8 md:p-10 rounded-[2rem] border border-[#3AA89B]/10 bg-[#061c1a] shadow-2xl flex flex-col md:flex-row gap-8 items-start"
+              style={{ zIndex: idx, top: `calc(8rem + ${idx * 1.5}rem)` }}
+            >
+              <div className="md:w-1/4 shrink-0">
+                <div className="text-4xl md:text-5xl font-serif text-[#3AA89B]">{item.year}</div>
               </div>
-              <h3 className="text-xl font-bold mb-1 group">
-                <span className="group-hover:text-[#3AA89B] transition-colors">Indiefluence</span> 
-                <span className="text-white/40 font-normal ml-2 text-sm">• Kurukshetra</span>
-              </h3>
-              <h4 className="text-lg text-white/80 font-medium mb-6">Frontend Developer</h4>
               
-              <p className="text-base font-light text-white/60 leading-relaxed mb-4 hover:text-white/80 transition-colors duration-300">
-                Worked on multiple client projects including business websites, educational platforms and eCommerce stores. Responsible for building responsive and interactive user interfaces using React.js, Next.js, Tailwind CSS and modern web technologies. Also involved in website maintenance, performance improvements and feature updates.
-              </p>
+              <div className="md:w-3/4 flex flex-col">
+                <h3 className="text-2xl md:text-3xl font-serif text-white mb-2">{item.role}</h3>
+                <h4 className="text-sm tracking-[0.1em] text-[#3AA89B] uppercase mb-6 font-medium">{item.company}</h4>
+                
+                <p className="text-base md:text-lg font-light text-white/90 leading-relaxed mb-8">
+                  {item.description}
+                </p>
+                
+                <div className="flex flex-wrap gap-3 mt-auto">
+                  {item.tags.map((tag, tIdx) => (
+                    <span key={tIdx} className="px-4 py-2 rounded-full border border-[#3AA89B]/20 bg-[#3AA89B]/10 text-xs text-white/80">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          ))}
 
-        {/* Right side floating text */}
-        <div className="hidden md:flex flex-col justify-between w-full md:w-1/4 text-xs tracking-[0.2em] uppercase text-white/40 pl-8">
-          <div className="exp-right-text leading-relaxed">
-            My journey so far — from learning and exploring to working on real-world projects, collaborating with amazing people and growing as a developer.
-          </div>
-          <div className="exp-right-text mt-16">
-            <span className="hover:text-white transition-colors">Real Projects</span><br/>
-            <span className="hover:text-white transition-colors">Real Learning</span><br/>
-            <span className="hover:text-white transition-colors">Real Growth</span><br/><br/>
-            <span className="block mb-4 w-[1px] h-12 bg-white/20"></span>
-            <span className="hover:text-white transition-colors">Still Exploring</span><br/>
-            <span className="hover:text-white transition-colors">Still Learning</span><br/>
-            <span className="hover:text-white transition-colors">Still Building</span> <span className="inline-block w-2 h-2 rounded-full bg-[#3AA89B] ml-2 animate-pulse"></span>
-          </div>
         </div>
       </div>
     </section>
