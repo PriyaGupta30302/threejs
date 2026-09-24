@@ -15,6 +15,7 @@ export default function Hero() {
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
+    ScrollTrigger.config({ ignoreMobileResize: true });
     
     if (!containerRef.current) return;
 

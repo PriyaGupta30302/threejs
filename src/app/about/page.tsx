@@ -13,7 +13,7 @@ export default function AboutPage() {
   return (
     <main className="bg-black min-h-screen w-full text-white relative" style={{ clipPath: 'inset(0)' }}>
       {/* Global 3D Background */}
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
+      <div className="fixed top-0 left-0 w-full h-screen z-0 pointer-events-none opacity-40">
         <AboutBackground3D />
       </div>
 

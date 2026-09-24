@@ -34,7 +34,7 @@ function CinematicCore({ progressRef, isMobile }: { progressRef: React.MutableRe
   });
 
   return (
-    <group ref={coreGroup} position={[0, isMobile ? 0 : -1, 0]}>
+    <group ref={coreGroup} position={[0, isMobile ? -0.5 : -1, 0]}>
       <Float speed={1.5} rotationIntensity={1} floatIntensity={1}>
         {/* Subtle wireframe matching home page elegance - keep it perfectly round on all devices */}
         <Icosahedron args={[1.8, 3]}>
@@ -78,6 +78,7 @@ export default function AboutHero() {
     window.addEventListener('resize', checkMobile);
     // Prevent GSAP from recalculating positions and causing jumps when mobile address bar hides
     gsap.registerPlugin(ScrollTrigger);
+    ScrollTrigger.config({ ignoreMobileResize: true });
     
     const ctx = gsap.context(() => {
       // Entry Animation
@@ -167,7 +168,7 @@ export default function AboutHero() {
         {/* <h2 className="cinematic-sub text-xs md:text-sm tracking-[0.5em] uppercase text-white/50 mb-4 font-mono font-bold">
           The Journey
         </h2> */}
-        <div className="flex flex-col items-center justify-center leading-[0.9] pt-14 md:pt-14">
+        <div className="flex flex-col items-center justify-center leading-[0.9] pt-20 md:pt-14">
           <h1 className="cinematic-text text-6xl md:text-8xl lg:text-[10vw] font-serif font-bold text-white tracking-tighter">
             ABOUT <span className="italic text-[#3AA89B] font-light">PRIYA</span>
           </h1>
