@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -79,7 +79,7 @@ export default function Toolkit() {
     };
   }, []);
 
-  const renderModule = (tool: any, idx: number, rowId: string) => (
+  const renderModule = (tool: { name: string, desc: string, icon: React.ReactNode }, idx: number, rowId: string) => (
     <div key={`${rowId}-${idx}`} className="shrink-0 w-[280px] h-[160px] relative border border-[#3AA89B]/30 bg-black/40 backdrop-blur-md p-6 group hover:bg-[#3AA89B]/10 hover:border-[#3AA89B]/60 transition-all duration-300">
       {/* Sci-Fi Corners */}
       <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-[#3AA89B]"></div>

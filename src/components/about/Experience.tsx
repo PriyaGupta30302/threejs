@@ -44,9 +44,9 @@ export default function Experience() {
     if (!containerRef.current) return;
     
     // Animate cards stacking
-    const cards = gsap.utils.toArray('.stack-card');
+    const cards = gsap.utils.toArray('.stack-card') as Element[];
     
-    cards.forEach((card: any, i) => {
+    cards.forEach((card) => {
       gsap.fromTo(card, 
         { y: 100, opacity: 0 },
         {
