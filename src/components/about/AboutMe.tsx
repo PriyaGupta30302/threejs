@@ -40,7 +40,7 @@ export default function AboutMe() {
   const text = "I am a frontend developer who loves turning complex designs into responsive, production-ready web applications. Over the past two years, I've built everything from full-scale e-commerce storefronts to high-traffic educational platforms. For me, the goal is simple: craft interfaces that don't just look beautiful, but perform flawlessly. Outside of my full-time work, I also collaborate with creatives to build custom portfolio experiences.";
 
   return (
-    <section ref={containerRef} className="py-32 md:py-48 w-full overflow-hidden border-t border-[#3AA89B]/10 relative bg-gradient-to-b from-black via-[#020a09] to-[#041514]">
+    <section ref={containerRef} className="pt-16 pb-32 md:pt-24 md:pb-48 w-full overflow-hidden border-t border-[#3AA89B]/10 relative bg-gradient-to-b from-black via-[#020a09] to-[#041514]">
       
       {/* Background Accent */}
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#3AA89B]/10 rounded-full blur-[150px] pointer-events-none translate-x-1/3 -translate-y-1/4"></div>

@@ -19,16 +19,16 @@ function CinematicCore({ progressRef, isMobile }: { progressRef: React.MutableRe
       
       const p = progressRef.current;
       
-      // Smoothly zoom in on scroll (scale up drastically)
-      // Using quadratic easing (p * p) so the first scroll feels extremely gentle and slow, avoiding a sudden rough jump
+      // Smoothly zoom in on scroll. We scale to 6.5 because at radius 1.8 * 5.5 = 10, it hits the camera.
+      // Scaling exactly to 6.5 ensures it passes the camera right at the very end of the scroll.
       const easedP = p * p;
-      const scale = THREE.MathUtils.lerp(1, 15, easedP);
+      const scale = THREE.MathUtils.lerp(1, 6.5, easedP);
       coreGroup.current.scale.setScalar(scale);
       
       // Fade out as it gets massive so it doesn't block the screen entirely
       if (materialRef.current) {
-        // Fade out mostly at the very end
-        materialRef.current.opacity = THREE.MathUtils.lerp(0.8, 0.0, Math.pow(p, 3)); 
+        // Fade out ONLY at the absolute end when it's crossing the camera
+        materialRef.current.opacity = THREE.MathUtils.lerp(0.8, 0.0, Math.pow(p, 6)); 
       }
     }
   });
@@ -129,7 +129,7 @@ export default function AboutHero() {
           ScrollTrigger.create({
             trigger: containerRef.current,
             start: 'top top',
-            end: '+=200%', 
+            end: '+=150%', 
             pin: true,
             scrub: 0.5,
             onUpdate: (self) => {

@@ -30,7 +30,7 @@ const timeline = [
     year: "Freelance",
     role: "Independent Web Developer",
     company: "Creative Clients",
-    description: "Collaborated directly with creatives to engineer custom digital experiences. Designed and developed 2 premium, highly interactive portfolio websites tailored to showcase client work with immersive scroll animations.",
+    description: "Collaborated directly with creatives to engineer custom digital experiences. Designed and developed premium, highly interactive portfolio websites tailored to showcase client work with immersive scroll animations.",
     tags: ["Portfolios", "Creative Development"]
   }
 ];
@@ -48,15 +48,16 @@ export default function Experience() {
     
     cards.forEach((card) => {
       gsap.fromTo(card, 
-        { y: 100, opacity: 0 },
+        { y: 150, opacity: 0, scale: 0.95 },
         {
           y: 0,
           opacity: 1,
-          duration: 1,
+          scale: 1,
+          duration: 1.2,
           ease: 'power3.out',
           scrollTrigger: {
             trigger: card,
-            start: 'top 85%',
+            start: 'top 90%',
           }
         }
       );
@@ -75,8 +76,8 @@ export default function Experience() {
         <div className="w-full md:w-1/4 shrink-0">
           <div className="sticky top-32">
             <h3 className="text-xs tracking-[0.2em] text-[#3AA89B] font-semibold uppercase mb-2">03</h3>
-            <h2 className="text-3xl md:text-4xl font-serif tracking-tight text-white mb-6">Experience</h2>
-            <p className="text-sm font-light text-white/60 leading-relaxed max-w-xs">
+            <h2 className="text-3xl md:text-5xl font-serif tracking-tight text-white mb-6">Experience</h2>
+            <p className="text-sm font-light text-white/50 leading-relaxed max-w-xs">
               My journey of building, guiding, and constantly learning.
             </p>
           </div>
@@ -88,24 +89,33 @@ export default function Experience() {
           {timeline.map((item, idx) => (
             <div 
               key={idx} 
-              className="stack-card sticky w-full p-8 md:p-10 rounded-[2rem] border border-[#3AA89B]/10 bg-[#061c1a] shadow-2xl flex flex-col md:flex-row gap-8 items-start"
+              className="stack-card sticky w-full p-8 md:p-12 rounded-3xl border border-white/5 bg-black/40 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.5)] flex flex-col md:flex-row gap-8 items-start group overflow-hidden"
               style={{ zIndex: idx, top: `calc(8rem + ${idx * 1.5}rem)` }}
             >
-              <div className="md:w-1/4 shrink-0">
-                <div className="text-4xl md:text-5xl font-serif text-[#3AA89B]">{item.year}</div>
+              {/* Hover Glow Effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#3AA89B]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+              
+              {/* Massive Watermark Year */}
+              <div className="absolute -right-8 -bottom-10 text-[120px] md:text-[180px] font-serif font-bold text-white/5 pointer-events-none select-none transition-transform duration-700 group-hover:scale-105 group-hover:text-white/10">
+                {item.year.includes('Free') ? 'WORK' : item.year}
+              </div>
+
+              <div className="md:w-1/4 shrink-0 flex flex-col relative z-10">
+                <div className="text-2xl md:text-3xl font-serif text-[#3AA89B] mb-4">{item.year}</div>
+                <div className="w-12 h-[1px] bg-[#3AA89B]/30 mb-4 group-hover:w-full transition-all duration-700"></div>
               </div>
               
-              <div className="md:w-3/4 flex flex-col">
-                <h3 className="text-2xl md:text-3xl font-serif text-white mb-2">{item.role}</h3>
-                <h4 className="text-sm tracking-[0.1em] text-[#3AA89B] uppercase mb-6 font-medium">{item.company}</h4>
+              <div className="md:w-3/4 flex flex-col relative z-10">
+                <h3 className="text-2xl md:text-4xl font-serif text-white mb-2">{item.role}</h3>
+                <h4 className="text-sm tracking-[0.2em] text-[#3AA89B] uppercase mb-8 font-medium">{item.company}</h4>
                 
-                <p className="text-base md:text-lg font-light text-white/90 leading-relaxed mb-8">
+                <p className="text-base md:text-lg font-light text-white/70 leading-relaxed mb-8 max-w-2xl group-hover:text-white/90 transition-colors duration-500">
                   {item.description}
                 </p>
                 
                 <div className="flex flex-wrap gap-3 mt-auto">
                   {item.tags.map((tag, tIdx) => (
-                    <span key={tIdx} className="px-4 py-2 rounded-full border border-[#3AA89B]/20 bg-[#3AA89B]/10 text-xs text-white/80">
+                    <span key={tIdx} className="px-4 py-2 rounded-full border border-white/10 bg-white/5 text-xs text-white/70 backdrop-blur-md">
                       {tag}
                     </span>
                   ))}
