@@ -215,8 +215,8 @@ const vertexShader = `
     vec4 mvPosition = modelViewMatrix * vec4(currentPos, 1.0);
     gl_Position = projectionMatrix * mvPosition;
     
-    // Point size increased for visibility
-    float baseSize = mix(25.0, 75.0, aSize);
+    // Point size decreased drastically for an extremely fine, detailed structure
+    float baseSize = mix(2.0, 10.0, aSize);
     gl_PointSize = baseSize * (1.0 / -mvPosition.z) * hoverEffect;
   }
 `;
@@ -270,7 +270,7 @@ export default function ParticleObject({ activeTech, isMobile = false }: Particl
   const { positions, target1, target2, sizes, randoms } = useMemo(() => {
     
     // Extract vertices from the FBX model
-    let rawVerts: THREE.Vector3[] = [];
+    const rawVerts: THREE.Vector3[] = [];
     fbx.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
@@ -293,7 +293,8 @@ export default function ParticleObject({ activeTech, isMobile = false }: Particl
     }
     
     // Sample down to a reasonable structure count for performance
-    const desiredStructureCount = isMobile ? 3000 : 9000;
+    // Increased count drastically for a highly dense, fine mesh look (particles closer together)
+    const desiredStructureCount = isMobile ? 12000 : 50000;
     let sampledVerts: THREE.Vector3[] = [];
     
     if (rawVerts.length > desiredStructureCount) {
@@ -312,12 +313,12 @@ export default function ParticleObject({ activeTech, isMobile = false }: Particl
     const size = new THREE.Vector3();
     box.getSize(size);
     
-    // We want the maximum dimension of the brain to be around 3.5 units wide
+    // We want the maximum dimension of the brain to be around 3.6 units wide to prevent right side clipping
     const maxDim = Math.max(size.x, size.y, size.z);
-    const scale = 3.5 / (maxDim || 1);
+    const scale = 3.6 / (maxDim || 1);
     
     const structureCount = sampledVerts.length;
-    const bgCount = isMobile ? 300 : 700;
+    const bgCount = isMobile ? 400 : 1000;
     const count = structureCount + bgCount;
     
     const positions = new Float32Array(count * 3);
@@ -330,12 +331,15 @@ export default function ParticleObject({ activeTech, isMobile = false }: Particl
       const i3 = i * 3;
       
       if (i < structureCount) {
-        let v = sampledVerts[i];
+        const v = sampledVerts[i];
         
         // Center and scale
         let bx = (v.x - center.x) * scale;
         let by = (v.y - center.y) * scale;
         let bz = (v.z - center.z) * scale;
+        
+        // Shift it down slightly to center it properly vertically
+        by -= 0.2;
         
         // Let's add the 3/4 angle rotation that the user requested earlier
         // FBX orientation might differ, but assuming standard orientation, 
@@ -343,11 +347,11 @@ export default function ParticleObject({ activeTech, isMobile = false }: Particl
         const rotY = -Math.PI / 4; 
         const rotX = Math.PI / 10; 
 
-        let bx_r = bx * Math.cos(rotY) - bz * Math.sin(rotY);
+        const bx_r = bx * Math.cos(rotY) - bz * Math.sin(rotY);
         let bz_r = bx * Math.sin(rotY) + bz * Math.cos(rotY);
         bx = bx_r; bz = bz_r;
 
-        let by_r = by * Math.cos(rotX) - bz * Math.sin(rotX);
+        const by_r = by * Math.cos(rotX) - bz * Math.sin(rotX);
         bz_r = by * Math.sin(rotX) + bz * Math.cos(rotX);
         by = by_r; bz = bz_r;
 
@@ -356,10 +360,10 @@ export default function ParticleObject({ activeTech, isMobile = false }: Particl
         positions[i3 + 2] = bz;
         
         // For the target sphere/bulb we need normal vectors
-        let rad = Math.sqrt(bx*bx + by*by + bz*bz);
-        let nx = bx / (rad || 1);
-        let ny = by / (rad || 1);
-        let nz = bz / (rad || 1);
+        const rad = Math.sqrt(bx*bx + by*by + bz*bz);
+        const nx = bx / (rad || 1);
+        const ny = by / (rad || 1);
+        const nz = bz / (rad || 1);
         
         // ------------------------------------
         // Target 1: Lightbulb
@@ -377,7 +381,7 @@ export default function ParticleObject({ activeTech, isMobile = false }: Particl
           }
         }
         
-        let theta = Math.atan2(nz, nx);
+        const theta = Math.atan2(nz, nx);
         // Distribute for targets
         target1[i3] = rBulb * Math.cos(theta);
         target1[i3 + 1] = yBulb;

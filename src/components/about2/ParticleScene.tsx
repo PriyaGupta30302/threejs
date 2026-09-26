@@ -27,7 +27,7 @@ export default function ParticleScene({ activeTech, isMobile = false }: Particle
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  useFrame((state) => {
+  useFrame(() => {
     if (!groupRef.current) return;
 
     // Smooth scroll camera/group based on progress
@@ -41,8 +41,8 @@ export default function ParticleScene({ activeTech, isMobile = false }: Particle
     groupRef.current.rotation.y = targetRotation.current.y + progress * Math.PI * 2;
     groupRef.current.rotation.x = targetRotation.current.x + Math.sin(progress * Math.PI) * 0.5;
     
-    // Base floating motion
-    groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.1;
+    // Base position (no more floating up and down)
+    // groupRef.current.position.y = 0;
 
     // Shift to the right to keep text readable, but center it on the last section
     const targetX = progress < 0.75 ? (isMobile ? 0.0 : 1.5) : 0.0;
