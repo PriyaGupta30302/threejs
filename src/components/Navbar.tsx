@@ -5,6 +5,8 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Link from 'next/link';
 
+import { usePathname } from 'next/navigation';
+
 // Magnetic Button Wrapper
 function Magnetic({ children }: { children: React.ReactNode }) {
   const magneticRef = useRef<HTMLDivElement>(null);
@@ -88,6 +90,7 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuLinksRef = useRef<(HTMLAnchorElement | null)[]>([]);
+  const pathname = usePathname();
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -160,7 +163,9 @@ export default function Navbar() {
 
   return (
     <>
-      <nav ref={containerRef} className="absolute top-8 left-0 right-0 z-[100] flex justify-between items-center w-full max-w-7xl mx-auto px-8 pointer-events-none [perspective:1000px]">
+      <nav ref={containerRef} className={`absolute top-8 left-0 right-0 z-[100] flex justify-between items-center w-full pointer-events-none [perspective:1000px] ${
+        pathname === '/about2' ? 'px-[70px]' : 'max-w-7xl mx-auto px-8'
+      }`}>
         {/* Logo */}
         <div 
           ref={el => { linksRef.current[0] = el }}

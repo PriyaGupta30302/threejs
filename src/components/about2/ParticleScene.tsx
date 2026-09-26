@@ -5,7 +5,9 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { globalScrollState } from './scrollState';
 import { MathUtils } from 'three';
-import ParticleObject from './ParticleObject';
+import BrainParticle from './BrainParticle';
+import BulbParticle from './BulbParticle';
+import CircleParticle from './CircleParticle';
 
 interface ParticleSceneProps {
   activeTech: string | null;
@@ -27,7 +29,7 @@ export default function ParticleScene({ activeTech, isMobile = false }: Particle
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  useFrame((state) => {
+  useFrame(() => {
     if (!groupRef.current) return;
 
     // Smooth scroll camera/group based on progress
@@ -45,8 +47,8 @@ export default function ParticleScene({ activeTech, isMobile = false }: Particle
     const targetY = progress < 0.75 ? (isMobile ? -0.3 : -0.4) : 0.0;
     groupRef.current.position.y = MathUtils.lerp(groupRef.current.position.y, targetY, 0.05);
 
-    // Shift to the right for desktop to align with text
-    const targetX = progress < 0.75 ? (isMobile ? 0.0 : 2.0) : 0.0;
+    // Shift to the right for desktop to align with text (slightly reduced for right padding)
+    const targetX = progress < 0.75 ? (isMobile ? 0.0 : 1.6) : 0.0;
     groupRef.current.position.x = MathUtils.lerp(groupRef.current.position.x, targetX, 0.05);
 
     // Adjust scale for mobile
@@ -57,7 +59,9 @@ export default function ParticleScene({ activeTech, isMobile = false }: Particle
   return (
     <group ref={groupRef}>
       <Suspense fallback={null}>
-        <ParticleObject activeTech={activeTech} isMobile={isMobile} />
+        <BrainParticle activeTech={activeTech} isMobile={isMobile} />
+        <BulbParticle activeTech={activeTech} isMobile={isMobile} />
+        <CircleParticle activeTech={activeTech} isMobile={isMobile} />
       </Suspense>
     </group>
   );

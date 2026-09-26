@@ -81,7 +81,7 @@ export default function About2() {
         {/* HERO */}
         <section 
           ref={el => { sectionsRef.current[0] = el; }} 
-          className="h-screen w-full flex flex-col justify-center px-8 md:px-20 max-w-7xl mx-auto"
+          className="h-screen w-full flex flex-col justify-center px-[70px]"
         >
           <p className="text-[#34d399] tracking-widest uppercase text-xs font-bold mb-6">About</p>
           <h1 className="text-4xl md:text-8xl font-heading mb-8 max-w-3xl leading-[1.1]">
@@ -95,7 +95,7 @@ export default function About2() {
         {/* SECTION 01 — ABOUT ME */}
         <section 
           ref={el => { sectionsRef.current[1] = el; }} 
-          className="h-screen w-full flex flex-col justify-center items-end px-8 md:px-20 max-w-7xl mx-auto text-right"
+          className="h-screen w-full flex flex-col justify-center items-end px-[70px] text-right"
         >
           <p className="text-[#34d399] tracking-widest uppercase text-xs font-bold mb-6">A little about me</p>
           <h2 className="text-3xl md:text-5xl font-heading mb-6 max-w-2xl leading-[1.2]">
@@ -109,7 +109,7 @@ export default function About2() {
         {/* SECTION 02 — EXPERIENCE */}
         <section 
           ref={el => { sectionsRef.current[2] = el; }} 
-          className="h-screen w-full flex flex-col justify-center px-8 md:px-20 max-w-7xl mx-auto"
+          className="h-screen w-full flex flex-col justify-center px-[70px]"
         >
           <p className="text-[#34d399] tracking-widest uppercase text-xs font-bold mb-6">Experience</p>
           <h2 className="text-4xl md:text-6xl font-heading mb-12 max-w-xl">
@@ -129,7 +129,7 @@ export default function About2() {
         {/* SECTION 03 — TOOLKIT */}
         <section 
           ref={el => { sectionsRef.current[3] = el; }} 
-          className="h-screen w-full flex flex-col justify-center items-center px-8 md:px-20 max-w-7xl mx-auto text-center pointer-events-auto"
+          className="h-screen w-full flex flex-col justify-center items-center px-[70px] text-center pointer-events-auto"
         >
           <p className="text-[#34d399] tracking-widest uppercase text-xs font-bold mb-12">I work with</p>
           
@@ -152,7 +152,7 @@ export default function About2() {
         {/* SECTION 04 — CTA */}
         <section 
           ref={el => { sectionsRef.current[4] = el; }} 
-          className="h-screen w-full flex flex-col justify-center items-center px-8 md:px-20 max-w-7xl mx-auto text-center"
+          className="h-screen w-full flex flex-col justify-center items-center px-[70px] text-center"
         >
           <h2 className="text-4xl md:text-8xl font-heading mb-12">
             Have a project <br/>in mind?
