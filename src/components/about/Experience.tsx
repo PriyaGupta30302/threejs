@@ -1,0 +1,131 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+const timeline = [
+  {
+    year: "2024",
+    role: "Frontend Developer (Intern to Full-Time)",
+    company: "Indiefluence",
+    description: "Started as an intern and transitioned into a permanent role within the exact same year. I built complete storefronts from scratch, transformed outdated interfaces into modern UIs, and established robust, reusable component systems for e-commerce and educational platforms.",
+    tags: ["Internship", "Full-Time", "UI/UX"]
+  },
+  {
+    year: "2025",
+    role: "Senior Frontend Developer",
+    company: "Indiefluence",
+    description: "Promoted to a senior role. Alongside developing full-scale platforms, I took on the responsibility of guiding junior developers, solving their technical doubts, and efficiently distributing tasks to ensure smooth project delivery.",
+    tags: ["Mentorship", "Architecture", "Delegation"]
+  },
+  {
+    year: "2026",
+    role: "Senior Frontend Developer",
+    company: "Indiefluence",
+    description: "Continuing to spearhead frontend builds, maintaining strict quality standards, and optimizing complex, animation-heavy applications to ensure flawless performance and zero bugs before client handoff.",
+    tags: ["Optimization", "Quality Assurance"]
+  },
+  {
+    year: "Freelance",
+    role: "Independent Web Developer",
+    company: "Creative Clients",
+    description: "Collaborated directly with creatives to engineer custom digital experiences. Designed and developed premium, highly interactive portfolio websites tailored to showcase client work with immersive scroll animations.",
+    tags: ["Portfolios", "Creative Development"]
+  }
+];
+
+export default function Experience() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    
+    if (!containerRef.current) return;
+    
+    // Animate cards stacking
+    const cards = gsap.utils.toArray('.stack-card') as Element[];
+    
+    cards.forEach((card) => {
+      gsap.fromTo(card, 
+        { y: 150, opacity: 0, scale: 0.95 },
+        {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 1.2,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 90%',
+          }
+        }
+      );
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
+  }, []);
+
+  return (
+    <section ref={containerRef} className="py-16 md:py-32 w-full border-t border-[#3AA89B]/10 relative bg-gradient-to-b from-[#041514] to-black">
+      <div className="max-w-[1280px] mx-auto px-6 md:px-12 flex flex-col md:flex-row gap-8 md:gap-16">
+        
+        {/* Section Identifier - Sticky */}
+        <div className="w-full md:w-1/4 shrink-0">
+          <div className="sticky top-32">
+            <h3 className="text-xs tracking-[0.2em] text-[#3AA89B] font-semibold uppercase mb-2">03</h3>
+            <h2 className="text-3xl md:text-5xl font-serif tracking-tight text-white mb-6">Experience</h2>
+            <p className="text-sm font-light text-white/50 leading-relaxed max-w-xs">
+              My journey of building, guiding, and constantly learning.
+            </p>
+          </div>
+        </div>
+
+        {/* Stacking Cards Content */}
+        <div className="w-full md:w-3/4 flex flex-col gap-8 pb-20">
+          
+          {timeline.map((item, idx) => (
+            <div 
+              key={idx} 
+              className="stack-card sticky w-full p-8 md:p-12 rounded-3xl border border-white/5 bg-black/40 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.5)] flex flex-col md:flex-row gap-8 items-start group overflow-hidden"
+              style={{ zIndex: idx, top: `calc(8rem + ${idx * 1.5}rem)` }}
+            >
+              {/* Hover Glow Effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#3AA89B]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+              
+              {/* Massive Watermark Year */}
+              <div className="absolute -right-8 -bottom-10 text-[120px] md:text-[180px] font-serif font-bold text-white/5 pointer-events-none select-none transition-transform duration-700 group-hover:scale-105 group-hover:text-white/10">
+                {item.year.includes('Free') ? 'WORK' : item.year}
+              </div>
+
+              <div className="md:w-1/4 shrink-0 flex flex-col relative z-10">
+                <div className="text-2xl md:text-3xl font-serif text-[#3AA89B] mb-4">{item.year}</div>
+                <div className="w-12 h-[1px] bg-[#3AA89B]/30 mb-4 group-hover:w-full transition-all duration-700"></div>
+              </div>
+              
+              <div className="md:w-3/4 flex flex-col relative z-10">
+                <h3 className="text-2xl md:text-4xl font-serif text-white mb-2">{item.role}</h3>
+                <h4 className="text-sm tracking-[0.2em] text-[#3AA89B] uppercase mb-8 font-medium">{item.company}</h4>
+                
+                <p className="text-base md:text-lg font-light text-white/70 leading-relaxed mb-8 max-w-2xl group-hover:text-white/90 transition-colors duration-500">
+                  {item.description}
+                </p>
+                
+                <div className="flex flex-wrap gap-3 mt-auto">
+                  {item.tags.map((tag, tIdx) => (
+                    <span key={tIdx} className="px-4 py-2 rounded-full border border-white/10 bg-white/5 text-xs text-white/70 backdrop-blur-md">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+
+        </div>
+      </div>
+    </section>
+  );
+}

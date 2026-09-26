@@ -54,10 +54,10 @@ export function useServicesAnimation({
           onUpdate: (self) => {
             const progress = self.progress;
             if (progress < 0.1) setActiveTab(-1); // Intro
-            else if (progress >= 0.1 && progress < 0.28) setActiveTab(0); // Web Dev
-            else if (progress >= 0.28 && progress < 0.65) setActiveTab(1); // Design
-            else if (progress >= 0.65 && progress < 0.85) setActiveTab(2); // Automation
-            else if (progress >= 0.85) setActiveTab(3); // Consulting
+            else if (progress >= 0.1 && progress < 0.40) setActiveTab(0); // Web Dev
+            else if (progress >= 0.40 && progress < 0.70) setActiveTab(1); // Design
+            else if (progress >= 0.70 && progress < 0.90) setActiveTab(2); // Automation
+            else if (progress >= 0.90) setActiveTab(3); // Consulting
           },
         },
       });

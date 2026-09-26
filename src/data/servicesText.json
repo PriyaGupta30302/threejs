@@ -1,55 +1,55 @@
 {
   "tabs": [
-    "Web Development",
-    "Design",
-    "Automation",
-    "Consulting"
+    "Development",
+    "UI / UX Design",
+    "Animation & 3D",
+    "Business Impact"
   ],
   "introduction": {
-    "heading": "We specialize in\ncustomer happiness.",
-    "subheading": "Tailored strategies, Guaranteed results",
-    "paragraph": "That's why we offer a full suite of services, each tailored to address your unique challenges and goals. Our team of experts combines creativity with data to build strategies that deliver results."
+    "heading": "Crafting digital experiences\nthat drive results.",
+    "subheading": "Optimized, Interactive, and Reliable",
+    "paragraph": "I build production-grade interfaces across e-commerce and corporate platforms. With 2+ years of experience, I focus on delivering seamless UI/UX, optimizing heavy assets, and building architectures that scale."
   },
   "webDevelopment": {
     "part1": {
-      "heading": "We love to code.",
-      "paragraph": "Animated panels, lovely transitions and beautiful designs. But what is good design, without function?"
+      "heading": "I engineer solutions.",
+      "paragraph": "A beautiful design needs a robust foundation. I architect scalable codebases and continuously master new tech stacks to build faster, highly-optimized websites that drive company growth and client success."
     },
     "part2": {
-      "heading": "Our focus",
+      "heading": "My Core Stack",
       "list": [
-        "Unique corporate websites",
-        "Smart open source CMS.",
-        "E-commerce solutions",
-        "Web app development"
+        "React.js & Next.js",
+        "JavaScript (ES6+) & TypeScript",
+        "Tailwind CSS & HTML5",
+        "Git & GitHub Version Control"
       ]
     }
   },
   "design": {
-    "heading": "Years of experience working with\nbrands you've interacted with backs up\nour expertise.",
-    "servicesHeading": "Our services",
+    "heading": "Transforming complex Figma designs into high-performance interfaces. I focus on intuitive UI/UX that builds user trust, encourages inquiries, and drives conversions.",
+    "servicesHeading": "My Approach to UI/UX",
     "servicesList": [
-      "UX/UI design",
-      "Brand identity and strategy",
-      "Photography and video production",
-      "CGI and motion design",
-      "Trade fair design and construction"
+      "Strategic UI/UX implementation",
+      "Asset & animation optimization",
+      "Mobile-first responsive design",
+      "On-time project delivery",
+      "Clean, component-driven architecture"
     ]
   },
   "automation": {
-    "heading": "We automate the heavy lifting with intelligent background systems. From data flows to AI support, we ensure your business scales without friction.",
-    "expertiseHeading": "Our expertise",
+    "heading": "I bring websites to life with premium animations that never compromise on performance or load speed.",
+    "expertiseHeading": "Animation & 3D",
     "expertiseList": [
-      "Process automation with make/n8n",
-      "AI assistants and chatbots",
-      "AI phone systems",
-      "Social media automation",
-      "Lead research and cold outreach",
-      "CRM and synchronization of multiple systems"
+      "GSAP (GreenSock) animations",
+      "Scroll-triggered interactions",
+      "Framer Motion transitions",
+      "Three.js 3D web experiences",
+      "Lighthouse performance optimization",
+      "Asset loading optimization"
     ]
   },
   "consulting": {
-    "heading": "Your all in\none agency",
-    "paragraph": "We guide your complete digital transformation. From strategy and branding to complex automation, we are your single point of contact from concept to execution."
+    "heading": "Driving\nConversions",
+    "paragraph": "A beautiful website is only effective if it performs. By combining blazing-fast Speed with premium, user-centric Design, I create digital experiences that build trust and ultimately drive Conversions—whether that means skyrocketing sales for an e-commerce brand, or generating high-quality leads for a corporate business."
   }
 }
