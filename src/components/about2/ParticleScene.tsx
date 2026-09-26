@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, Suspense } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { globalScrollState } from './scrollState';
@@ -9,9 +9,10 @@ import ParticleObject from './ParticleObject';
 
 interface ParticleSceneProps {
   activeTech: string | null;
+  isMobile?: boolean;
 }
 
-export default function ParticleScene({ activeTech }: ParticleSceneProps) {
+export default function ParticleScene({ activeTech, isMobile = false }: ParticleSceneProps) {
   const groupRef = useRef<THREE.Group>(null);
   const targetRotation = useRef({ x: 0, y: 0 });
   const mousePos = useRef({ x: 0, y: 0 });
@@ -44,13 +45,19 @@ export default function ParticleScene({ activeTech }: ParticleSceneProps) {
     groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.1;
 
     // Shift to the right to keep text readable, but center it on the last section
-    const targetX = progress < 0.75 ? 1.5 : 0.0;
+    const targetX = progress < 0.75 ? (isMobile ? 0.0 : 1.5) : 0.0;
     groupRef.current.position.x = MathUtils.lerp(groupRef.current.position.x, targetX, 0.05);
+
+    // Adjust scale for mobile
+    const targetScale = isMobile ? 0.7 : 1.0;
+    groupRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.05);
   });
 
   return (
     <group ref={groupRef}>
-      <ParticleObject activeTech={activeTech} />
+      <Suspense fallback={null}>
+        <ParticleObject activeTech={activeTech} isMobile={isMobile} />
+      </Suspense>
     </group>
   );
 }

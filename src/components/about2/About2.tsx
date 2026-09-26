@@ -13,9 +13,17 @@ export default function About2() {
   const containerRef = useRef<HTMLDivElement>(null);
   const sectionsRef = useRef<(HTMLElement | null)[]>([]);
   const [activeTech, setActiveTech] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
+
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
 
     if (!containerRef.current) return;
 
@@ -41,6 +49,7 @@ export default function About2() {
     });
 
     return () => {
+      window.removeEventListener('resize', checkMobile);
       st.kill();
       ScrollTrigger.getAll().forEach(t => t.kill());
     };
@@ -59,15 +68,15 @@ export default function About2() {
     >
       {/* 3D Canvas Background */}
       <div className="fixed top-0 left-0 w-full h-screen z-0">
-        <Canvas camera={{ position: [0, 0, 5], fov: 45 }} dpr={[1, 2]}>
+        <Canvas camera={{ position: [0, 0, 5], fov: 45 }} dpr={isMobile ? [1, 1] : [1, 2]}>
           <color attach="background" args={['#000000']} />
           <ambientLight intensity={0.5} />
-          <ParticleScene activeTech={activeTech} />
+          <ParticleScene activeTech={activeTech} isMobile={isMobile} />
         </Canvas>
       </div>
 
       {/* HTML Content Overlay */}
-      <div className="relative z-10 w-full pointer-events-none">
+      <div className="relative z-50 w-full pointer-events-none bg-black/40 md:bg-transparent">
         
         {/* HERO */}
         <section 
@@ -75,7 +84,7 @@ export default function About2() {
           className="h-screen w-full flex flex-col justify-center px-8 md:px-20 max-w-7xl mx-auto"
         >
           <p className="text-[#34d399] tracking-widest uppercase text-xs font-bold mb-6">About</p>
-          <h1 className="text-5xl md:text-8xl font-heading mb-8 max-w-3xl leading-[1.1]">
+          <h1 className="text-4xl md:text-8xl font-heading mb-8 max-w-3xl leading-[1.1]">
             Turning ideas into <br/><i className="text-white/60">real experiences.</i>
           </h1>
           <p className="max-w-md text-lg text-white/80 leading-relaxed font-light">
@@ -89,7 +98,7 @@ export default function About2() {
           className="h-screen w-full flex flex-col justify-center items-end px-8 md:px-20 max-w-7xl mx-auto text-right"
         >
           <p className="text-[#34d399] tracking-widest uppercase text-xs font-bold mb-6">A little about me</p>
-          <h2 className="text-3xl md:text-5xl font-heading mb-8 max-w-2xl leading-[1.2]">
+          <h2 className="text-3xl md:text-5xl font-heading mb-6 max-w-2xl leading-[1.2]">
             I&apos;m a Frontend Developer with <span className="text-[#34d399]">2+ years</span> of experience building responsive and interactive websites.
           </h2>
           <p className="max-w-md text-base md:text-lg text-white/70 leading-relaxed font-light ml-auto">
@@ -103,14 +112,14 @@ export default function About2() {
           className="h-screen w-full flex flex-col justify-center px-8 md:px-20 max-w-7xl mx-auto"
         >
           <p className="text-[#34d399] tracking-widest uppercase text-xs font-bold mb-6">Experience</p>
-          <h2 className="text-4xl md:text-6xl font-heading mb-16 max-w-xl">
+          <h2 className="text-4xl md:text-6xl font-heading mb-12 max-w-xl">
             2+ years <br/>building for the web.
           </h2>
           
           <div className="max-w-2xl border-l border-white/20 pl-8 relative">
             <div className="absolute w-3 h-3 bg-[#34d399] rounded-full -left-[6.5px] top-2 shadow-[0_0_10px_#34d399]" />
             <p className="text-sm text-white/50 mb-2 tracking-widest uppercase">2024 — Present</p>
-            <h3 className="text-xl md:text-2xl font-bold mb-4">Indiefluence <span className="text-white/50 font-light">· Frontend Developer</span></h3>
+            <h3 className="text-xl md:text-2xl font-bold mb-4">Indiefluence <span className="block md:inline text-white/50 font-light text-base md:text-2xl mt-1 md:mt-0">· Frontend Developer</span></h3>
             <p className="text-white/70 leading-relaxed font-light text-sm md:text-base">
               Worked across real-world web projects including business websites, eCommerce and education platforms, building responsive and interactive interfaces using React.js, Next.js, JavaScript, Tailwind CSS and modern animation tools.
             </p>
@@ -145,7 +154,7 @@ export default function About2() {
           ref={el => { sectionsRef.current[4] = el; }} 
           className="h-screen w-full flex flex-col justify-center items-center px-8 md:px-20 max-w-7xl mx-auto text-center"
         >
-          <h2 className="text-5xl md:text-8xl font-heading mb-12">
+          <h2 className="text-4xl md:text-8xl font-heading mb-12">
             Have a project <br/>in mind?
           </h2>
           <Link href="/contact" className="pointer-events-auto group relative inline-flex items-center justify-center px-8 py-4 overflow-hidden rounded-full border border-white/20 bg-transparent text-white transition-all duration-300 hover:border-[#34d399] hover:bg-[#34d399]/10">
