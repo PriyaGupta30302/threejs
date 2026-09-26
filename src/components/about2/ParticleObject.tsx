@@ -123,8 +123,8 @@ const vertexShader = `
     float fluidY = cos(pos.x * 3.0 + time * 1.1) * sin(pos.z * 2.0 + time * 0.9);
     float fluidZ = sin(pos.x * 3.0 + time * 1.2) * cos(pos.y * 2.0 + time);
     
-    // Fade out fluid motion when morphing to bulb/sphere
-    float motionIntensity = mix(0.04, 0.01, morph1);
+    // Fade out fluid motion almost entirely so they stick perfectly to the exact brain shape
+    float motionIntensity = mix(0.002, 0.0, morph1);
     currentPos += vec3(fluidX, fluidY, fluidZ) * motionIntensity * hoverEffect;
     
     // --- ORGANIC 3D MOUSE DISPLACEMENT ---
@@ -183,13 +183,26 @@ const vertexShader = `
     vec3 colorCyan = vec3(0.1, 0.8, 0.9);
     vec3 colorWhite = vec3(1.0, 1.0, 1.0);
     
-    float colorNoise = snoise(pos * 0.3 + time * 0.05); 
+    // Slower, wider noise so colors don't flicker/blink rapidly
+    float colorNoise = snoise(pos * 0.15 + time * 0.02); 
     
     // Base color based on original position X
     vec3 baseCol = mix(colorPurple, colorGold, smoothstep(-1.5, 1.5, pos.x));
     
     // Add Cyan near the bottom
     baseCol = mix(colorCyan, baseCol, smoothstep(-1.5, 0.0, pos.y));
+    
+    // Add extra vibrant randomized colors for background particles
+    if (aRandom > 0.8) {
+        float randColor = fract(aRandom * 45.123 + pos.x * 0.1 + pos.y * 0.2);
+        if (randColor < 0.33) {
+            baseCol = colorPurple * 1.5;
+        } else if (randColor < 0.66) {
+            baseCol = colorCyan * 1.5;
+        } else {
+            baseCol = colorGold * 1.5;
+        }
+    }
     
     // Add white highlights on high noise areas
     vColor = mix(baseCol, colorWhite, smoothstep(0.3, 0.8, colorNoise));
@@ -200,24 +213,31 @@ const vertexShader = `
     // Set alpha higher so the 3D mesh is clearly visible
     vAlpha = mix(0.4, 0.9, aRandom);
     
-    // Apply heavy noise displacement to the base shape to create the "folded brain" look
-    // Only apply to the main structure, not the background scatter (aRandom > 0.8 is background)
+    // Apply displacement (removed the fake brain wrinkle noise to preserve exact original model lines)
     // Only apply to the main structure, not the background scatter
-    float brainWrinkleIntensity = 1.0 - smoothstep(0.0, 0.3, uProgress);
-    
     if (aRandom < 0.8) {
-      vec3 normal = normalize(currentPos);
-      float displace = sin(currentPos.x * 6.0 + time) * cos(currentPos.y * 6.0) * 0.015 * brainWrinkleIntensity;
-      currentPos += normal * displace;
+       // We keep the morph logic intact but remove the extra fake surface noise
     }
     
     // Projection
     vec4 mvPosition = modelViewMatrix * vec4(currentPos, 1.0);
     gl_Position = projectionMatrix * mvPosition;
     
-    // Point size decreased drastically for an extremely fine, detailed structure
-    float baseSize = mix(2.0, 10.0, aSize);
-    gl_PointSize = baseSize * (1.0 / -mvPosition.z) * hoverEffect;
+    // Point size (Restored back to large sizes for the brain structure)
+    float baseSize = mix(30.0, 75.0, aSize);
+    
+    // Background particles scale
+    if (aRandom > 0.8) {
+        baseSize *= 1.1; 
+    }
+    
+    // Smooth zoom in/out (pulsing) for each particle
+    float pulse = sin(uTime * (1.5 + aRandom) + aRandom * 6.28) * 0.3 + 0.7; 
+    
+    // Clamp the perspective division so particles near the camera don't become massively huge
+    float perspective = 1.0 / max(3.0, -mvPosition.z);
+    
+    gl_PointSize = baseSize * perspective * hoverEffect * pulse;
   }
 `;
 
@@ -239,12 +259,13 @@ const fragmentShader = `
     // Otherwise it's solid.
     
     float size = 0.25;
-    float thickness = 0.04;
+    float thickness = 0.03; // Thinner outlines for large, elegant triangles
     
     float alpha = 1.0 - smoothstep(size - 0.02, size + 0.02, d);
     
-    // Make ~50% of the brain particles hollow (outline only)
-    if (vRandom > 0.5 && vAlpha < 0.95) {
+    // Make ~50% of the main brain particles hollow (outline only)
+    // Keep background particles (vRandom > 0.8) completely solid so they pop!
+    if (vRandom > 0.5 && vRandom < 0.8 && vAlpha < 0.95) {
       float inner = 1.0 - smoothstep(size - thickness - 0.02, size - thickness + 0.02, d);
       alpha -= inner;
     }
@@ -270,7 +291,7 @@ export default function ParticleObject({ activeTech, isMobile = false }: Particl
   const { positions, target1, target2, sizes, randoms } = useMemo(() => {
     
     // Extract vertices from the FBX model
-    const rawVerts: THREE.Vector3[] = [];
+    let rawVerts: THREE.Vector3[] = [];
     fbx.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
@@ -293,8 +314,8 @@ export default function ParticleObject({ activeTech, isMobile = false }: Particl
     }
     
     // Sample down to a reasonable structure count for performance
-    // Increased count drastically for a highly dense, fine mesh look (particles closer together)
-    const desiredStructureCount = isMobile ? 12000 : 50000;
+    // High density to ensure particles stick together and form precise brain lines
+    const desiredStructureCount = isMobile ? 12000 : 45000;
     let sampledVerts: THREE.Vector3[] = [];
     
     if (rawVerts.length > desiredStructureCount) {
@@ -313,12 +334,12 @@ export default function ParticleObject({ activeTech, isMobile = false }: Particl
     const size = new THREE.Vector3();
     box.getSize(size);
     
-    // We want the maximum dimension of the brain to be around 3.6 units wide to prevent right side clipping
+    // We want the maximum dimension of the brain to be around 5.5 units wide (larger)
     const maxDim = Math.max(size.x, size.y, size.z);
-    const scale = 3.6 / (maxDim || 1);
+    const scale = 5.5 / (maxDim || 1);
     
     const structureCount = sampledVerts.length;
-    const bgCount = isMobile ? 400 : 1000;
+    const bgCount = isMobile ? 500 : 1000; // Balanced background scatter
     const count = structureCount + bgCount;
     
     const positions = new Float32Array(count * 3);
@@ -331,15 +352,12 @@ export default function ParticleObject({ activeTech, isMobile = false }: Particl
       const i3 = i * 3;
       
       if (i < structureCount) {
-        const v = sampledVerts[i];
+        let v = sampledVerts[i];
         
         // Center and scale
         let bx = (v.x - center.x) * scale;
         let by = (v.y - center.y) * scale;
         let bz = (v.z - center.z) * scale;
-        
-        // Shift it down slightly to center it properly vertically
-        by -= 0.2;
         
         // Let's add the 3/4 angle rotation that the user requested earlier
         // FBX orientation might differ, but assuming standard orientation, 
@@ -347,11 +365,11 @@ export default function ParticleObject({ activeTech, isMobile = false }: Particl
         const rotY = -Math.PI / 4; 
         const rotX = Math.PI / 10; 
 
-        const bx_r = bx * Math.cos(rotY) - bz * Math.sin(rotY);
+        let bx_r = bx * Math.cos(rotY) - bz * Math.sin(rotY);
         let bz_r = bx * Math.sin(rotY) + bz * Math.cos(rotY);
         bx = bx_r; bz = bz_r;
 
-        const by_r = by * Math.cos(rotX) - bz * Math.sin(rotX);
+        let by_r = by * Math.cos(rotX) - bz * Math.sin(rotX);
         bz_r = by * Math.sin(rotX) + bz * Math.cos(rotX);
         by = by_r; bz = bz_r;
 
@@ -360,10 +378,10 @@ export default function ParticleObject({ activeTech, isMobile = false }: Particl
         positions[i3 + 2] = bz;
         
         // For the target sphere/bulb we need normal vectors
-        const rad = Math.sqrt(bx*bx + by*by + bz*bz);
-        const nx = bx / (rad || 1);
-        const ny = by / (rad || 1);
-        const nz = bz / (rad || 1);
+        let rad = Math.sqrt(bx*bx + by*by + bz*bz);
+        let nx = bx / (rad || 1);
+        let ny = by / (rad || 1);
+        let nz = bz / (rad || 1);
         
         // ------------------------------------
         // Target 1: Lightbulb
@@ -381,7 +399,7 @@ export default function ParticleObject({ activeTech, isMobile = false }: Particl
           }
         }
         
-        const theta = Math.atan2(nz, nx);
+        let theta = Math.atan2(nz, nx);
         // Distribute for targets
         target1[i3] = rBulb * Math.cos(theta);
         target1[i3 + 1] = yBulb;

@@ -68,7 +68,7 @@ export default function About2() {
     >
       {/* 3D Canvas Background */}
       <div className="fixed top-0 left-0 w-full h-screen z-0">
-        <Canvas camera={{ position: [0, 0, 5], fov: 45 }} dpr={isMobile ? [1, 1] : [1, 2]}>
+        <Canvas camera={{ position: [0, 0, 7], fov: 45 }} dpr={isMobile ? [1, 1] : [1, 2]}>
           <color attach="background" args={['#000000']} />
           <ambientLight intensity={0.5} />
           <ParticleScene activeTech={activeTech} isMobile={isMobile} />

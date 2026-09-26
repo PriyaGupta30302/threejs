@@ -27,7 +27,7 @@ export default function ParticleScene({ activeTech, isMobile = false }: Particle
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  useFrame(() => {
+  useFrame((state) => {
     if (!groupRef.current) return;
 
     // Smooth scroll camera/group based on progress
@@ -41,11 +41,12 @@ export default function ParticleScene({ activeTech, isMobile = false }: Particle
     groupRef.current.rotation.y = targetRotation.current.y + progress * Math.PI * 2;
     groupRef.current.rotation.x = targetRotation.current.x + Math.sin(progress * Math.PI) * 0.5;
     
-    // Base position (no more floating up and down)
-    // groupRef.current.position.y = 0;
+    // Shift down slightly so it doesn't overlap the navbar
+    const targetY = progress < 0.75 ? (isMobile ? -0.3 : -0.4) : 0.0;
+    groupRef.current.position.y = MathUtils.lerp(groupRef.current.position.y, targetY, 0.05);
 
-    // Shift to the right to keep text readable, but center it on the last section
-    const targetX = progress < 0.75 ? (isMobile ? 0.0 : 1.5) : 0.0;
+    // Shift to the right for desktop to align with text
+    const targetX = progress < 0.75 ? (isMobile ? 0.0 : 2.0) : 0.0;
     groupRef.current.position.x = MathUtils.lerp(groupRef.current.position.x, targetX, 0.05);
 
     // Adjust scale for mobile
