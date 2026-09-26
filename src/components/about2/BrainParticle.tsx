@@ -207,11 +207,21 @@ const vertexShader = `
     }
     
     // Calculate true 3D directional lighting based on the model's physical normals
-    vec3 lightDir = normalize(vec3(1.0, 1.5, 2.0));
-    float diffuse = max(0.0, dot(aNormal, lightDir)) * 0.5 + 0.5;
+    vec3 mainLightDir = normalize(vec3(1.0, 1.5, 2.0));
+    float mainDiffuse = max(0.0, dot(aNormal, mainLightDir));
+    
+    // Fill light from bottom-left to prevent it from being too dark
+    vec3 fillLightDir = normalize(vec3(-1.0, -1.0, 1.0));
+    float fillDiffuse = max(0.0, dot(aNormal, fillLightDir)) * 0.6; // 60% intensity fill
+    
+    // Balanced diffuse for clear 3D structure without pitch black voids
+    float diffuse = clamp(mainDiffuse + fillDiffuse, 0.0, 1.0) * 0.8 + 0.2;
+    
+    // Add a slight white tint to the bottom-left to satisfy "halke se white particles"
+    baseCol = mix(baseCol, vec3(1.0), fillDiffuse * 0.4);
     
     // Add specular highlight for shinier, more saturated look
-    vec3 halfDir = normalize(lightDir + viewDir);
+    vec3 halfDir = normalize(mainLightDir + viewDir);
     float specAngle = max(dot(halfDir, aNormal), 0.0);
     float specular = pow(specAngle, 16.0) * 0.8;
 
@@ -220,13 +230,8 @@ const vertexShader = `
     
     // Density logic: keep particles dense everywhere to make it fully filled
     if (aRandom < 0.8) {
-        if (facingCamera < -0.1) {
-            // Back faces are slightly faded but not completely hidden, so it still looks dense
-            vAlpha = mix(0.15, 0.4, aRandom);
-        } else {
-            // Front face - full extreme density
-            vAlpha = mix(0.7, 1.0, aRandom);
-        }
+        // True solid surface - depthWrite will handle occlusion naturally!
+        vAlpha = mix(0.8, 1.0, aRandom);
     } else {
         // Background particles
         vAlpha = mix(0.8, 1.0, aRandom); 
@@ -242,8 +247,8 @@ const vertexShader = `
     float depthFog = smoothstep(-12.0, 0.0, mvPosition.z);
     vColor *= mix(0.1, 1.5, depthFog); // Boost foreground contrast
     
-    // Point size: Slightly reduced to allow the massive count to form a solid structure
-    float baseSize = mix(35.0, 70.0, aSize);
+    // Point size: Reduced significantly to prevent the "chunky blob" look and reveal delicate edges
+    float baseSize = mix(8.0, 22.0, aSize);
     
     // Make particles facing away from the center (rims) slightly larger
     baseSize *= mix(0.8, 1.2, rimFactor); 
@@ -285,18 +290,8 @@ const fragmentShader = `
     float finalAlpha = alpha;
     vec3 finalColor = vColor;
     
-    // Solid with fake 3D shading (make it look like a 3D pyramid with lighting)
-    // No more hollow wireframes, we use the solid alpha.
+    // Simple solid filled triangle without dimensional shading
     finalAlpha = alpha;
-    
-    // Dimensional shading to make the flat triangle look 3D
-       float sector = floor(0.5 + a/r); // Identifies the 3 faces of the pyramid
-       float shade = 1.0;
-       if (sector == 0.0) shade = 1.0;       // Top/Front face is bright
-       else if (sector == 1.0) shade = 0.6;  // Left face is darker
-       else shade = 0.3;                     // Right face is darkest
-       
-       finalColor *= shade;
     if (finalAlpha < 0.05 || vAlpha < 0.05) discard;
     
     gl_FragColor = vec4(finalColor, finalAlpha * vAlpha);
@@ -384,11 +379,7 @@ export default function BrainParticle({ activeTech, isMobile = false }: BrainPar
             
             const p = surfaceP.clone();
             
-            // Volumetric filling: Push 30% of particles inside to make the brain solid
-            if (Math.random() < 0.3) {
-                const depth = Math.pow(Math.random(), 1.0 / 3.0); // uniform volume distribution
-                p.lerp(new THREE.Vector3(0,0,0), 1.0 - depth); 
-            }
+            // NO volumetric filling so the brain is hollow, allowing the grooves to show the background
             
             sampledVerts.push({
                 p,
@@ -556,7 +547,7 @@ export default function BrainParticle({ activeTech, isMobile = false }: BrainPar
           uMouse: { value: new THREE.Vector2(-999, -999) },
         }}
         transparent
-        depthWrite={false}
+        depthWrite={true}
         blending={THREE.NormalBlending}
       />
     </points>

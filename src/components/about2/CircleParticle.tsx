@@ -111,15 +111,8 @@ const fragmentShader = `
     float finalAlpha = alpha;
     vec3 finalColor = vColor;
     
+    // Simple solid filled triangle without dimensional shading
     finalAlpha = alpha;
-    
-    float sector = floor(0.5 + a/r); 
-    float shade = 1.0;
-    if (sector == 0.0) shade = 1.0;       
-    else if (sector == 1.0) shade = 0.6;  
-    else shade = 0.3;                     
-    
-    finalColor *= shade;
     
     if (finalAlpha < 0.01 || vAlpha < 0.01) discard;
     
