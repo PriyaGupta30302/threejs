@@ -413,6 +413,14 @@ export default function MorphingParticles({ activeTech, isMobile = false }: Morp
     }
   });
 
+  const uniforms = useMemo(() => ({
+    uTime: { value: 0 },
+    uProgress: { value: 0 },
+    uIsTechHovered: { value: 0 },
+    uIsMobile: { value: isMobile ? 1.0 : 0.0 },
+    uMouse: { value: new THREE.Vector2(-999, -999) },
+  }), [isMobile]);
+
   return (
     <points>
       <bufferGeometry key={isMobile ? 'mobile' : 'desktop'}>
@@ -431,13 +439,7 @@ export default function MorphingParticles({ activeTech, isMobile = false }: Morp
         ref={materialRef}
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
-        uniforms={{
-          uTime: { value: 0 },
-          uProgress: { value: 0 },
-          uIsTechHovered: { value: 0 },
-          uIsMobile: { value: isMobile ? 1.0 : 0.0 },
-          uMouse: { value: new THREE.Vector2(-999, -999) },
-        }}
+        uniforms={uniforms}
         transparent
         depthWrite={true}
         blending={THREE.NormalBlending}
