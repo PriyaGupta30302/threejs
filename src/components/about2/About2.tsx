@@ -33,7 +33,8 @@ export default function About2() {
       end: 'bottom bottom',
       onUpdate: (self) => {
         // Prevent glitch: during refresh, progress may temporarily drop to 0
-        if (!(ScrollTrigger as any).isRefreshing) {
+        // @ts-expect-error: isRefreshing is missing from GSAP TypeScript definitions
+        if (!ScrollTrigger.isRefreshing) {
           globalScrollState.progress = self.progress;
         }
       },
@@ -182,3 +183,4 @@ export default function About2() {
     </main>
   );
 }
+ 
