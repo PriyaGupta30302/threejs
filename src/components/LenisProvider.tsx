@@ -16,6 +16,7 @@ export default function LenisProvider({ children }: { children: React.ReactNode 
       orientation: "vertical",
       gestureOrientation: "vertical",
       smoothWheel: true,
+      wheelMultiplier: 0.6, // Slow down mouse wheel scrolling by 40% for better animation viewing
       touchMultiplier: 2,
     });
 

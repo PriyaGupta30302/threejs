@@ -3,7 +3,7 @@
 import React, { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
-import { useFBX } from '@react-three/drei';
+import { useGLTF } from '@react-three/drei';
 import { globalScrollState } from './scrollState';
 import { MathUtils } from 'three';
 
@@ -14,14 +14,14 @@ const vertexShader = `
   uniform float uIsMobile;
   uniform vec2 uMouse;
   
-  attribute vec3 aTarget1;
-  attribute vec3 aTarget2;
+  attribute vec3 aNormal;
   attribute float aSize;
   attribute float aRandom;
   
   varying vec3 vColor;
   varying float vAlpha;
   varying float vRandom;
+
 
   // Simple 3D noise function
   vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
@@ -98,33 +98,25 @@ const vertexShader = `
 
   void main() {
     vRandom = aRandom;
-    // Determine section transitions based on uProgress
-    // uProgress goes 0 to 1 across the whole page (4 sections)
-    
-    // Smooth stepping for morphing
-    // 0.1 -> 0.3 (Hero to About): Brain to Bulb
-    // 0.7 -> 0.9 (Experience to Toolkit): Bulb to Circle
-    float morph1 = smoothstep(0.1, 0.3, uProgress);
-    float morph2 = smoothstep(0.7, 0.9, uProgress);
+    // Fade Brain in/out based on uProgress
+    // Brain is fully visible from 0 to 0.25, fades out completely by 0.35
+    float fadeOut = 1.0 - smoothstep(0.25, 0.35, uProgress);
     
     // Base position
     vec3 pos = position;
-    
-    // Morph logic
-    vec3 currentPos = mix(pos, aTarget1, morph1);
-    currentPos = mix(currentPos, aTarget2, morph2);
+    vec3 currentPos = pos;
+
     
     // Tech hover effect (explode slightly and speed up noise)
     float hoverEffect = mix(1.0, 1.2 + aRandom * 0.2, uIsTechHovered);
     float time = uTime * 0.3;
     
-    // Smooth fluid motion instead of erratic blinking noise
+    // Smooth fluid motion 
     float fluidX = sin(pos.y * 3.0 + time) * cos(pos.z * 2.0 + time * 0.8);
     float fluidY = cos(pos.x * 3.0 + time * 1.1) * sin(pos.z * 2.0 + time * 0.9);
     float fluidZ = sin(pos.x * 3.0 + time * 1.2) * cos(pos.y * 2.0 + time);
     
-    // Fade out fluid motion when morphing to bulb/sphere
-    float motionIntensity = mix(0.04, 0.01, morph1);
+    float motionIntensity = 0.002;
     currentPos += vec3(fluidX, fluidY, fluidZ) * motionIntensity * hoverEffect;
     
     // --- ORGANIC 3D MOUSE DISPLACEMENT ---
@@ -183,41 +175,91 @@ const vertexShader = `
     vec3 colorCyan = vec3(0.1, 0.8, 0.9);
     vec3 colorWhite = vec3(1.0, 1.0, 1.0);
     
-    float colorNoise = snoise(pos * 0.3 + time * 0.05); 
+    // Slower, wider noise so colors don't flicker/blink rapidly
+    float colorNoise = snoise(pos * 0.15 + time * 0.02); 
     
-    // Base color based on original position X
-    vec3 baseCol = mix(colorPurple, colorGold, smoothstep(-1.5, 1.5, pos.x));
+    // Base color based on Fresnel (rim lighting)
+    // Reference image has glowing yellow/orange on the edges (rims) and dark purple in the center/valleys
+    vec4 mvPosition = modelViewMatrix * vec4(currentPos, 1.0);
+    vec3 viewDir = normalize(-mvPosition.xyz);
     
-    // Add Cyan near the bottom
-    baseCol = mix(colorCyan, baseCol, smoothstep(-1.5, 0.0, pos.y));
+    float facingCamera = dot(aNormal, viewDir);
+    float rimFactor = 1.0 - smoothstep(0.0, 0.8, facingCamera);
     
-    // Add white highlights on high noise areas
-    vColor = mix(baseCol, colorWhite, smoothstep(0.3, 0.8, colorNoise));
+    vec3 baseCol = mix(colorPurple, colorGold, rimFactor);
     
-    // Add hover effect
-    vColor = mix(vColor, vec3(0.2, 0.9, 0.9), uIsTechHovered * 0.4);
+    // Add Cyan near the bottom left
+    baseCol = mix(baseCol, colorCyan, smoothstep(-1.5, 0.0, pos.y) * 0.5);
     
-    // Set alpha higher so the 3D mesh is clearly visible
-    vAlpha = mix(0.4, 0.9, aRandom);
+    // Boost overall brightness
+    baseCol *= 2.5;
     
-    // Apply heavy noise displacement to the base shape to create the "folded brain" look
-    // Only apply to the main structure, not the background scatter (aRandom > 0.8 is background)
-    // Only apply to the main structure, not the background scatter
-    float brainWrinkleIntensity = 1.0 - smoothstep(0.0, 0.3, uProgress);
-    
-    if (aRandom < 0.8) {
-      vec3 normal = normalize(currentPos);
-      float displace = sin(currentPos.x * 6.0 + time) * cos(currentPos.y * 6.0) * 0.015 * brainWrinkleIntensity;
-      currentPos += normal * displace;
+    // Add extra vibrant randomized colors for background particles
+    if (aRandom > 0.8) {
+        float randColor = fract(aRandom * 45.123 + pos.x * 0.1 + pos.y * 0.2);
+        if (randColor < 0.33) {
+            baseCol = colorPurple * 1.5;
+        } else if (randColor < 0.66) {
+            baseCol = colorCyan * 1.5;
+        } else {
+            baseCol = colorGold * 1.5;
+        }
     }
     
+    // Calculate true 3D directional lighting based on the model's physical normals
+    vec3 mainLightDir = normalize(vec3(1.0, 1.5, 2.0));
+    float mainDiffuse = max(0.0, dot(aNormal, mainLightDir));
+    
+    // Fill light from bottom-left to prevent it from being too dark
+    vec3 fillLightDir = normalize(vec3(-1.0, -1.0, 1.0));
+    float fillDiffuse = max(0.0, dot(aNormal, fillLightDir)) * 0.6; // 60% intensity fill
+    
+    // Balanced diffuse for clear 3D structure without pitch black voids
+    float diffuse = clamp(mainDiffuse + fillDiffuse, 0.0, 1.0) * 0.8 + 0.2;
+    
+    // Add a slight white tint to the bottom-left to satisfy "halke se white particles"
+    baseCol = mix(baseCol, vec3(1.0), fillDiffuse * 0.4);
+    
+    // Add specular highlight for shinier, more saturated look
+    vec3 halfDir = normalize(mainLightDir + viewDir);
+    float specAngle = max(dot(halfDir, aNormal), 0.0);
+    float specular = pow(specAngle, 16.0) * 0.8;
+
+    vColor = mix(baseCol * diffuse + specular, colorWhite, smoothstep(0.3, 0.8, colorNoise));
+    vColor = mix(vColor, vec3(0.2, 0.9, 0.9), uIsTechHovered * 0.4);
+    
+    // Density logic: keep particles dense everywhere to make it fully filled
+    if (aRandom < 0.8) {
+        // True solid surface - depthWrite will handle occlusion naturally!
+        vAlpha = mix(0.8, 1.0, aRandom);
+    } else {
+        // Background particles
+        vAlpha = mix(0.8, 1.0, aRandom); 
+    }
+    
+    // Apply global fade based on scroll progress
+    vAlpha *= fadeOut;
+    
     // Projection
-    vec4 mvPosition = modelViewMatrix * vec4(currentPos, 1.0);
     gl_Position = projectionMatrix * mvPosition;
     
-    // Point size decreased drastically for an extremely fine, detailed structure
-    float baseSize = mix(2.0, 10.0, aSize);
-    gl_PointSize = baseSize * (1.0 / -mvPosition.z) * hoverEffect;
+    // Depth Shading: Darken particles that are further away from the camera
+    float depthFog = smoothstep(-12.0, 0.0, mvPosition.z);
+    vColor *= mix(0.1, 1.5, depthFog); // Boost foreground contrast
+    
+    // Point size: Reduced significantly to prevent the "chunky blob" look and reveal delicate edges
+    float baseSize = mix(8.0, 22.0, aSize);
+    
+    // Make particles facing away from the center (rims) slightly larger
+    baseSize *= mix(0.8, 1.2, rimFactor); 
+    
+    if (aRandom > 0.8) {
+        baseSize *= 1.2; 
+    }
+    
+    float pulse = sin(uTime * (1.5 + aRandom) + aRandom * 6.28) * 0.3 + 0.7; 
+    float perspective = 1.0 / max(3.0, -mvPosition.z);
+    gl_PointSize = baseSize * perspective * hoverEffect * pulse;
   }
 `;
 
@@ -229,101 +271,143 @@ const fragmentShader = `
   void main() {
     vec2 uv = gl_PointCoord - 0.5;
     
-    // Triangle math
+    // Distance field for triangle
     float a = atan(uv.x, uv.y) + 3.14159;
     float r = 3.14159 * 2.0 / 3.0;
     float d = cos(floor(0.5 + a/r) * r - a) * length(uv);
     
-    // Solid vs Hollow (Outline) based on alpha variation hack
-    // If vAlpha is exactly 0.99, we'll treat it as a signal for a hollow triangle.
-    // Otherwise it's solid.
+    float size = 0.35;
+    float thickness = 0.06; // Increased thickness since points are smaller
     
-    float size = 0.25;
-    float thickness = 0.04;
+    // Outer border (Sharpened for smaller particles)
+    float alpha = 1.0 - smoothstep(size - 0.015, size + 0.015, d);
+    float inner = 1.0 - smoothstep(size - thickness - 0.015, size - thickness + 0.015, d);
+    float border = alpha - inner;
     
-    float alpha = 1.0 - smoothstep(size - 0.02, size + 0.02, d);
+    // Pure hollow triangles matching the reference image perfectly
+    float wireframe = border;
     
-    // Make ~50% of the brain particles hollow (outline only)
-    if (vRandom > 0.5 && vAlpha < 0.95) {
-      float inner = 1.0 - smoothstep(size - thickness - 0.02, size - thickness + 0.02, d);
-      alpha -= inner;
-    }
+    float finalAlpha = alpha;
+    vec3 finalColor = vColor;
     
-    if (alpha < 0.01) discard;
+    // Simple solid filled triangle without dimensional shading
+    finalAlpha = alpha;
+    if (finalAlpha < 0.05 || vAlpha < 0.05) discard;
     
-    gl_FragColor = vec4(vColor, alpha * vAlpha);
+    gl_FragColor = vec4(finalColor, finalAlpha * vAlpha);
   }
 `;
 
-interface ParticleObjectProps {
+interface BrainParticleProps {
   activeTech: string | null;
   isMobile?: boolean;
 }
 
-export default function ParticleObject({ activeTech, isMobile = false }: ParticleObjectProps) {
+export default function BrainParticle({ activeTech, isMobile = false }: BrainParticleProps) {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
   
   // Load the actual brain 3D model provided by the user
-  const fbx = useFBX('/31-mozgani/brain.fbx');
+  const gltf = useGLTF('/Rotten Brain.glb');
   
   // Create particle geometry data
-  const { positions, target1, target2, sizes, randoms } = useMemo(() => {
+  const { positions, normals, sizes, randoms } = useMemo(() => {
     
-    // Extract vertices from the FBX model
-    const rawVerts: THREE.Vector3[] = [];
-    fbx.traverse((child) => {
+    // Extract triangles from the GLTF model to sample the exact 3D surface
+    const rawTriangles: { pos: THREE.Vector3[], norm: THREE.Vector3 }[] = [];
+    gltf.scene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
         const posAttr = mesh.geometry.attributes.position;
+        const index = mesh.geometry.index;
         if (posAttr) {
            mesh.updateMatrixWorld();
            const mat = mesh.matrixWorld;
-           const v = new THREE.Vector3();
-           for (let i = 0; i < posAttr.count; i++) {
-               v.fromBufferAttribute(posAttr, i);
-               v.applyMatrix4(mat);
-               rawVerts.push(v.clone());
+           
+           if (index) {
+               // Indexed geometry
+               for (let i = 0; i < index.count; i += 3) {
+                   const a = new THREE.Vector3().fromBufferAttribute(posAttr, index.getX(i)).applyMatrix4(mat);
+                   const b = new THREE.Vector3().fromBufferAttribute(posAttr, index.getX(i+1)).applyMatrix4(mat);
+                   const c = new THREE.Vector3().fromBufferAttribute(posAttr, index.getX(i+2)).applyMatrix4(mat);
+                   
+                   // Calculate face normal
+                   const cb = new THREE.Vector3().subVectors(c, b);
+                   const ab = new THREE.Vector3().subVectors(a, b);
+                   const norm = cb.cross(ab).normalize();
+                   
+                   rawTriangles.push({ pos: [a, b, c], norm });
+               }
+           } else {
+               // Non-indexed geometry
+               for (let i = 0; i < posAttr.count; i += 3) {
+                   const a = new THREE.Vector3().fromBufferAttribute(posAttr, i).applyMatrix4(mat);
+                   const b = new THREE.Vector3().fromBufferAttribute(posAttr, i+1).applyMatrix4(mat);
+                   const c = new THREE.Vector3().fromBufferAttribute(posAttr, i+2).applyMatrix4(mat);
+                   
+                   // Calculate face normal
+                   const cb = new THREE.Vector3().subVectors(c, b);
+                   const ab = new THREE.Vector3().subVectors(a, b);
+                   const norm = cb.cross(ab).normalize();
+                   
+                   rawTriangles.push({ pos: [a, b, c], norm });
+               }
            }
         }
       }
     });
     
-    if (rawVerts.length === 0) {
-        rawVerts.push(new THREE.Vector3(0,0,0)); // Fallback
-    }
+    // Extreme particle count to make the brain completely filled and dense
+    const desiredStructureCount = isMobile ? 40000 : 150000;
+    const sampledVerts: { p: THREE.Vector3, n: THREE.Vector3 }[] = [];
     
-    // Sample down to a reasonable structure count for performance
-    // Increased count drastically for a highly dense, fine mesh look (particles closer together)
-    const desiredStructureCount = isMobile ? 12000 : 50000;
-    let sampledVerts: THREE.Vector3[] = [];
-    
-    if (rawVerts.length > desiredStructureCount) {
-        const step = rawVerts.length / desiredStructureCount;
+    if (rawTriangles.length > 0) {
+        // Sample points exactly uniformly across the surface of the triangles
+        // This guarantees perfect detailing regardless of how low-poly the base model is
         for (let i = 0; i < desiredStructureCount; i++) {
-            sampledVerts.push(rawVerts[Math.floor(i * step)]);
+            const tri = rawTriangles[Math.floor(Math.random() * rawTriangles.length)];
+            const r1 = Math.random();
+            const r2 = Math.random();
+            const sqrtR1 = Math.sqrt(r1);
+            const u = 1 - sqrtR1;
+            const v = r2 * sqrtR1;
+            const w = 1 - u - v;
+            const surfaceP = new THREE.Vector3(
+                tri.pos[0].x * u + tri.pos[1].x * v + tri.pos[2].x * w,
+                tri.pos[0].y * u + tri.pos[1].y * v + tri.pos[2].y * w,
+                tri.pos[0].z * u + tri.pos[1].z * v + tri.pos[2].z * w
+            );
+            
+            const p = surfaceP.clone();
+            
+            // NO volumetric filling so the brain is hollow, allowing the grooves to show the background
+            
+            sampledVerts.push({
+                p,
+                n: tri.norm.clone()
+            });
         }
     } else {
-        sampledVerts = rawVerts;
+        // Fallback
+        sampledVerts.push({ p: new THREE.Vector3(0,0,0), n: new THREE.Vector3(0,1,0) });
     }
     
     // Center and scale the model perfectly to fit the screen
-    const box = new THREE.Box3().setFromPoints(sampledVerts);
+    const box = new THREE.Box3().setFromPoints(sampledVerts.map(sv => sv.p));
     const center = new THREE.Vector3();
     box.getCenter(center);
     const size = new THREE.Vector3();
     box.getSize(size);
     
-    // We want the maximum dimension of the brain to be around 3.6 units wide to prevent right side clipping
+    // We want the maximum dimension of the brain to be around 5.5 units wide (larger)
     const maxDim = Math.max(size.x, size.y, size.z);
-    const scale = 3.6 / (maxDim || 1);
+    const scale = 5.5 / (maxDim || 1);
     
     const structureCount = sampledVerts.length;
-    const bgCount = isMobile ? 400 : 1000;
+    const bgCount = isMobile ? 500 : 1000; // Balanced background scatter
     const count = structureCount + bgCount;
     
     const positions = new Float32Array(count * 3);
-    const target1 = new Float32Array(count * 3);
-    const target2 = new Float32Array(count * 3);
+    const normals = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     const randoms = new Float32Array(count);
     
@@ -331,69 +415,44 @@ export default function ParticleObject({ activeTech, isMobile = false }: Particl
       const i3 = i * 3;
       
       if (i < structureCount) {
-        const v = sampledVerts[i];
+        const v = sampledVerts[i].p;
+        const n = sampledVerts[i].n;
         
         // Center and scale
         let bx = (v.x - center.x) * scale;
         let by = (v.y - center.y) * scale;
         let bz = (v.z - center.z) * scale;
         
-        // Shift it down slightly to center it properly vertically
-        by -= 0.2;
+        // Rotate normals the same way we rotate positions
+        let nx_r = n.x, ny_r = n.y, nz_r = n.z;
         
-        // Let's add the 3/4 angle rotation that the user requested earlier
-        // FBX orientation might differ, but assuming standard orientation, 
-        // we rotate Y by -45 degrees and slightly tilt X.
-        const rotY = -Math.PI / 4; 
-        const rotX = Math.PI / 10; 
-
+        // Default to a direct side profile view (as requested by the user)
+        const rotY = Math.PI / -4; 
+        const rotX = 0.0; 
+        
         const bx_r = bx * Math.cos(rotY) - bz * Math.sin(rotY);
         let bz_r = bx * Math.sin(rotY) + bz * Math.cos(rotY);
         bx = bx_r; bz = bz_r;
-
+        
+        const norm_x_r = nx_r * Math.cos(rotY) - nz_r * Math.sin(rotY);
+        let norm_z_r = nx_r * Math.sin(rotY) + nz_r * Math.cos(rotY);
+        nx_r = norm_x_r; nz_r = norm_z_r;
+        
         const by_r = by * Math.cos(rotX) - bz * Math.sin(rotX);
         bz_r = by * Math.sin(rotX) + bz * Math.cos(rotX);
         by = by_r; bz = bz_r;
-
+        
+        const norm_y_r = ny_r * Math.cos(rotX) - nz_r * Math.sin(rotX);
+        norm_z_r = ny_r * Math.sin(rotX) + nz_r * Math.cos(rotX);
+        ny_r = norm_y_r; nz_r = norm_z_r;
+        
         positions[i3] = bx; 
         positions[i3 + 1] = by;
         positions[i3 + 2] = bz;
         
-        // For the target sphere/bulb we need normal vectors
-        const rad = Math.sqrt(bx*bx + by*by + bz*bz);
-        const nx = bx / (rad || 1);
-        const ny = by / (rad || 1);
-        const nz = bz / (rad || 1);
-        
-        // ------------------------------------
-        // Target 1: Lightbulb
-        // ------------------------------------
-        const yBulb = ny * 1.4 + 0.2; 
-        let rBulb;
-        if (yBulb > 0.4) {
-          rBulb = Math.sqrt(Math.max(0, 1.2 * 1.2 - Math.pow(yBulb - 0.4, 2)));
-        } else {
-          const t = (0.4 - yBulb) / 2.0;
-          rBulb = 1.2 * Math.exp(-t * 2.5);
-          rBulb = Math.max(0.4, rBulb);
-          if (yBulb < -1.1) {
-            rBulb += Math.sin(yBulb * 40) * 0.04;
-          }
-        }
-        
-        const theta = Math.atan2(nz, nx);
-        // Distribute for targets
-        target1[i3] = rBulb * Math.cos(theta);
-        target1[i3 + 1] = yBulb;
-        target1[i3 + 2] = rBulb * Math.sin(theta);
-        
-        // ------------------------------------
-        // Target 2: Perfect Sphere
-        // ------------------------------------
-        const rSphere = 1.6;
-        target2[i3] = nx * rSphere;
-        target2[i3 + 1] = ny * rSphere;
-        target2[i3 + 2] = nz * rSphere;
+        normals[i3] = nx_r;
+        normals[i3 + 1] = ny_r;
+        normals[i3 + 2] = nz_r;
         
         randoms[i] = Math.random() * 0.7; // Below 0.8 means solid
       } else {
@@ -407,13 +466,9 @@ export default function ParticleObject({ activeTech, isMobile = false }: Particl
         positions[i3 + 1] = r * y_norm;
         positions[i3 + 2] = r * radius_at_y * Math.sin(theta);
         
-        target1[i3] = positions[i3] * 1.2;
-        target1[i3 + 1] = positions[i3 + 1] * 1.2;
-        target1[i3 + 2] = positions[i3 + 2] * 1.2;
-        
-        target2[i3] = positions[i3] * 1.5;
-        target2[i3 + 1] = positions[i3 + 1] * 1.5;
-        target2[i3 + 2] = positions[i3 + 2] * 1.5;
+        normals[i3] = 0.0;
+        normals[i3 + 1] = 0.0;
+        normals[i3 + 2] = 1.0;
         
         randoms[i] = 0.85 + Math.random() * 0.15; 
       }
@@ -421,8 +476,8 @@ export default function ParticleObject({ activeTech, isMobile = false }: Particl
       sizes[i] = Math.random(); 
     }
     
-    return { positions, target1, target2, sizes, randoms };
-  }, [isMobile, fbx]);
+    return { positions, normals, sizes, randoms };
+  }, [isMobile, gltf.scene]);
 
   // Update uniforms
   const hoveredValue = useRef(0);
@@ -468,12 +523,8 @@ export default function ParticleObject({ activeTech, isMobile = false }: Particl
           args={[positions, 3]}
         />
         <bufferAttribute
-          attach="attributes-aTarget1"
-          args={[target1, 3]}
-        />
-        <bufferAttribute
-          attach="attributes-aTarget2"
-          args={[target2, 3]}
+          attach="attributes-aNormal"
+          args={[normals, 3]}
         />
         <bufferAttribute
           attach="attributes-aSize"
@@ -496,7 +547,7 @@ export default function ParticleObject({ activeTech, isMobile = false }: Particl
           uMouse: { value: new THREE.Vector2(-999, -999) },
         }}
         transparent
-        depthWrite={false}
+        depthWrite={true}
         blending={THREE.NormalBlending}
       />
     </points>

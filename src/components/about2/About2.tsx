@@ -32,8 +32,16 @@ export default function About2() {
       start: 'top top',
       end: 'bottom bottom',
       onUpdate: (self) => {
-        globalScrollState.progress = self.progress;
+        // Prevent glitch: during refresh, progress may temporarily drop to 0
+        // @ts-expect-error: isRefreshing is missing from GSAP TypeScript definitions
+        if (!ScrollTrigger.isRefreshing) {
+          globalScrollState.progress = self.progress;
+        }
       },
+      onRefresh: (self) => {
+        // Ensure progress is synced accurately after the refresh is complete
+        globalScrollState.progress = self.progress;
+      }
     });
 
     sectionsRef.current.forEach((section, index) => {
@@ -68,7 +76,7 @@ export default function About2() {
     >
       {/* 3D Canvas Background */}
       <div className="fixed top-0 left-0 w-full h-screen z-0">
-        <Canvas camera={{ position: [0, 0, 5], fov: 45 }} dpr={isMobile ? [1, 1] : [1, 2]}>
+        <Canvas camera={{ position: [0, 0, 7], fov: 45 }} dpr={isMobile ? [1, 1] : [1, 2]}>
           <color attach="background" args={['#000000']} />
           <ambientLight intensity={0.5} />
           <ParticleScene activeTech={activeTech} isMobile={isMobile} />
@@ -81,7 +89,7 @@ export default function About2() {
         {/* HERO */}
         <section 
           ref={el => { sectionsRef.current[0] = el; }} 
-          className="h-screen w-full flex flex-col justify-center px-8 md:px-20 max-w-7xl mx-auto"
+          className="h-screen w-full flex flex-col justify-center px-[70px]"
         >
           <p className="text-[#34d399] tracking-widest uppercase text-xs font-bold mb-6">About</p>
           <h1 className="text-4xl md:text-8xl font-heading mb-8 max-w-3xl leading-[1.1]">
@@ -95,7 +103,7 @@ export default function About2() {
         {/* SECTION 01 — ABOUT ME */}
         <section 
           ref={el => { sectionsRef.current[1] = el; }} 
-          className="h-screen w-full flex flex-col justify-center items-end px-8 md:px-20 max-w-7xl mx-auto text-right"
+          className="h-screen w-full flex flex-col justify-center items-end px-[70px] text-right"
         >
           <p className="text-[#34d399] tracking-widest uppercase text-xs font-bold mb-6">A little about me</p>
           <h2 className="text-3xl md:text-5xl font-heading mb-6 max-w-2xl leading-[1.2]">
@@ -106,10 +114,16 @@ export default function About2() {
           </p>
         </section>
 
-        {/* SECTION 02 — EXPERIENCE */}
+        {/* SECTION 02 — TRANSITION GALAXY GAP */}
         <section 
           ref={el => { sectionsRef.current[2] = el; }} 
-          className="h-screen w-full flex flex-col justify-center px-8 md:px-20 max-w-7xl mx-auto"
+          className="h-screen w-full pointer-events-none"
+        />
+
+        {/* SECTION 03 — EXPERIENCE */}
+        <section 
+          ref={el => { sectionsRef.current[3] = el; }} 
+          className="h-screen w-full flex flex-col justify-center px-[70px]"
         >
           <p className="text-[#34d399] tracking-widest uppercase text-xs font-bold mb-6">Experience</p>
           <h2 className="text-4xl md:text-6xl font-heading mb-12 max-w-xl">
@@ -126,10 +140,10 @@ export default function About2() {
           </div>
         </section>
 
-        {/* SECTION 03 — TOOLKIT */}
+        {/* SECTION 04 — TOOLKIT */}
         <section 
-          ref={el => { sectionsRef.current[3] = el; }} 
-          className="h-screen w-full flex flex-col justify-center items-center px-8 md:px-20 max-w-7xl mx-auto text-center pointer-events-auto"
+          ref={el => { sectionsRef.current[4] = el; }} 
+          className="h-screen w-full flex flex-col justify-center items-center px-[70px] text-center pointer-events-auto"
         >
           <p className="text-[#34d399] tracking-widest uppercase text-xs font-bold mb-12">I work with</p>
           
@@ -149,10 +163,10 @@ export default function About2() {
           </div>
         </section>
 
-        {/* SECTION 04 — CTA */}
+        {/* SECTION 05 — CTA */}
         <section 
-          ref={el => { sectionsRef.current[4] = el; }} 
-          className="h-screen w-full flex flex-col justify-center items-center px-8 md:px-20 max-w-7xl mx-auto text-center"
+          ref={el => { sectionsRef.current[5] = el; }} 
+          className="h-screen w-full flex flex-col justify-center items-center px-[70px] text-center"
         >
           <h2 className="text-4xl md:text-8xl font-heading mb-12">
             Have a project <br/>in mind?
@@ -169,3 +183,4 @@ export default function About2() {
     </main>
   );
 }
+ 
