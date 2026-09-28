@@ -106,9 +106,15 @@ export default function About2() {
           </p>
         </section>
 
-        {/* SECTION 02 — EXPERIENCE */}
+        {/* SECTION 02 — TRANSITION GALAXY GAP */}
         <section 
           ref={el => { sectionsRef.current[2] = el; }} 
+          className="h-screen w-full pointer-events-none"
+        />
+
+        {/* SECTION 03 — EXPERIENCE */}
+        <section 
+          ref={el => { sectionsRef.current[3] = el; }} 
           className="h-screen w-full flex flex-col justify-center px-[70px]"
         >
           <p className="text-[#34d399] tracking-widest uppercase text-xs font-bold mb-6">Experience</p>
@@ -126,9 +132,9 @@ export default function About2() {
           </div>
         </section>
 
-        {/* SECTION 03 — TOOLKIT */}
+        {/* SECTION 04 — TOOLKIT */}
         <section 
-          ref={el => { sectionsRef.current[3] = el; }} 
+          ref={el => { sectionsRef.current[4] = el; }} 
           className="h-screen w-full flex flex-col justify-center items-center px-[70px] text-center pointer-events-auto"
         >
           <p className="text-[#34d399] tracking-widest uppercase text-xs font-bold mb-12">I work with</p>
@@ -149,9 +155,9 @@ export default function About2() {
           </div>
         </section>
 
-        {/* SECTION 04 — CTA */}
+        {/* SECTION 05 — CTA */}
         <section 
-          ref={el => { sectionsRef.current[4] = el; }} 
+          ref={el => { sectionsRef.current[5] = el; }} 
           className="h-screen w-full flex flex-col justify-center items-center px-[70px] text-center"
         >
           <h2 className="text-4xl md:text-8xl font-heading mb-12">
