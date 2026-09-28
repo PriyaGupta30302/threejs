@@ -397,7 +397,7 @@ export default function MorphingParticles({ activeTech, isMobile = false }: Morp
       
       const currentProg = materialRef.current.uniforms.uProgress.value;
       const targetProg = globalScrollState.progress;
-      materialRef.current.uniforms.uProgress.value = MathUtils.lerp(currentProg, targetProg, 0.05);
+      materialRef.current.uniforms.uProgress.value = MathUtils.lerp(currentProg, targetProg, 0.02);
       
       if (state.pointer.x !== 0 || state.pointer.y !== 0) {
           if (!hasMoved.current) smoothedMouse.current.copy(state.pointer);

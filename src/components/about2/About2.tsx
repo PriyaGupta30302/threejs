@@ -32,8 +32,15 @@ export default function About2() {
       start: 'top top',
       end: 'bottom bottom',
       onUpdate: (self) => {
-        globalScrollState.progress = self.progress;
+        // Prevent glitch: during refresh, progress may temporarily drop to 0
+        if (!(ScrollTrigger as any).isRefreshing) {
+          globalScrollState.progress = self.progress;
+        }
       },
+      onRefresh: (self) => {
+        // Ensure progress is synced accurately after the refresh is complete
+        globalScrollState.progress = self.progress;
+      }
     });
 
     sectionsRef.current.forEach((section, index) => {
