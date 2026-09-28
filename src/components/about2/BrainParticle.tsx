@@ -427,7 +427,7 @@ export default function BrainParticle({ activeTech, isMobile = false }: BrainPar
         let nx_r = n.x, ny_r = n.y, nz_r = n.z;
         
         // Default to a direct side profile view (as requested by the user)
-        const rotY = Math.PI / -6; 
+        const rotY = Math.PI / -4; 
         const rotX = 0.0; 
         
         const bx_r = bx * Math.cos(rotY) - bz * Math.sin(rotY);

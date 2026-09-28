@@ -37,43 +37,49 @@ export default function ParticleScene({ activeTech, isMobile = false }: Particle
     targetRotation.current.x = MathUtils.lerp(targetRotation.current.x, mousePos.current.y * 0.2, 0.05);
     targetRotation.current.y = MathUtils.lerp(targetRotation.current.y, mousePos.current.x * 0.2, 0.05);
 
-    // Apply scroll based rotation
-    groupRef.current.rotation.y = targetRotation.current.y + progress * Math.PI * 2;
-    groupRef.current.rotation.x = targetRotation.current.x + Math.sin(progress * Math.PI) * 0.5;
+    // Apply base rotation from mouse parallax only
+    groupRef.current.rotation.y = targetRotation.current.y;
+    groupRef.current.rotation.x = targetRotation.current.x;
     
-    // Calculate precise target Y and target X based on progress to match 6-section layout
-    let targetY = isMobile ? -0.3 : -0.4;
+    // Base vertical offset - giving the brain model more space from the top
+    let targetY = isMobile ? -0.3 : -0.3;
     let targetX = 0.0;
-    
+
     if (!isMobile) {
         if (progress < 0.20) {
-            // Section 0 to 1: Move from right (2.2) to left (-2.2)
+            // Hero to About: Right to Left
             const t = progress / 0.20;
-            const smoothT = t * t * (3 - 2 * t);
-            targetX = MathUtils.lerp(2.2, -2.2, smoothT);
-        } else if (progress >= 0.20 && progress < 0.40) {
-            // Section 1 to 2 (Gap): Move from left (-2.2) to center (0.0)
-            const t = (progress - 0.20) / 0.20;
-            const smoothT = t * t * (3 - 2 * t);
-            targetX = MathUtils.lerp(-2.2, 0.0, smoothT);
-        } else if (progress >= 0.40 && progress < 0.60) {
-            // Section 2 (Gap) to 3 (Experience): Move from center (0.0) to right (2.2)
-            const t = (progress - 0.40) / 0.20;
-            const smoothT = t * t * (3 - 2 * t);
-            targetX = MathUtils.lerp(0.0, 2.2, smoothT);
-            targetY = MathUtils.lerp(-0.4, -0.6, smoothT); // Drop down for experience
-        } else if (progress >= 0.60 && progress < 0.80) {
-            // Section 3 to 4 (Toolkit): Move from right (2.2) to center (0.0)
-            const t = (progress - 0.60) / 0.20;
-            const smoothT = t * t * (3 - 2 * t);
-            targetX = MathUtils.lerp(2.2, 0.0, smoothT);
-            targetY = MathUtils.lerp(-0.6, 0.0, smoothT); // Reset Y to center
-        } else {
-            // Section 4 and 5 (Toolkit to CTA): Stay centered
+            // Matches user's -2.5 destination for more space
+            targetX = MathUtils.lerp(1.6, -2.5, t * t * (3 - 2 * t));
+        } else if (progress < 0.30) {
+            // About to Gap: Left to Center
+            const t = (progress - 0.20) / 0.10;
+            // Smoothly move from -2.5 back to Center
+            targetX = MathUtils.lerp(-2.5, 0.0, t * t * (3 - 2 * t));
+        } else if (progress < 0.40) {
+            // Gap Morphing: Stay Center
             targetX = 0.0;
+        } else if (progress < 0.50) {
+            // Gap to Experience: Move Center to Right and Center Vertically
+            const t = (progress - 0.40) / 0.10;
+            // Moved to 2.2 for more space from the left side text
+            targetX = MathUtils.lerp(0.0, 2.2, t * t * (3 - 2 * t));
+            targetY = MathUtils.lerp(-0.3, 0.0, t * t * (3 - 2 * t));
+        } else if (progress < 0.70) {
+            // Experience Pause: Stay Right and Centered
+            targetX = 2.2;
             targetY = 0.0;
+        } else if (progress < 0.80) {
+            // Experience to Toolkit: Move Right to Center and reset Y
+            const t = (progress - 0.70) / 0.10;
+            targetX = MathUtils.lerp(2.2, 0.0, t * t * (3 - 2 * t));
+            targetY = MathUtils.lerp(0.0, -0.3, t * t * (3 - 2 * t));
+        } else {
+            // Toolkit and Beyond
+            targetX = 0.0;
+            targetY = -0.3;
         }
-    } else {
+        } else {
         // Mobile layout: mostly centered
         if (progress >= 0.40 && progress < 0.80) {
             const t = (progress - 0.40) / 0.40;

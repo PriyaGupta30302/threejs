@@ -89,15 +89,15 @@ const vertexShader = `
     // 0.60 - 0.80: Bulb -> Galaxy 2 -> Circle (Experience to Toolkit)
     // 0.80 - 1.00: Circle (Toolkit to CTA)
     
-    // Brain to Galaxy (Shatter): 0.20 to 0.40
-    float shatterBrain = smoothstep(0.20, 0.40, uProgress);
-    // Galaxy to Bulb (Assemble): 0.40 to 0.60
-    float assembleBulb = smoothstep(0.40, 0.60, uProgress);
+    // Brain to Galaxy (Shatter): Very slow shatter at Center (0.30 to 0.40)
+    float shatterBrain = smoothstep(0.30, 0.40, uProgress);
+    // Galaxy to Bulb (Assemble): Assemble completely by the time it hits Experience (0.45 to 0.55)
+    float assembleBulb = smoothstep(0.45, 0.55, uProgress);
     
-    // Bulb to Galaxy 2 (Shatter): 0.60 to 0.70
-    float shatterBulb = smoothstep(0.60, 0.70, uProgress);
-    // Galaxy 2 to Circle (Assemble): 0.70 to 0.80
-    float assembleCircle = smoothstep(0.70, 0.80, uProgress);
+    // Bulb to Galaxy 2 (Shatter): Happens while moving to Center (0.70 to 0.80)
+    float shatterBulb = smoothstep(0.70, 0.80, uProgress);
+    // Galaxy 2 to Circle (Assemble): Happens at Center (0.80 to 0.90)
+    float assembleCircle = smoothstep(0.80, 0.90, uProgress);
 
     // Apply turbulence during galaxy phase to make it dynamic
     float galaxyMotion = uTime * 0.2;
@@ -274,8 +274,8 @@ export default function MorphingParticles({ activeTech, isMobile = false }: Morp
   const bulbObj = useLoader(OBJLoader, '/Light Bulb/Light Bulb.obj');
   
   const geometryData = useMemo(() => {
-    const structureCount = isMobile ? 30000 : 80000;
-    const bgCount = isMobile ? 1000 : 2000;
+    const structureCount = isMobile ? 50000 : 150000;
+    const bgCount = isMobile ? 2000 : 5000;
     const count = structureCount + bgCount;
     
     // Extract Brain Triangles
@@ -284,12 +284,13 @@ export default function MorphingParticles({ activeTech, isMobile = false }: Morp
     const bulbTriangles = extractTrianglesFromObject(bulbObj, 'Light_Bulb');
     
     // Sample Brain
-    // Scale 5.5, Rotation Y = -PI/6
-    const brainSamples = sampleTriangles(brainTriangles, structureCount, 5.5, { x: 0, y: -Math.PI/6, z: 0 });
+    // Scale 5.5, Rotation Y = Math.PI/4 to face the right side
+    const brainSamples = sampleTriangles(brainTriangles, structureCount, 5.3, { x: -0.1, y: Math.PI/4, z: 0 });
     
     // Sample Bulb
-    // Scale Bulb to a nice size, add slight rotation for dynamic feel
-    const bulbSamples = sampleTriangles(bulbTriangles, structureCount, 4.5, { x: 0.1, y: 0, z: -0.1 }, new THREE.Vector3(0, -0.2, 0));
+    // Reduce Bulb scale to 5.0 (from 6.5) to fit the screen better
+    // Z rotation is the left/right tilt.
+    const bulbSamples = sampleTriangles(bulbTriangles, structureCount, 5.0, { x: 0.1, y: 0, z: 0.5 }, new THREE.Vector3(0, -0.2, 0));
     
     const aBrainPos = new Float32Array(count * 3);
     const aBrainNormal = new Float32Array(count * 3);
@@ -347,11 +348,11 @@ export default function MorphingParticles({ activeTech, isMobile = false }: Morp
         aCircleNormal[i3+2] = snz;
       }
       
-      // Galaxy (Milky Way spiral/disk)
-      const gRadius = 6.0 + Math.random() * 8.0;
+      // Galaxy (Milky Way filling the visible screen)
+      const gRadius = 2.0 + Math.random() * 14.0;
       const gTheta = Math.random() * Math.PI * 2;
       const gSpiral = gTheta + gRadius * 0.5; // Spiral effect
-      const gHeight = (Math.random() - 0.5) * (12.0 / gRadius); // Thinner at edges
+      const gHeight = (Math.random() - 0.5) * 18.0; // Fill screen height
       
       aGalaxyPos[i3] = Math.cos(gSpiral) * gRadius;
       aGalaxyPos[i3+1] = gHeight;
