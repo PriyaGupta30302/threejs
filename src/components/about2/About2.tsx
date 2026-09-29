@@ -17,12 +17,14 @@ export default function About2() {
   const sectionsRef = useRef<(HTMLElement | null)[]>([]);
   const [activeTech, setActiveTech] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [isTablet, setIsTablet] = useState<boolean>(false);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
+      setIsTablet(window.innerWidth >= 768 && window.innerWidth < 1024);
     };
     
     checkMobile();
@@ -79,11 +81,11 @@ export default function About2() {
     >
       {/* 3D Canvas Background */}
       <div className="fixed top-0 left-0 w-full h-screen z-0">
-        <Canvas camera={{ position: [0, 0, 7], fov: 45 }} dpr={isMobile ? [1, 1] : [1, 1.5]}>
+        <Canvas camera={{ position: [0, 0, 7], fov: 45 }} dpr={[1, 2]}>
           <color attach="background" args={['#000000']} />
           <ambientLight intensity={0.5} />
           <Suspense fallback={null}>
-            <ParticleScene activeTech={activeTech} isMobile={isMobile} />
+            <ParticleScene activeTech={activeTech} isMobile={isMobile} isTablet={isTablet} />
           </Suspense>
         </Canvas>
         <Loader 
@@ -98,7 +100,7 @@ export default function About2() {
         {/* HERO */}
         <section 
           ref={el => { sectionsRef.current[0] = el; }} 
-          className="min-h-screen lg:h-screen py-24 lg:py-0 w-full flex flex-col justify-center px-[30px] md:px-[70px]"
+          className="min-h-[85vh] lg:h-screen py-12 lg:py-0 w-full flex flex-col justify-center px-[30px] md:px-[70px]"
         >
           <p className="text-[#34d399] tracking-widest uppercase text-xs font-bold mb-6">About</p>
           <h1 className="text-4xl md:text-8xl font-heading mb-8 max-w-3xl leading-[1.1]">
@@ -112,7 +114,7 @@ export default function About2() {
         {/* SECTION 01 — ABOUT ME */}
         <section 
           ref={el => { sectionsRef.current[1] = el; }} 
-          className="min-h-screen lg:h-screen py-24 lg:py-0 w-full flex flex-col justify-center items-end px-[30px] md:px-[70px] text-right"
+          className="min-h-[85vh] lg:h-screen py-12 lg:py-0 w-full flex flex-col justify-center items-end px-[30px] md:px-[70px] text-right"
         >
           <p className="text-[#34d399] tracking-widest uppercase text-xs font-bold mb-6">A little about me</p>
           <h2 className="text-3xl md:text-5xl font-heading mb-6 max-w-3xl leading-[1.2]">
@@ -137,7 +139,7 @@ export default function About2() {
         {/* SECTION 03 — EXPERIENCE */}
         <section 
           ref={el => { sectionsRef.current[3] = el; }} 
-          className="min-h-screen lg:h-screen py-24 lg:py-0 w-full flex flex-col justify-center px-[30px] md:px-[70px]"
+          className="min-h-[85vh] lg:h-screen py-12 lg:py-0 w-full flex flex-col justify-center px-[30px] md:px-[70px]"
         >
           <p className="text-[#34d399] tracking-widest uppercase text-xs font-bold mb-6">Experience & Education</p>
           <h2 className="text-4xl md:text-6xl font-heading mb-12 max-w-xl">
@@ -181,7 +183,7 @@ export default function About2() {
         {/* SECTION 04 — TOOLKIT */}
         <section 
           ref={el => { sectionsRef.current[4] = el; }} 
-          className="min-h-screen lg:h-screen py-24 lg:py-0 w-full flex flex-col justify-center items-center px-[30px] md:px-[70px] text-center pointer-events-auto"
+          className="min-h-[85vh] lg:h-screen py-12 lg:py-0 w-full flex flex-col justify-center items-center px-[30px] md:px-[70px] text-center pointer-events-auto"
         >
           <p className="text-[#34d399] tracking-widest uppercase text-xs font-bold mb-12">I work with</p>
           
@@ -189,11 +191,11 @@ export default function About2() {
             {technologies.map((tech) => (
               <span 
                 key={tech}
-                onMouseEnter={() => setActiveTech(tech)}
-                onMouseLeave={() => setActiveTech(null)}
-                className={`text-2xl md:text-4xl font-heading cursor-pointer transition-all duration-500 ${
+                onMouseEnter={() => !isMobile && !isTablet && setActiveTech(tech)}
+                onMouseLeave={() => !isMobile && !isTablet && setActiveTech(null)}
+                className={`text-2xl md:text-4xl font-heading transition-all duration-500 ${
                   activeTech === tech ? 'text-[#34d399] scale-110 drop-shadow-[0_0_15px_rgba(52,211,153,0.8)]' : (activeTech ? 'text-white/20 blur-[1px]' : 'text-white hover:text-[#34d399]')
-                }`}
+                } ${isMobile || isTablet ? 'cursor-default' : 'cursor-pointer'}`}
               >
                 {tech}
               </span>
@@ -204,7 +206,7 @@ export default function About2() {
         {/* SECTION 05 — CTA */}
         <section 
           ref={el => { sectionsRef.current[5] = el; }} 
-          className="min-h-screen lg:h-screen py-24 lg:py-0 w-full flex flex-col justify-center items-center px-[30px] md:px-[70px] text-center"
+          className="min-h-[70vh] lg:h-screen py-12 lg:py-0 w-full flex flex-col justify-center items-center px-[30px] md:px-[70px] text-center"
         >
           <h2 className="text-4xl md:text-8xl font-heading mb-12">
             Have a project <br/>in mind?

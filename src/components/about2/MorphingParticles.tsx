@@ -15,6 +15,7 @@ const vertexShader = `
   uniform float uProgress;
   uniform float uIsTechHovered;
   uniform float uIsMobile;
+  uniform float uIsTablet;
   uniform vec2 uMouse;
   
   attribute vec3 aBrainPos;
@@ -148,7 +149,7 @@ const vertexShader = `
     
     float dist = distance(screenPos, uMouse);
     float fieldNoise = snoise(baseMorphPos * 2.0 + vec3(time * 0.3)) * 0.5 + 0.5;
-    float baseRadius = uIsMobile > 0.5 ? 0.7 : 0.55;
+    float baseRadius = uIsMobile > 0.5 ? 0.7 : (uIsTablet > 0.5 ? 0.65 : 0.55);
     float organicRadius = baseRadius * (0.4 + 0.6 * fieldNoise) * (0.6 + 0.8 * aRandom);
     float influence = smoothstep(0.0, 1.0, 1.0 - smoothstep(0.0, organicRadius, dist));
     vec2 pushDir2D = normalize(screenPos - uMouse + vec2(0.0001)); 
@@ -223,6 +224,12 @@ const vertexShader = `
     if (aRandom > 0.8) {
         baseSize *= 1.2; 
     }
+
+    if (uIsMobile > 0.5) {
+        baseSize *= 1.8; 
+    } else if (uIsTablet > 0.5) {
+        baseSize *= 1.4;
+    }
     
     float pulse = sin(uTime * (1.5 + aRandom) + aRandom * 6.28) * 0.3 + 0.7; 
     float perspective = 1.0 / max(3.0, -mvPosition.z);
@@ -262,9 +269,10 @@ const fragmentShader = `
 interface MorphingParticlesProps {
   activeTech: string | null;
   isMobile?: boolean;
+  isTablet?: boolean;
 }
 
-export default function MorphingParticles({ activeTech, isMobile = false }: MorphingParticlesProps) {
+export default function MorphingParticles({ activeTech, isMobile = false, isTablet = false }: MorphingParticlesProps) {
   const materialRef = useRef<THREE.ShaderMaterial>(null);
   
   const brainGltf = useGLTF('/Rotten Brain.glb');
@@ -274,8 +282,15 @@ export default function MorphingParticles({ activeTech, isMobile = false }: Morp
   const bulbObj = useLoader(OBJLoader, '/Light Bulb/Light Bulb.obj');
   
   const geometryData = useMemo(() => {
-    const structureCount = isMobile ? 50000 : 150000;
-    const bgCount = isMobile ? 2000 : 5000;
+    let structureCount = 150000;
+    let bgCount = 5000;
+    if (isMobile) {
+        structureCount = 25000;
+        bgCount = 1200;
+    } else if (isTablet) {
+        structureCount = 40000;
+        bgCount = 2000;
+    }
     const count = structureCount + bgCount;
     
     // Extract Brain Triangles
@@ -384,7 +399,7 @@ export default function MorphingParticles({ activeTech, isMobile = false }: Morp
     }
     
     return { aBrainPos, aBrainNormal, aBulbPos, aBulbNormal, aCirclePos, aCircleNormal, aGalaxyPos, aSize, aRandom };
-  }, [brainGltf, bulbObj, isMobile]);
+  }, [brainGltf, bulbObj, isMobile, isTablet]);
 
   const hoveredValue = useRef(0);
   const smoothedMouse = useRef(new THREE.Vector2(-999, -999));
@@ -394,17 +409,22 @@ export default function MorphingParticles({ activeTech, isMobile = false }: Morp
     if (materialRef.current) {
       materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
       materialRef.current.uniforms.uIsMobile.value = isMobile ? 1.0 : 0.0;
+      materialRef.current.uniforms.uIsTablet.value = isTablet ? 1.0 : 0.0;
       
       const currentProg = materialRef.current.uniforms.uProgress.value;
       const targetProg = globalScrollState.progress;
       materialRef.current.uniforms.uProgress.value = MathUtils.lerp(currentProg, targetProg, 0.02);
       
-      if (state.pointer.x !== 0 || state.pointer.y !== 0) {
-          if (!hasMoved.current) smoothedMouse.current.copy(state.pointer);
-          hasMoved.current = true;
+      if (!isMobile && !isTablet) {
+        if (state.pointer.x !== 0 || state.pointer.y !== 0) {
+            if (!hasMoved.current) smoothedMouse.current.copy(state.pointer);
+            hasMoved.current = true;
+        }
+        
+        if (hasMoved.current) smoothedMouse.current.lerp(state.pointer, 0.12);
+      } else {
+        smoothedMouse.current.set(-999, -999);
       }
-      
-      if (hasMoved.current) smoothedMouse.current.lerp(state.pointer, 0.12);
       materialRef.current.uniforms.uMouse.value.copy(smoothedMouse.current);
       
       const targetHover = activeTech ? 1.0 : 0.0;
@@ -418,12 +438,13 @@ export default function MorphingParticles({ activeTech, isMobile = false }: Morp
     uProgress: { value: 0 },
     uIsTechHovered: { value: 0 },
     uIsMobile: { value: isMobile ? 1.0 : 0.0 },
+    uIsTablet: { value: isTablet ? 1.0 : 0.0 },
     uMouse: { value: new THREE.Vector2(-999, -999) },
-  }), [isMobile]);
+  }), [isMobile, isTablet]);
 
   return (
     <points>
-      <bufferGeometry key={isMobile ? 'mobile' : 'desktop'}>
+      <bufferGeometry key={isMobile ? 'mobile' : (isTablet ? 'tablet' : 'desktop')}>
         <bufferAttribute attach="attributes-position" args={[geometryData.aBrainPos, 3]} />
         <bufferAttribute attach="attributes-aBrainPos" args={[geometryData.aBrainPos, 3]} />
         <bufferAttribute attach="attributes-aBrainNormal" args={[geometryData.aBrainNormal, 3]} />
