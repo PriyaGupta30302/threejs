@@ -1,10 +1,13 @@
 'use client';
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, Suspense } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Canvas } from '@react-three/fiber';
-import ParticleScene from './ParticleScene';
+import { Loader } from '@react-three/drei';
+import dynamic from 'next/dynamic';
+
+const ParticleScene = dynamic(() => import('./ParticleScene'), { ssr: false });
 import Link from 'next/link';
 
 import { globalScrollState } from './scrollState';
@@ -76,11 +79,17 @@ export default function About2() {
     >
       {/* 3D Canvas Background */}
       <div className="fixed top-0 left-0 w-full h-screen z-0">
-        <Canvas camera={{ position: [0, 0, 7], fov: 45 }} dpr={isMobile ? [1, 1] : [1, 2]}>
+        <Canvas camera={{ position: [0, 0, 7], fov: 45 }} dpr={isMobile ? [1, 1] : [1, 1.5]}>
           <color attach="background" args={['#000000']} />
           <ambientLight intensity={0.5} />
-          <ParticleScene activeTech={activeTech} isMobile={isMobile} />
+          <Suspense fallback={null}>
+            <ParticleScene activeTech={activeTech} isMobile={isMobile} />
+          </Suspense>
         </Canvas>
+        <Loader 
+          dataInterpolation={(p) => `Loading Universe ${p.toFixed(0)}%`}
+          initialState={(active) => active}
+        />
       </div>
 
       {/* HTML Content Overlay */}

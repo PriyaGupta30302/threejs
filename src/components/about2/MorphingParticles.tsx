@@ -447,3 +447,6 @@ export default function MorphingParticles({ activeTech, isMobile = false }: Morp
     </points>
   );
 }
+
+useGLTF.preload('/Rotten Brain.glb');
+useLoader.preload(OBJLoader, '/Light Bulb/Light Bulb.obj');
