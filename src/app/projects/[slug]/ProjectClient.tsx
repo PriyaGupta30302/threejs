@@ -110,59 +110,7 @@ export default function ProjectClient({ project, nextProject }: Props) {
         );
       });
 
-      // E. 3D Stacked Card Section
-      const stackTimeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: ".stack-section",
-          start: "top top",
-          end: "+=200%",
-          scrub: 1,
-          pin: true,
-        },
-      });
 
-      const cards = gsap.utils.toArray(".stack-card") as HTMLElement[];
-      cards.forEach((card: HTMLElement, i) => {
-        // Initial setup for 3D stack
-        gsap.set(card, {
-          z: -i * 150,
-          opacity: 1 - (i * 0.2),
-          y: i * 20,
-          zIndex: cards.length - i
-        });
-
-        // Sequence: Front card flies away
-        if (i < cards.length - 1) {
-          stackTimeline.to(
-            card,
-            {
-              z: 200,
-              opacity: 0,
-              scale: 1.2,
-              duration: 1,
-              ease: "power2.inOut",
-            },
-            i * 1
-          );
-        }
-
-        // Sequence: Remaining cards step forward
-        cards.forEach((otherCard: HTMLElement, j) => {
-          if (j > i) {
-            stackTimeline.to(
-              otherCard,
-              {
-                z: "+=150",
-                opacity: "+=0.2",
-                y: "-=20",
-                duration: 1,
-                ease: "power2.inOut",
-              },
-              i * 1
-            );
-          }
-        });
-      });
 
       // F. Physical Card Dropping
       const physicalCards = gsap.utils.toArray(".physical-card") as HTMLElement[];
@@ -276,7 +224,7 @@ export default function ProjectClient({ project, nextProject }: Props) {
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_white_0%,_transparent_70%)] pointer-events-none" />
         
         {/* Abstract Orbiting Background Rings */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 pb-20">
           <div className="abstract-orbit absolute w-[80vw] h-[80vw] md:w-[50vw] md:h-[50vw] rounded-full border border-white/20">
             <div className="absolute top-0 left-1/2 w-3 h-3 bg-white rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-[0_0_20px_rgba(255,255,255,0.8)]" />
             <div className="absolute bottom-0 left-1/2 w-4 h-4 bg-[#3AA89B] rounded-full transform -translate-x-1/2 translate-y-1/2 shadow-[0_0_25px_rgba(58,168,155,0.8)]" />
@@ -301,22 +249,7 @@ export default function ProjectClient({ project, nextProject }: Props) {
         </div>
       </section>
 
-      {/* E: 3D STACKED CARD SECTION */}
-      <section className="stack-section h-screen w-full flex items-center justify-center bg-black relative" style={{ perspective: "1000px" }}>
-        <div className="relative w-[90vw] md:w-[60vw] h-[60vh]" style={{ transformStyle: "preserve-3d" }}>
-          {project.gallery?.map((img, i) => (
-            <div
-              key={i}
-              className="stack-card absolute inset-0 rounded-2xl overflow-hidden shadow-2xl border border-white/10"
-              style={{
-                transformOrigin: "center center",
-              }}
-            >
-              <Image src={img} alt={`Gallery ${i}`} fill className="object-cover" />
-            </div>
-          ))}
-        </div>
-      </section>
+
 
       {/* F: PHYSICAL CARDS */}
       <section className="physical-section relative w-full min-h-[150vh] bg-[#050505] py-32 px-4">
