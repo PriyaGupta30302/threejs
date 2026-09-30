@@ -28,7 +28,7 @@ export default function ProjectClient({ project, nextProject }: Props) {
         scrollTrigger: {
           trigger: ".hero-container",
           start: "top top",
-          end: "bottom top",
+          end: "+=100%",
           scrub: true,
           pin: true,
         },
@@ -123,34 +123,45 @@ export default function ProjectClient({ project, nextProject }: Props) {
 
       const cards = gsap.utils.toArray(".stack-card") as HTMLElement[];
       cards.forEach((card: HTMLElement, i) => {
-        // Initial setup for 3D
+        // Initial setup for 3D stack
         gsap.set(card, {
-          z: -500 + i * 150,
-          opacity: 1 - (cards.length - i) * 0.2,
+          z: -i * 150,
+          opacity: 1 - (i * 0.2),
           y: i * 20,
+          zIndex: cards.length - i
         });
 
-        stackTimeline.to(
-          card,
-          {
-            z: 0,
-            opacity: 1,
-            y: 0,
-            duration: 1,
-            ease: "none",
-          },
-          i * 0.5
-        ).to(
-          card,
-          {
-            z: 200,
-            opacity: 0,
-            scale: 1.2,
-            duration: 0.5,
-            ease: "none",
-          },
-          (i + 1) * 0.5
-        );
+        // Sequence: Front card flies away
+        if (i < cards.length - 1) {
+          stackTimeline.to(
+            card,
+            {
+              z: 200,
+              opacity: 0,
+              scale: 1.2,
+              duration: 1,
+              ease: "power2.inOut",
+            },
+            i * 1
+          );
+        }
+
+        // Sequence: Remaining cards step forward
+        cards.forEach((otherCard: HTMLElement, j) => {
+          if (j > i) {
+            stackTimeline.to(
+              otherCard,
+              {
+                z: "+=150",
+                opacity: "+=0.2",
+                y: "-=20",
+                duration: 1,
+                ease: "power2.inOut",
+              },
+              i * 1
+            );
+          }
+        });
       });
 
       // F. Physical Card Dropping
@@ -203,8 +214,8 @@ export default function ProjectClient({ project, nextProject }: Props) {
   return (
     <div ref={container} className="bg-black text-white min-h-screen overflow-hidden">
       {/* A & B: HERO SECTION */}
-      <section className="hero-container relative h-[150vh] w-full bg-black">
-        <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center pt-20 px-4 md:px-10">
+      <section className="hero-container relative h-screen w-full bg-black">
+        <div className="h-full w-full flex flex-col items-center justify-center px-4 md:px-10">
           <div className="hero-text text-center w-full z-10 flex flex-col items-center justify-center mix-blend-difference pointer-events-none mb-10">
             <p className="text-sm md:text-md uppercase tracking-[0.2em] mb-4 opacity-70">
               Project / {project.id < 10 ? `0${project.id}` : project.id}
@@ -214,7 +225,7 @@ export default function ProjectClient({ project, nextProject }: Props) {
             </h1>
           </div>
 
-          <div className="hero-visual-wrapper absolute inset-0 z-0 flex items-center justify-center h-full w-full" style={{ clipPath: "inset(20% 10% 20% 10%)", scale: 1.05, borderRadius: "20px" }}>
+          <div className="hero-visual-wrapper absolute inset-0 z-0 flex items-center justify-center h-full w-full" style={{ clipPath: "inset(15% 0% 15% 0%)", scale: 1.05 }}>
             <Image
               src={project.heroImage || "/hero/hero-img.png"}
               alt={project.title}
@@ -266,11 +277,13 @@ export default function ProjectClient({ project, nextProject }: Props) {
         
         {/* Abstract Orbiting Background Rings */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-          <div className="abstract-orbit absolute w-[80vw] h-[80vw] md:w-[50vw] md:h-[50vw] rounded-full border border-white/5">
-            <div className="absolute top-0 left-1/2 w-2 h-2 bg-white/40 rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
-            <div className="absolute bottom-0 left-1/2 w-3 h-3 bg-[#3AA89B]/50 rounded-full transform -translate-x-1/2 translate-y-1/2 shadow-[0_0_20px_rgba(58,168,155,0.5)]" />
+          <div className="abstract-orbit absolute w-[80vw] h-[80vw] md:w-[50vw] md:h-[50vw] rounded-full border border-white/20">
+            <div className="absolute top-0 left-1/2 w-3 h-3 bg-white rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-[0_0_20px_rgba(255,255,255,0.8)]" />
+            <div className="absolute bottom-0 left-1/2 w-4 h-4 bg-[#3AA89B] rounded-full transform -translate-x-1/2 translate-y-1/2 shadow-[0_0_25px_rgba(58,168,155,0.8)]" />
           </div>
-          <div className="abstract-orbit absolute w-[60vw] h-[60vw] md:w-[35vw] md:h-[35vw] rounded-full border border-white/5" />
+          <div className="abstract-orbit absolute w-[60vw] h-[60vw] md:w-[35vw] md:h-[35vw] rounded-full border border-white/10">
+            <div className="absolute left-0 top-1/2 w-2 h-2 bg-white/70 rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
+          </div>
         </div>
 
         {/* Sequenced Text Center */}
