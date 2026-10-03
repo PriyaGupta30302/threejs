@@ -88,17 +88,7 @@ export default function ProjectClient({ project }: { project: Project }) {
         delay: 0.2
       });
 
-      // Hero Parallax on Scroll
-      gsap.to(".hero-img", {
-        yPercent: 30,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero-section",
-          start: "top top",
-          end: "bottom top",
-          scrub: true
-        }
-      });
+      // Hero Parallax on Scroll (Removed to just rely on text parallax)
 
       gsap.to(".hero-text", {
         y: -150,
@@ -141,6 +131,13 @@ export default function ProjectClient({ project }: { project: Project }) {
   return (
     <div ref={containerRef} className="bg-[#050505] min-h-screen text-white relative selection:bg-[#3AA89B] selection:text-white">
       
+      {/* Soft Glowing Background Orbs */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#3AA89B] opacity-[0.15] blur-[100px]" />
+        <div className="absolute top-[40%] right-[-20%] w-[40vw] h-[40vw] rounded-full bg-[#3AA89B] opacity-[0.1] blur-[120px]" />
+        <div className="absolute bottom-[-10%] left-[20%] w-[60vw] h-[60vw] rounded-full bg-[#3AA89B] opacity-[0.1] blur-[150px]" />
+      </div>
+
       {/* Fixed 3D Particle Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <Canvas camera={{ position: [0, 0, 10], fov: 45 }}>
@@ -150,10 +147,7 @@ export default function ProjectClient({ project }: { project: Project }) {
 
       {/* Hero Section */}
       <section className="hero-section relative h-[80vh] md:h-screen w-full overflow-hidden z-10 flex items-center justify-center">
-        <div className="absolute inset-0">
-          <Image src={project.heroImage || "/hero/hero-img.png"} alt="Hero" fill className="hero-img object-cover opacity-50" priority />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/20 via-[#050505]/40 to-[#050505]" />
-        </div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(58,168,155,0.7)_0%,_rgba(58,168,155,0.1)_40%,_#050505_80%)]" />
         
         <div className="hero-text relative z-10 text-center flex flex-col items-center">
           <span className="text-sm md:text-md uppercase tracking-[0.4em] text-[#3AA89B] mb-6 font-semibold overflow-hidden">
