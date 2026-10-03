@@ -27,7 +27,7 @@ export default function ParticleScene({ activeTech, isMobile = false, isTablet =
     };
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+  }, [isMobile, isTablet]);
   const baseRotationY = useRef(0);
 
   useFrame(() => {
