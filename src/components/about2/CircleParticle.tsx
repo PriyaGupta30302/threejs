@@ -251,4 +251,4 @@ export default function CircleParticle({ activeTech, isMobile = false }: CircleP
       />
     </points>
   );
-}
+} 

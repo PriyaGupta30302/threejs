@@ -239,7 +239,7 @@ export default function ProjectClient({ project }: { project: Project }) {
                 <h4 className="text-sm uppercase tracking-widest text-white/50">Execution Strategy</h4>
               </div>
               <p className="text-xl md:text-3xl font-light leading-relaxed text-white/90 italic">
-                "{project.bullets[1]}"
+                &quot;{project.bullets[1]}&quot;
               </p>
             </div>
           )}

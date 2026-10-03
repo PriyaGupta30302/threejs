@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { gsap } from "gsap";
 import { projects } from "@/data/projects";
 
@@ -10,8 +9,6 @@ import { projects } from "@/data/projects";
 
 export default function AllProjectsPage() {
   const containerRef = useRef<HTMLDivElement>(null);
-  
-  const [hoveredProject, setHoveredProject] = useState<string | null>(null);
   
   // Trail Effect Refs
   const trailRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -22,7 +19,6 @@ export default function AllProjectsPage() {
   const trailActiveRef = useRef(false);
 
   const handleMouseEnter = (slug: string) => {
-    setHoveredProject(slug);
     trailActiveRef.current = true;
     const proj = projects.find(p => p.slug === slug);
     if (proj) {
@@ -31,7 +27,6 @@ export default function AllProjectsPage() {
   };
 
   const handleMouseLeave = () => {
-    setHoveredProject(null);
     trailActiveRef.current = false;
   };
 
