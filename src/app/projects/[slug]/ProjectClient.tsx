@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { gsap } from "gsap";
@@ -17,10 +17,10 @@ if (typeof window !== "undefined") {
 function GlassParticles() {
   const groupRef = useRef<THREE.Group>(null);
   
-  // Create 30 random glass shapes
+  // Create 8 random glass shapes (reduced significantly for performance)
   const shapes = React.useMemo(() => {
     const temp = [];
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 8; i++) {
       temp.push({
         position: [
           (Math.random() - 0.5) * 20,
@@ -32,7 +32,7 @@ function GlassParticles() {
           Math.random() * Math.PI,
           0
         ] as [number, number, number],
-        scale: Math.random() * 0.4 + 0.1,
+        scale: Math.random() * 0.6 + 0.2, // Slightly larger to compensate for fewer particles
       });
     }
     return temp;
@@ -60,6 +60,8 @@ function GlassParticles() {
               ior={1.5} 
               chromaticAberration={0.4}
               color="#ffffff"
+              resolution={64} // Highly optimized resolution
+              samples={3} // Optimized sampling
             />
           </mesh>
         </Float>
@@ -74,6 +76,13 @@ function GlassParticles() {
 
 export default function ProjectClient({ project }: { project: Project }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showCanvas, setShowCanvas] = useState(false);
+
+  useEffect(() => {
+    // Mount canvas almost immediately, but defer just enough to not block paint
+    const timer = setTimeout(() => setShowCanvas(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -85,10 +94,8 @@ export default function ProjectClient({ project }: { project: Project }) {
         stagger: 0.05,
         duration: 1.5,
         ease: "power4.out",
-        delay: 0.2
+        delay: 1.0 // Wait for particles to fade in first
       });
-
-      // Hero Parallax on Scroll (Removed to just rely on text parallax)
 
       gsap.to(".hero-text", {
         y: -150,
@@ -139,10 +146,12 @@ export default function ProjectClient({ project }: { project: Project }) {
       </div>
 
       {/* Fixed 3D Particle Background */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <Canvas camera={{ position: [0, 0, 10], fov: 45 }}>
-          <GlassParticles />
-        </Canvas>
+      <div className={`fixed inset-0 z-0 pointer-events-none transition-opacity duration-1000 ${showCanvas ? 'opacity-100' : 'opacity-0'}`}>
+        {showCanvas && (
+          <Canvas camera={{ position: [0, 0, 10], fov: 45 }} dpr={[1, 1.5]}>
+            <GlassParticles />
+          </Canvas>
+        )}
       </div>
 
       {/* Hero Section */}
