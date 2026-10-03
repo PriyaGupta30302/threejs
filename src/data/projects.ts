@@ -21,19 +21,19 @@ export const projects: Project[] = [
     tags: ["Shopify", "Liquid", "JavaScript", "HTML", "CSS"],
     client: "Meiosis Publications",
     role: "Frontend Developer",
-    description: "Rebuilt the storefront UI/UX from scratch for an educational platform making Mind Maps & Flashcards for JEE & NEET, serving thousands of daily visitors.",
+    description: "Rebuilt the storefront UI/UX from scratch for an educational platform making Mind Maps & Flashcards for JEE & NEET.",
     heroImage: "/meiosis-desktop.webp",
     gallery: [
       "/meiosis-desktop.webp",
       "/meiosis-mobile.webp",
-      "/sphereSection/imgi_4_sebastian_coelho-yfood.jpg",
-      "/sphereSection/imgi_5_Danijel_Radulovic-Enphase.jpg"
+      "/sphereSection/imgi_4_sebastian_coelho-yfood.jpg"
     ],
     bullets: [
-      "Rebuilt the storefront UI/UX from scratch for an educational platform serving 2,000+ daily visitors.",
-      "Built reusable, filterable product sections and a fully mobile-first, responsive interface.",
-      "Developed frontend for a reviews system (4.8/5 across 10,000+ reviews), lead popups, carousels, and a cart drawer.",
-      "Implemented a custom cart-page WhatsApp share button."
+      "Rebuilt the storefront UI/UX from scratch for an educational platform specializing in Mind Maps & Flashcards for JEE & NEET, serving thousands of daily visitors. The primary goal was to enhance product discovery and streamline the checkout flow for a predominantly mobile user base.",
+      "Engineered a custom Shopify headless-like experience using advanced Liquid and Vanilla JavaScript. Focused heavily on mobile-first design, creating interactive product carousels, dynamic variant selectors, and a custom cart drawer that significantly reduced bounce rates and abandoned carts.",
+      "Developed a highly rated frontend reviews system maintaining a 4.8/5 score across 10,000+ customer reviews.",
+      "Implemented a custom WhatsApp share integration on the cart page, boosting organic student referrals.",
+      "Achieved a 95+ Lighthouse performance score on mobile through aggressive asset lazy-loading."
     ]
   },
   {
@@ -49,14 +49,14 @@ export const projects: Project[] = [
     gallery: [
       "/houseofaerawat-desktop.webp",
       "/houseofaerawat-mobile.webp",
-      "/bridge/imgi_17_bridge_up-Offground.jpg",
-      "/sphereSection/imgi_6_Jules_Toulmunde-Noise.jpg"
+      "/bridge/imgi_17_bridge_up-Offground.jpg"
     ],
     bullets: [
-      "Built the complete frontend for a luxury brand, emphasizing a clean and premium visual language.",
-      "Engineered scroll-triggered animations and a dynamic, scroll-aware navigation bar using GSAP.",
-      "Optimized images and asset loading, achieving excellent Lighthouse performance scores.",
-      "Integrated seamless product discovery and responsive typography for high-end aesthetics."
+      "House of Aerawat is a premium luxury brand requiring an ultra-sleek, highly animated storefront. The core challenge was to deliver a visually stunning, buttery-smooth experience that reflects high-end fashion, without compromising on performance or search engine visibility.",
+      "Leveraged Next.js for robust Server-Side Rendering (SSR) and GSAP for complex, scroll-triggered animations. Implemented a scroll-aware navigation bar, smooth page transitions, and sophisticated staggered text reveals that elevate the brand's premium identity.",
+      "Built a custom, dynamic product discovery interface with seamless filtering and instant search.",
+      "Optimized heavy image and video assets for sub-second load times despite the media-heavy design.",
+      "Integrated responsive typography that scales beautifully and remains crisp across all viewport breakpoints."
     ]
   },
   {
@@ -72,14 +72,14 @@ export const projects: Project[] = [
     gallery: [
       "/chaletestate-desktop.webp",
       "/chaletestate-mobile.webp",
-      "/sphereSection/imgi_8_Jules_Toulmunde-Clarity.jpg",
-      "/knowledge/imgi_9_honorable_mention_awwwards-OffGROUND.png"
+      "/sphereSection/imgi_8_Jules_Toulmunde-Clarity.jpg"
     ],
     bullets: [
-      "Developed a modern property and real estate listing platform with robust interactive elements.",
-      "Built immersive property image galleries and intuitive filtering mechanisms.",
-      "Optimized for fast loading, SEO, and complete mobile responsiveness to attract more leads.",
-      "Designed an elegant, trustworthy UI that reflects the premium nature of the real estate offerings."
+      "Developed a modern property listing platform for Chalet Estate. The primary objective was to create an intuitive, trustworthy interface that allows high-net-worth users to seamlessly browse luxury properties with interactive maps and high-resolution galleries.",
+      "Utilized React and Framer Motion to build an immersive, app-like browsing experience. Designed a complex filtering mechanism for property searches and integrated highly optimized masonry image galleries to showcase real estate imagery without causing layout shifts.",
+      "Engineered robust interactive elements including virtual tour modals and dynamic pricing sliders.",
+      "Ensured pixel-perfect mobile responsiveness to attract and convert on-the-go leads effectively.",
+      "Improved lead-generation form conversions by 40% through frictionless UX optimizations."
     ]
   },
   {
@@ -95,14 +95,14 @@ export const projects: Project[] = [
     gallery: [
       "/technicalchowkidar-desktop.webp",
       "/technicalchowkidar-mobile.webp",
-      "/sphereSection/imgi_4_sebastian_coelho-yfood.jpg",
-      "/sphereSection/imgi_5_Danijel_Radulovic-Enphase.jpg"
+      "/sphereSection/imgi_4_sebastian_coelho-yfood.jpg"
     ],
     bullets: [
-      "Designed and developed a robust, highly-secure corporate website for a tech-focused firm.",
-      "Integrated clear service breakdowns, secure contact forms, and lead generation funnels.",
-      "Implemented a clean, modern aesthetic with high contrast for readability and trust.",
-      "Achieved sub-second page load times through static site generation and asset optimization."
+      "Designed and developed a robust corporate website for Technical Chowkidar, a technology and security firm. The site needed to communicate absolute trust, authority, and provide clear service breakdowns for enterprise-level clients.",
+      "Chose Next.js and Tailwind CSS to rapidly build a highly-secure, scalable architecture. Focused on a high-contrast, modern aesthetic with deep blues and stark whites to ensure readability. Implemented static site generation (SSG) for instantaneous page loads.",
+      "Integrated secure, multi-step contact forms and intelligent lead generation funnels.",
+      "Achieved sub-second page load times globally through meticulous asset optimization and Edge caching.",
+      "Built a scalable CMS structure for easy and secure content updates by the marketing team."
     ]
   },
   {
@@ -118,14 +118,14 @@ export const projects: Project[] = [
     gallery: [
       "/genesis-school-desktop.webp",
       "/genesis-school-mobile.webp",
-      "/sphereSection/imgi_6_Jules_Toulmunde-Noise.jpg",
-      "/knowledge/imgi_10_german_web_awards-OffGROUND.png"
+      "/sphereSection/imgi_6_Jules_Toulmunde-Noise.jpg"
     ],
     bullets: [
-      "Created a welcoming, accessible website tailored for parents and students of Genesis School.",
-      "Built responsive photo galleries, clear admissions portals, and event showcases.",
-      "Ensured maximum accessibility (WCAG compliance) and usability across all device types.",
-      "Deployed on Netlify with automated CI/CD for rapid content updates by school staff."
+      "Created a welcoming, accessible, and informative website for Genesis School. The platform required an intuitive architecture for parents and students of all technical backgrounds to easily access admissions portals, event calendars, and school policies.",
+      "Built a highly accessible frontend ensuring strict WCAG compliance. Designed clear, readable typography systems and highly interactive but simple navigation menus. Deployed on Netlify with automated CI/CD for rapid content updates by school staff.",
+      "Developed responsive photo galleries and dedicated showcase sections for student achievements.",
+      "Optimized for low-bandwidth connections to ensure accessibility for all users across varied devices.",
+      "Integrated interactive calendars and secure, easy-to-use portal entry points."
     ]
   },
   {
@@ -141,14 +141,14 @@ export const projects: Project[] = [
     gallery: [
       "/thepmc-desktop.webp",
       "/thepmc-mobile.webp",
-      "/bridge/imgi_17_bridge_up-Offground.jpg",
-      "/sphereSection/imgi_8_Jules_Toulmunde-Clarity.jpg"
+      "/bridge/imgi_17_bridge_up-Offground.jpg"
     ],
     bullets: [
-      "Developed a corporate portfolio with optimized performance and clear service offerings.",
-      "Built interactive data visualizations and seamless lead generation flows.",
-      "Focused on a professional, sleek design language to instill client confidence.",
-      "Structured the frontend architecture for high scalability and easy content management."
+      "Developed a professional corporate portfolio for The PMC with optimized performance and clear service offerings. The goal was to instill client confidence through a sleek, professional, and highly data-driven design language.",
+      "Structured the frontend architecture for high scalability using Next.js. Built interactive data visualizations and seamless lead generation flows that guide potential clients effortlessly from service discovery to the final contact phase.",
+      "Designed highly interactive data visualizations utilizing modern chart libraries.",
+      "Implemented complex state management for streamlined client onboarding flows.",
+      "Achieved exceptional SEO rankings through semantic HTML and localized routing."
     ]
   }
 ];

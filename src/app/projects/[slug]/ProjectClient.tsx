@@ -207,32 +207,81 @@ export default function ProjectClient({ project }: { project: Project }) {
           </div>
         </div>
 
-        {/* Right Column: Scrolling Gallery & Insights */}
+        {/* Right Column: Case Study Structure */}
         <div className="w-full md:w-2/3 flex flex-col gap-16 md:gap-32 mt-12 md:mt-0 pb-32">
           
-          {/* First Insight Block */}
+          {/* Section 01: The Challenge */}
           {project.bullets && project.bullets.length > 0 && (
-            <div className="gallery-item p-8 md:p-16 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl">
-              <h4 className="text-xl md:text-4xl font-serif leading-tight italic">
-                &quot;{project.bullets[0]}&quot;
-              </h4>
+            <div className="gallery-item flex flex-col gap-6">
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-serif text-[#3AA89B]">01 //</span>
+                <h4 className="text-sm uppercase tracking-widest text-white/50">Project Overview</h4>
+              </div>
+              <h3 className="text-2xl md:text-4xl font-serif leading-tight text-white/90">
+                {project.bullets[0]}
+              </h3>
             </div>
           )}
 
-          {/* Gallery Images */}
-          {project.gallery?.map((img, i) => (
-            <div key={i} className="gallery-item relative w-full aspect-[4/5] md:aspect-[16/10] rounded-2xl overflow-hidden shadow-2xl group">
-              <Image src={img} alt={`Gallery ${i}`} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+          {/* Gallery Image 1 */}
+          {project.gallery && project.gallery.length > 0 && (
+            <div className="gallery-item relative w-full aspect-[4/3] md:aspect-[16/10] rounded-2xl overflow-hidden shadow-2xl group">
+              <Image src={project.gallery[0]} alt={`${project.title} Screenshot 1`} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
               <div className="absolute inset-0 bg-black/10 mix-blend-overlay pointer-events-none" />
             </div>
-          ))}
+          )}
 
-          {/* Second Insight Block (if available) */}
+          {/* Section 02: Execution & Strategy */}
           {project.bullets && project.bullets.length > 1 && (
-            <div className="gallery-item p-8 md:p-16 bg-[#3AA89B]/10 backdrop-blur-xl rounded-2xl border border-[#3AA89B]/30 shadow-2xl">
-              <h4 className="text-xl md:text-4xl font-serif leading-tight italic text-[#3AA89B]">
-                &quot;{project.bullets[1]}&quot;
-              </h4>
+            <div className="gallery-item flex flex-col gap-6 p-8 md:p-12 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl">
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-serif text-[#3AA89B]">02 //</span>
+                <h4 className="text-sm uppercase tracking-widest text-white/50">Execution Strategy</h4>
+              </div>
+              <p className="text-xl md:text-3xl font-light leading-relaxed text-white/90 italic">
+                "{project.bullets[1]}"
+              </p>
+            </div>
+          )}
+
+          {/* Gallery Images 2 & 3 (Staggered Grid) */}
+          {project.gallery && project.gallery.length > 1 && (
+            <div className="gallery-item grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl group">
+                <Image src={project.gallery[1]} alt={`${project.title} Screenshot 2`} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-black/10 mix-blend-overlay pointer-events-none" />
+              </div>
+              {project.gallery.length > 2 && (
+                <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl group md:translate-y-16">
+                  <Image src={project.gallery[2]} alt={`${project.title} Screenshot 3`} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-black/10 mix-blend-overlay pointer-events-none" />
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Section 03: Frontend Highlights */}
+          {project.bullets && project.bullets.length > 2 && (
+            <div className="gallery-item flex flex-col gap-8 md:mt-16">
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-serif text-[#3AA89B]">03 //</span>
+                <h4 className="text-sm uppercase tracking-widest text-white/50">Frontend Highlights & Results</h4>
+              </div>
+              <ul className="flex flex-col gap-8">
+                {project.bullets.slice(2).map((bullet, idx) => (
+                  <li key={idx} className="flex gap-6 items-start text-lg md:text-2xl font-light text-white/80 border-l-2 border-[#3AA89B] pl-6 py-2">
+                    {bullet}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Gallery Image 4 */}
+          {project.gallery && project.gallery.length > 3 && (
+            <div className="gallery-item relative w-full aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl group mt-8">
+              <Image src={project.gallery[3]} alt={`${project.title} Final Screenshot`} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-black/10 mix-blend-overlay pointer-events-none" />
             </div>
           )}
 
