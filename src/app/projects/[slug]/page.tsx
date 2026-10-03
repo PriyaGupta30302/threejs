@@ -1,29 +1,18 @@
-import { notFound } from 'next/navigation';
-import { projects } from '@/data/projects';
-import ProjectClient from './ProjectClient';
-
-interface Props {
-  params: Promise<{
-    slug: string;
-  }>;
-}
+import { projects } from "@/data/projects";
+import { notFound } from "next/navigation";
+import ProjectClient from "./ProjectClient";
 
 export function generateStaticParams() {
-  return projects.map((project) => ({
-    slug: project.slug,
-  }));
+  return projects.map((p) => ({ slug: p.slug }));
 }
 
-export default async function ProjectPage({ params }: Props) {
+export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const projectIndex = projects.findIndex((p) => p.slug === resolvedParams.slug);
-  const project = projects[projectIndex];
+  const project = projects.find((p) => p.slug === resolvedParams.slug);
 
   if (!project) {
     notFound();
   }
 
-  const nextProject = projects[(projectIndex + 1) % projects.length];
-
-  return <ProjectClient project={project} nextProject={nextProject} />;
+  return <ProjectClient project={project} />;
 }
