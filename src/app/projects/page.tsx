@@ -127,7 +127,7 @@ export default function AllProjectsPage() {
           >
             {/* Using standard img for dynamic src switching without React lifecycle delays */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="" alt="" className="w-full h-full object-cover" />
+            <img alt="" className="w-full h-full object-cover" />
           </div>
         ))}
       </div>
