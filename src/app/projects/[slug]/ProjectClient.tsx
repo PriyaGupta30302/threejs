@@ -163,10 +163,14 @@ export default function ProjectClient({ project }: { project: Project }) {
             <span className="inline-block hero-char">Featured</span>
             <span className="inline-block hero-char">&nbsp;Project</span>
           </span>
-          <h1 className="text-[14vw] md:text-[10vw] font-serif uppercase tracking-tighter leading-[0.85] overflow-hidden">
-            {project.title.split("").map((char, i) => (
-              <span key={i} className="inline-block hero-char">
-                {char === " " ? "\u00A0" : char}
+          <h1 className="text-[14vw] md:text-[10vw] font-serif uppercase tracking-tighter leading-[0.85] flex flex-wrap justify-center gap-x-[3vw] md:gap-x-[2vw]">
+            {project.title.split(" ").map((word, wIdx) => (
+              <span key={wIdx} className="inline-flex overflow-hidden pr-8 -mr-8 pb-4 -mb-4 pt-2 -mt-2">
+                {word.split("").map((char, cIdx) => (
+                  <span key={cIdx} className="inline-block hero-char">
+                    {char}
+                  </span>
+                ))}
               </span>
             ))}
           </h1>
