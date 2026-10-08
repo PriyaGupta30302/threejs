@@ -55,7 +55,7 @@ function ParticleWave() {
         size={0.045} 
         color="#3AA89B" 
         transparent 
-        opacity={0.45} 
+        opacity={0.55} 
         sizeAttenuation 
         blending={THREE.AdditiveBlending}
       />
@@ -70,9 +70,9 @@ export default function ContactClient() {
       
       {/* Ambient Green/Black Gradient Background */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#3AA89B] opacity-[0.15] blur-[100px]" />
-        <div className="absolute top-[40%] right-[-20%] w-[40vw] h-[40vw] rounded-full bg-[#3AA89B] opacity-[0.1] blur-[120px]" />
-        <div className="absolute bottom-[-10%] left-[20%] w-[60vw] h-[60vw] rounded-full bg-[#3AA89B] opacity-[0.1] blur-[150px]" />
+        <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#3AA89B] opacity-[0.25] blur-[100px]" />
+        <div className="absolute top-[40%] right-[-20%] w-[40vw] h-[40vw] rounded-full bg-[#3AA89B] opacity-[0.2] blur-[120px]" />
+        <div className="absolute bottom-[-10%] left-[20%] w-[60vw] h-[60vw] rounded-full bg-[#3AA89B] opacity-[0.2] blur-[150px]" />
       </div>
 
       {/* 3D Background - Particle Sea */}
