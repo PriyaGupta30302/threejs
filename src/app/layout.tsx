@@ -5,6 +5,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import LenisProvider from "@/components/LenisProvider";
 import Loader from "@/components/Loader";
+import Footer from "@/components/Footer";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -36,6 +37,7 @@ export default function RootLayout({
           <Loader />
           <Navbar />
           {children}
+          <Footer />
         </LenisProvider>
       </body>
     </html>

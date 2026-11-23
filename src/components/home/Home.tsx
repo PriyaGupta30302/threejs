@@ -5,7 +5,6 @@ import ServicesSection from "./ServicesSection";
 import BridgeSection from "./BridgeSection";
 import NurturingSection from "./NurturingSection";
 import KnowledgeSection from "./KnowledgeSection";
-import Footer from "../Footer";
 
 export default function Home() {
   return (
@@ -15,7 +14,6 @@ export default function Home() {
       <BridgeSection />
       <NurturingSection />
       <KnowledgeSection />
-      <Footer />
     </>
   );
 }

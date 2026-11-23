@@ -6,7 +6,6 @@ import Toolkit from '@/components/about/Toolkit';
 import Numbers from '@/components/about/Numbers';
 import WhatIEnjoy from '@/components/about/WhatIEnjoy';
 import ContactCTA from '@/components/about/ContactCTA';
-import Footer from '@/components/Footer';
 import AboutBackground3D from '@/components/about/AboutBackground3D';
 
 export default function AboutPage() {
@@ -28,9 +27,6 @@ export default function AboutPage() {
         <Numbers />
         <WhatIEnjoy />
         <ContactCTA />
-      </div>
-      <div className="relative z-10">
-        <Footer />
       </div>
     </main>
   );
