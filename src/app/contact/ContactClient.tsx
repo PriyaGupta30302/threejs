@@ -10,7 +10,7 @@ function ParticleWave() {
   const pointsRef = useRef<THREE.Points>(null);
   const count = 120; // Balanced density
   const sep = 0.25; // Balanced spacing
-  
+
   const positions = useMemo(() => {
     const pos = new Float32Array(count * count * 3);
     let i = 0;
@@ -31,12 +31,12 @@ function ParticleWave() {
       const positions = pointsRef.current.geometry.attributes.position.array as Float32Array;
       let i = 0;
       const t = state.clock.elapsedTime * 0.6;
-      
+
       for (let ix = 0; ix < count; ix++) {
         for (let iy = 0; iy < count; iy++) {
           // Elegant wave height
-          positions[i + 1] = 
-            Math.sin((ix * 0.15) + t) * 1.2 + 
+          positions[i + 1] =
+            Math.sin((ix * 0.15) + t) * 1.2 +
             Math.sin((iy * 0.1) + t * 0.8) * 1.2;
           i += 3;
         }
@@ -51,12 +51,12 @@ function ParticleWave() {
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
-      <pointsMaterial 
-        size={0.045} 
-        color="#3AA89B" 
-        transparent 
-        opacity={0.55} 
-        sizeAttenuation 
+      <pointsMaterial
+        size={0.045}
+        color="#3AA89B"
+        transparent
+        opacity={0.55}
+        sizeAttenuation
         blending={THREE.AdditiveBlending}
       />
     </points>
@@ -67,7 +67,7 @@ function ParticleWave() {
 export default function ContactClient() {
   return (
     <main className="relative min-h-screen w-full bg-black flex flex-col justify-center overflow-hidden">
-      
+
       {/* Ambient Green/Black Gradient Background */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#3AA89B] opacity-[0.25] blur-[100px]" />
@@ -85,76 +85,91 @@ export default function ContactClient() {
       </div>
 
       {/* Foreground Content */}
-      <div className="relative z-10 w-full max-w-5xl mx-auto px-6 md:px-12 flex flex-col items-center pt-24 pb-12">
-        
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="text-center mb-12 md:mb-16"
-        >
-          <h1 className="text-6xl md:text-8xl lg:text-[7rem] font-serif tracking-tighter text-white mb-6 leading-[1.1] pb-2 pr-4">
-            Get in <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-[#3AA89B] to-emerald-200 pr-4">Touch</span>
-          </h1>
-          <p className="text-white/50 text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed">
-            Whether you have a specific project in mind, need a creative developer, or just want to connect—I&apos;d love to hear from you.
-          </p>
-        </motion.div>
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pt-32 pb-24 min-h-screen flex flex-col justify-center">
 
-        {/* Floating Glassmorphic Form */}
-        <motion.form 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full backdrop-blur-xl bg-white/[0.02] border border-white/10 p-8 md:p-14 rounded-[2.5rem] shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col gap-10"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <div className="flex flex-col gap-2 relative group">
-              <label className="text-[10px] uppercase tracking-[0.2em] text-white/40 group-focus-within:text-[#3AA89B] transition-colors font-bold">Your Name</label>
-              <input type="text" placeholder="John Doe" className="w-full bg-transparent border-b border-white/10 pb-3 text-white focus:outline-none focus:border-[#3AA89B] transition-colors placeholder:text-white/20 text-xl font-light" />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-12">
+
+          {/* LEFT SIDE: Heading & Contact Info */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-col justify-between"
+          >
+            <div>
+              <h1 className="text-6xl md:text-8xl lg:text-[7rem] font-serif tracking-tighter text-white mb-6 leading-[1.1] pb-2 pr-4">
+                Ready to <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-[#3AA89B] to-emerald-200 pr-4">Build?</span>
+              </h1>
+              <p className="text-white/50 text-lg md:text-xl max-w-md font-light leading-relaxed">
+                I&apos;m always open to discussing new projects, creative ideas, or exciting career opportunities. Drop me a message and let&apos;s make something amazing together.
+              </p>
             </div>
-            <div className="flex flex-col gap-2 relative group">
-              <label className="text-[10px] uppercase tracking-[0.2em] text-white/40 group-focus-within:text-[#3AA89B] transition-colors font-bold">Your Email</label>
-              <input type="email" placeholder="john@example.com" className="w-full bg-transparent border-b border-white/10 pb-3 text-white focus:outline-none focus:border-[#3AA89B] transition-colors placeholder:text-white/20 text-xl font-light" />
+
+            <div className="mt-16 flex flex-col gap-10">
+              <div className="group cursor-pointer inline-block">
+                <span className="block text-[10px] uppercase tracking-[0.2em] text-[#3AA89B] font-bold mb-2">Email Me</span>
+                <a href="mailto:priyagupta30302@gmail.com" className="text-2xl md:text-4xl text-white group-hover:text-white/70 font-light transition-colors duration-500">
+                  priyagupta30302@gmail.com
+                </a>
+              </div>
+              <div className="group cursor-pointer inline-block">
+                <span className="block text-[10px] uppercase tracking-[0.2em] text-[#3AA89B] font-bold mb-2">Call Me</span>
+                <a href="tel:+917056600842" className="text-2xl md:text-4xl text-white group-hover:text-white/70 font-light transition-colors duration-500">
+                  +91 70566 00842
+                </a>
+              </div>
+
+              {/* Elegant Social Links */}
+              <div className="mt-4 flex gap-6">
+                <a href="#" className="flex items-center gap-3 text-white/50 hover:text-[#3AA89B] group transition-colors p-2 -ml-2 rounded-lg hover:bg-white/5">
+                   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-110 transition-transform">
+                     <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                     <rect x="2" y="9" width="4" height="12"/>
+                     <circle cx="4" cy="4" r="2"/>
+                   </svg>
+                   <span className="uppercase tracking-[0.15em] text-xs font-bold mt-1">LinkedIn</span>
+                </a>
+                <a href="#" className="flex items-center gap-3 text-white/50 hover:text-[#3AA89B] group transition-colors p-2 rounded-lg hover:bg-white/5">
+                   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-110 transition-transform">
+                     <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                   </svg>
+                   <span className="uppercase tracking-[0.15em] text-xs font-bold mt-1">GitHub</span>
+                </a>
+              </div>
             </div>
-          </div>
-          
-          <div className="flex flex-col gap-2 relative group">
-            <label className="text-[10px] uppercase tracking-[0.2em] text-white/40 group-focus-within:text-[#3AA89B] transition-colors font-bold">Message Details</label>
-            <textarea placeholder="Tell me about your vision..." rows={3} className="w-full bg-transparent border-b border-white/10 pb-3 text-white focus:outline-none focus:border-[#3AA89B] transition-colors placeholder:text-white/20 text-xl font-light resize-none" />
-          </div>
+          </motion.div>
 
-          <div className="mt-4 flex justify-center">
-            <button className="group relative flex items-center justify-center overflow-hidden rounded-full bg-white text-black px-14 py-5 font-bold uppercase tracking-[0.2em] text-xs hover:scale-[1.02] transition-all duration-300">
-               <span className="relative z-10 group-hover:text-white transition-colors duration-300">Send Message</span>
-               <div className="absolute inset-0 bg-[#3AA89B] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
-            </button>
-          </div>
-        </motion.form>
+          {/* RIGHT SIDE: Minimalist Form */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-col justify-center lg:pl-16"
+          >
+            <form className="w-full flex flex-col gap-14">
+              <div className="relative group">
+                <label className="absolute -top-6 left-0 text-[10px] uppercase tracking-[0.2em] text-[#3AA89B] font-bold opacity-0 group-focus-within:opacity-100 transition-opacity">What&apos;s your name?</label>
+                <input type="text" placeholder="Your Name" className="w-full bg-transparent border-b border-white/20 pb-4 text-white focus:outline-none focus:border-[#3AA89B] transition-colors placeholder:text-white/30 text-2xl font-light" />
+              </div>
 
-        {/* Footer Contact Grid */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6, duration: 1 }}
-          className="mt-20 flex flex-wrap justify-center gap-12 md:gap-24 text-center w-full"
-        >
-          <div className="flex flex-col items-center">
-             <span className="uppercase tracking-widest text-[10px] text-white/30 font-bold mb-3">Direct Email</span>
-             <a href="mailto:priyagupta30302@gmail.com" className="text-white/80 hover:text-[#3AA89B] text-lg font-light transition-all">priyagupta30302@gmail.com</a>
-          </div>
-          <div className="flex flex-col items-center">
-             <span className="uppercase tracking-widest text-[10px] text-white/30 font-bold mb-3">Phone</span>
-             <a href="tel:+917056600842" className="text-white/80 hover:text-[#3AA89B] text-lg font-light transition-all">+91 70566 00842</a>
-          </div>
-          <div className="flex flex-col items-center">
-             <span className="uppercase tracking-widest text-[10px] text-white/30 font-bold mb-3">Socials</span>
-             <div className="flex gap-6 text-white/80 text-lg font-light">
-               <a href="#" className="hover:text-[#3AA89B] transition-all">LinkedIn</a>
-               <a href="#" className="hover:text-[#3AA89B] transition-all">GitHub</a>
-             </div>
-          </div>
-        </motion.div>
+              <div className="relative group">
+                <label className="absolute -top-6 left-0 text-[10px] uppercase tracking-[0.2em] text-[#3AA89B] font-bold opacity-0 group-focus-within:opacity-100 transition-opacity">Where can I reach you?</label>
+                <input type="email" placeholder="Email Address" className="w-full bg-transparent border-b border-white/20 pb-4 text-white focus:outline-none focus:border-[#3AA89B] transition-colors placeholder:text-white/30 text-2xl font-light" />
+              </div>
+
+              <div className="relative group pt-4">
+                <label className="absolute -top-6 left-0 text-[10px] uppercase tracking-[0.2em] text-[#3AA89B] font-bold opacity-0 group-focus-within:opacity-100 transition-opacity">How can I help?</label>
+                <textarea placeholder="Tell me about your project..." rows={3} className="w-full bg-transparent border-b border-white/20 pb-4 text-white focus:outline-none focus:border-[#3AA89B] transition-colors placeholder:text-white/30 text-2xl font-light resize-none" />
+              </div>
+
+              <button className="self-start group relative flex items-center gap-4 overflow-hidden rounded-full border border-white/20 hover:border-[#3AA89B] bg-transparent text-white px-10 py-5 transition-all duration-500 mt-4">
+                 <span className="relative z-10 font-bold uppercase tracking-[0.15em] text-xs transition-colors duration-300">Send Message</span>
+                 <div className="absolute inset-0 bg-[#3AA89B] translate-y-[100%] group-hover:translate-y-0 transition-transform duration-500 ease-out" />
+              </button>
+            </form>
+          </motion.div>
+
+        </div>
       </div>
     </main>
   );
