@@ -1,318 +1,410 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment, Float, MeshTransmissionMaterial } from "@react-three/drei";
-import * as THREE from "three";
-import { Project } from "@/data/projects";
+import { Project, projects } from "@/data/projects";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-function GlassParticles() {
-  const groupRef = useRef<THREE.Group>(null);
-  
-  // Create 8 random glass shapes (reduced significantly for performance)
-  const shapes = React.useMemo(() => {
-    const temp = [];
-    for (let i = 0; i < 8; i++) {
-      temp.push({
-        position: [
-          (Math.random() - 0.5) * 20,
-          (Math.random() - 0.5) * 20,
-          (Math.random() - 0.5) * 10 - 5
-        ] as [number, number, number],
-        rotation: [
-          Math.random() * Math.PI,
-          Math.random() * Math.PI,
-          0
-        ] as [number, number, number],
-        scale: Math.random() * 0.6 + 0.2, // Slightly larger to compensate for fewer particles
-      });
-    }
-    return temp;
-  }, []);
+const pad = (n: number) => String(n).padStart(2, "0");
+const OUTLINE = "text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.4)]";
 
-  useFrame((state, delta) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.05;
-      const scrollY = window.scrollY;
-      groupRef.current.position.y = scrollY * 0.01; // Parallax effect against scroll
-    }
-  });
+const CHAPTERS = [
+  { id: "brief", label: "The Brief" },
+  { id: "built", label: "What I Built" },
+  { id: "impact", label: "The Impact" },
+  { id: "stack", label: "Under the Hood" },
+];
 
-  return (
-    <group ref={groupRef}>
-      {shapes.map((shape, i) => (
-        <Float key={i} speed={1 + Math.random() * 2} rotationIntensity={2} floatIntensity={2}>
-          <mesh position={shape.position} rotation={shape.rotation} scale={shape.scale}>
-            <icosahedronGeometry args={[1, 0]} />
-            <MeshTransmissionMaterial 
-              backside 
-              thickness={0.5} 
-              roughness={0.1} 
-              transmission={1} 
-              ior={1.5} 
-              chromaticAberration={0.4}
-              color="#ffffff"
-              resolution={64} // Highly optimized resolution
-              samples={3} // Optimized sampling
-            />
-          </mesh>
-        </Float>
-      ))}
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[5, 5, 5]} intensity={2} color="#3AA89B" />
-      <directionalLight position={[-5, -5, -5]} intensity={1} color="#ffffff" />
-      <Environment preset="city" />
-    </group>
-  );
+// How the device stage poses itself for each chapter (desktop only)
+const BROWSER_POSE = [
+  "translateX(0) rotateY(-10deg) rotateX(4deg) scale(1)",
+  "translateX(-9%) rotateY(-6deg) rotateX(2deg) scale(0.88)",
+  "translateX(0) rotateY(0deg) rotateX(0deg) scale(0.78)",
+  "translateX(-4%) rotateY(9deg) rotateX(-3deg) scale(0.95)",
+];
+const BROWSER_OPACITY = [1, 1, 0.45, 1];
+const PHONE_POSE = [
+  "translateY(130%) rotate(0deg) scale(1)",
+  "translateY(0) rotate(5deg) scale(1)",
+  "translateY(-6%) rotate(0deg) scale(0.9)",
+  "translateY(0) rotate(-4deg) scale(1.05)",
+];
+const PHONE_OPACITY = [0, 1, 0.5, 1];
+
+/** Animates "4.8/5", "10,000+", "<1s", "40%"… when scrolled into view. Non-numeric values render as-is. */
+function Counter({ value }: { value: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    const m = value.match(/^([^\d]*)([\d,]*\.?\d+)(.*)$/);
+    if (!el || !m) return;
+
+    const [, prefix, num, suffix] = m;
+    const target = parseFloat(num.replace(/,/g, ""));
+    const decimals = (num.split(".")[1] || "").length;
+    const comma = num.includes(",");
+    const fmt = (v: number) =>
+      comma
+        ? v.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
+        : v.toFixed(decimals);
+
+    const state = { v: 0 };
+    el.textContent = prefix + fmt(0) + suffix;
+
+    const st = ScrollTrigger.create({
+      trigger: el,
+      start: "top 90%",
+      once: true,
+      onEnter: () =>
+        gsap.to(state, {
+          v: target,
+          duration: 1.8,
+          ease: "power3.out",
+          onUpdate: () => {
+            el.textContent = prefix + fmt(state.v) + suffix;
+          },
+        }),
+    });
+    return () => st.kill();
+  }, [value]);
+
+  return <span ref={ref}>{value}</span>;
 }
+
+const ChapterLabel = ({ n, children }: { n: string; children: React.ReactNode }) => (
+  <div className="flex items-center gap-4 mb-8">
+    <span className="font-serif text-[#33CC99] text-lg">{n}</span>
+    <span className="h-px w-10 bg-[#33CC99]/50" />
+    <span className="text-xs uppercase tracking-[0.3em] text-white/50">{children}</span>
+  </div>
+);
 
 export default function ProjectClient({ project }: { project: Project }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [showCanvas, setShowCanvas] = useState(false);
+  const [chapter, setChapter] = useState(0);
 
+  const index = projects.findIndex((p) => p.slug === project.slug);
+  const prev = projects[(index - 1 + projects.length) % projects.length];
+  const next = projects[(index + 1) % projects.length];
+  const desktopShot = project.gallery?.[0] ?? project.heroImage;
+  const mobileShot = project.gallery?.[1];
+
+  // Scroll-spy: which chapter is centred in the viewport
   useEffect(() => {
-    // Mount canvas almost immediately, but defer just enough to not block paint
-    const timer = setTimeout(() => setShowCanvas(true), 100);
-    return () => clearTimeout(timer);
+    const els = CHAPTERS.map((c) => document.getElementById(c.id)).filter(Boolean) as HTMLElement[];
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setChapter(CHAPTERS.findIndex((c) => c.id === e.target.id));
+        });
+      },
+      { rootMargin: "-45% 0px -45% 0px" }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
   }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      
-      // Hero Entrance
-      gsap.from(".hero-char", {
-        y: 100,
-        opacity: 0,
-        stagger: 0.05,
-        duration: 1.5,
+      gsap.from(".title-word", {
+        yPercent: 115,
+        duration: 1.3,
+        stagger: 0.1,
         ease: "power4.out",
-        delay: 1.0 // Wait for particles to fade in first
+        delay: 0.1,
       });
+      gsap.from(".hero-in", { y: 40, opacity: 0, stagger: 0.12, duration: 1, ease: "power3.out", delay: 0.6 });
 
-      gsap.to(".hero-text", {
-        y: -150,
-        opacity: 0,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero-section",
-          start: "top top",
-          end: "bottom top",
-          scrub: true
-        }
+      (gsap.utils.toArray(".reveal") as HTMLElement[]).forEach((el) => {
+        gsap.from(el, {
+          y: 50,
+          opacity: 0,
+          duration: 0.9,
+          ease: "power3.out",
+          scrollTrigger: { trigger: el, start: "top 88%", once: true },
+        });
       });
-
-      // Gallery Items Staggered Fade Up
-      const items = gsap.utils.toArray(".gallery-item") as HTMLElement[];
-      items.forEach((item) => {
-        gsap.fromTo(item, 
-          { opacity: 0, y: 100, scale: 0.95 },
-          { 
-            opacity: 1, 
-            y: 0, 
-            scale: 1, 
-            duration: 1,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: item,
-              start: "top 85%",
-              toggleActions: "play none none reverse"
-            }
-          }
-        );
-      });
-
     }, containerRef);
     return () => ctx.revert();
   }, []);
 
   if (!project) return null;
 
+  const jumpTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "center" });
+  const words = project.title.split(" ");
+
   return (
-    <div ref={containerRef} className="bg-[#050505] min-h-screen text-white relative selection:bg-[#3AA89B] selection:text-white">
-      
-      {/* Soft Glowing Background Orbs */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#3AA89B] opacity-[0.15] blur-[100px]" />
-        <div className="absolute top-[40%] right-[-20%] w-[40vw] h-[40vw] rounded-full bg-[#3AA89B] opacity-[0.1] blur-[120px]" />
-        <div className="absolute bottom-[-10%] left-[20%] w-[60vw] h-[60vw] rounded-full bg-[#3AA89B] opacity-[0.1] blur-[150px]" />
-      </div>
+    <div
+      ref={containerRef}
+      className="relative bg-[#050505] text-white overflow-x-clip selection:bg-[#33CC99] selection:text-black"
+    >
+      {/* ───────── Hero ───────── */}
+      <section className="relative min-h-svh flex flex-col justify-between px-6 md:px-12 pt-32 pb-10 max-w-[1700px] mx-auto">
+        <div className="absolute inset-0 -z-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-[-25%] left-1/2 -translate-x-1/2 w-[85vw] h-[55vw] rounded-full bg-[#33CC99] opacity-[0.13] blur-[160px]" />
+        </div>
 
-      {/* Fixed 3D Particle Background */}
-      <div className={`fixed inset-0 z-0 pointer-events-none transition-opacity duration-1000 ${showCanvas ? 'opacity-100' : 'opacity-0'}`}>
-        {showCanvas && (
-          <Canvas camera={{ position: [0, 0, 10], fov: 45 }} dpr={[1, 1.5]}>
-            <GlassParticles />
-          </Canvas>
-        )}
-      </div>
-
-      {/* Hero Section */}
-      <section className="hero-section relative h-[80vh] md:h-screen w-full overflow-hidden z-10 flex items-center justify-center">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(58,168,155,0.7)_0%,_rgba(58,168,155,0.1)_40%,_#050505_80%)]" />
-        
-        <div className="hero-text relative z-10 text-center flex flex-col items-center">
-          <span className="text-sm md:text-md uppercase tracking-[0.4em] text-[#3AA89B] mb-6 font-semibold overflow-hidden">
-            <span className="inline-block hero-char">Featured</span>
-            <span className="inline-block hero-char">&nbsp;Project</span>
+        <div className="hero-in relative flex items-center justify-between text-xs uppercase tracking-[0.25em]">
+          <Link href="/projects" className="group inline-flex items-center gap-3 text-white/50 hover:text-[#33CC99] transition-colors">
+            <span className="transition-transform duration-300 group-hover:-translate-x-1">←</span> All projects
+          </Link>
+          <span className="text-white/40">
+            Case file {pad(index + 1)} / {pad(projects.length)}
           </span>
-          <h1 className="text-[14vw] md:text-[10vw] font-serif uppercase tracking-tighter leading-[0.85] flex flex-wrap justify-center gap-x-[3vw] md:gap-x-[2vw]">
-            {project.title.split(" ").map((word, wIdx) => (
-              <span key={wIdx} className="inline-flex overflow-hidden pr-8 -mr-8 pb-4 -mb-4 pt-2 -mt-2">
-                {word.split("").map((char, cIdx) => (
-                  <span key={cIdx} className="inline-block hero-char">
-                    {char}
-                  </span>
-                ))}
+        </div>
+
+        <div className="relative flex flex-col gap-8 md:gap-10 py-16">
+          <span className="hero-in text-xs md:text-sm uppercase tracking-[0.35em] text-[#33CC99] font-semibold">
+            {project.category}
+          </span>
+
+          <h1 className="font-serif uppercase tracking-tighter leading-[0.86] text-[15vw] md:text-[10.5vw] flex flex-wrap gap-x-[2.5vw]">
+            {words.map((w, i) => (
+              <span key={i} className="inline-block overflow-hidden pb-[0.08em] -mb-[0.08em]">
+                <span className={`title-word inline-block ${i % 2 === 1 ? OUTLINE : ""}`}>{w}</span>
               </span>
             ))}
           </h1>
+
+          <p className="hero-in font-serif italic text-2xl md:text-4xl leading-tight text-white/85 max-w-4xl">
+            {project.tagline}
+          </p>
+          <p className="hero-in text-white/55 text-base md:text-lg leading-relaxed max-w-2xl">{project.pitch}</p>
+        </div>
+
+        <div className="hero-in relative grid grid-cols-3 gap-4 md:gap-10 border-t border-white/15 pt-6">
+          {project.metrics.map((m) => (
+            <div key={m.label} className="flex flex-col gap-2">
+              <span className="font-serif text-[#33CC99] text-3xl md:text-6xl leading-none">
+                <Counter value={m.value} />
+              </span>
+              <span className="text-[10px] md:text-xs uppercase tracking-[0.18em] text-white/45 leading-snug">{m.label}</span>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Content Section (Editorial Split) */}
-      <section className="content-section relative z-10 w-full max-w-[1600px] mx-auto px-6 md:px-16 py-20 flex flex-col md:flex-row gap-12 md:gap-24">
-        
-        {/* Left Column: Sticky Metadata & Info */}
-        <div className="w-full md:w-1/3 flex flex-col gap-12">
-          {/* CSS Sticky positioning for smooth native sticky effect */}
-          <div className="sticky top-32 flex flex-col gap-16">
-            
-            {/* Description */}
-            <div>
-              <h3 className="text-2xl md:text-3xl font-serif leading-relaxed text-white/90">
-                {project.description}
-              </h3>
+      {/* ───────── Story: sticky device stage + chapters ───────── */}
+      <section className="relative max-w-[1700px] mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-x-12">
+        {/* Stage */}
+        <div className="lg:col-span-7 lg:sticky lg:top-0 lg:h-svh flex items-center justify-center py-16 lg:py-0 order-first">
+          <div className="relative w-full max-w-[820px]">
+            {/* Giant outlined headline metric behind the devices */}
+            <div
+              aria-hidden
+              className="absolute inset-0 -z-0 grid place-items-center pointer-events-none select-none transition-opacity duration-700"
+              style={{ opacity: chapter === 2 ? 1 : 0.55 }}
+            >
+              <span className="font-serif leading-none text-[20vw] lg:text-[13vw] text-transparent [-webkit-text-stroke:1px_rgba(51,204,153,0.3)] whitespace-nowrap">
+                {project.metrics[0].value}
+              </span>
             </div>
 
-            {/* Meta Data Table */}
-            <div className="flex flex-col gap-8 border-t border-white/20 pt-8">
-              <div className="flex justify-between items-center">
-                <span className="text-xs uppercase tracking-widest text-white/40">Client</span>
-                <span className="text-sm font-medium">{project.client}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs uppercase tracking-widest text-white/40">Year</span>
-                <span className="text-sm font-medium">{project.date}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs uppercase tracking-widest text-white/40">Role</span>
-                <span className="text-sm font-medium">{project.role}</span>
-              </div>
-              <div className="flex flex-col gap-4">
-                <span className="text-xs uppercase tracking-widest text-white/40">Services</span>
-                <div className="flex flex-wrap gap-2">
-                  {project.tags?.map((tag, idx) => (
-                    <span key={idx} className="text-xs font-medium px-4 py-2 bg-white/5 backdrop-blur-md rounded-full border border-white/10">
-                      {tag}
-                    </span>
-                  ))}
+            <div className="relative [perspective:1800px]">
+              {desktopShot && (
+                <div
+                  className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-white/15 bg-[#0b0b0b] shadow-[0_50px_120px_-30px_rgba(51,204,153,0.35)] transition-all duration-[1100ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] lg:[transform:var(--bt)] lg:[opacity:var(--bo)]"
+                  style={
+                    {
+                      "--bt": BROWSER_POSE[chapter],
+                      "--bo": BROWSER_OPACITY[chapter],
+                    } as React.CSSProperties
+                  }
+                >
+                  <div className="absolute top-0 inset-x-0 h-8 flex items-center gap-2 px-4 bg-[#141414] border-b border-white/10 z-10">
+                    <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
+                  </div>
+                  <Image
+                    src={desktopShot}
+                    alt={`${project.title} desktop screenshot`}
+                    fill
+                    priority
+                    sizes="(min-width: 1024px) 55vw, 100vw"
+                    className="object-cover object-top pt-8"
+                  />
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
+              )}
 
-        {/* Right Column: Case Study Structure */}
-        <div className="w-full md:w-2/3 flex flex-col gap-16 md:gap-32 mt-12 md:mt-0 pb-32">
-          
-          {/* Section 01: The Challenge */}
-          {project.bullets && project.bullets.length > 0 && (
-            <div className="gallery-item flex flex-col gap-6">
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-serif text-[#3AA89B]">01 //</span>
-                <h4 className="text-sm uppercase tracking-widest text-white/50">Project Overview</h4>
-              </div>
-              <h3 className="text-2xl md:text-4xl font-serif leading-tight text-white/90">
-                {project.bullets[0]}
-              </h3>
-            </div>
-          )}
-
-          {/* Gallery Image 1 */}
-          {project.gallery && project.gallery.length > 0 && (
-            <div className="gallery-item relative w-full aspect-[4/3] md:aspect-[16/10] rounded-2xl overflow-hidden shadow-2xl group">
-              <Image src={project.gallery[0]} alt={`${project.title} Screenshot 1`} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-black/10 mix-blend-overlay pointer-events-none" />
-            </div>
-          )}
-
-          {/* Section 02: Execution & Strategy */}
-          {project.bullets && project.bullets.length > 1 && (
-            <div className="gallery-item flex flex-col gap-6 p-8 md:p-12 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl">
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-serif text-[#3AA89B]">02 //</span>
-                <h4 className="text-sm uppercase tracking-widest text-white/50">Execution Strategy</h4>
-              </div>
-              <p className="text-xl md:text-3xl font-light leading-relaxed text-white/90 italic">
-                &quot;{project.bullets[1]}&quot;
-              </p>
-            </div>
-          )}
-
-          {/* Gallery Images 2 & 3 (Staggered Grid) */}
-          {project.gallery && project.gallery.length > 1 && (
-            <div className="gallery-item grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl group">
-                <Image src={project.gallery[1]} alt={`${project.title} Screenshot 2`} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-black/10 mix-blend-overlay pointer-events-none" />
-              </div>
-              {project.gallery.length > 2 && (
-                <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl group md:translate-y-16">
-                  <Image src={project.gallery[2]} alt={`${project.title} Screenshot 3`} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-black/10 mix-blend-overlay pointer-events-none" />
+              {mobileShot && (
+                <div
+                  className="absolute -bottom-6 right-2 md:-bottom-10 md:-right-4 w-[24%] aspect-[9/19] rounded-[1.6rem] border-[7px] border-[#1c1c1c] overflow-hidden shadow-2xl transition-all duration-[1100ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] lg:[transform:var(--pt)] lg:[opacity:var(--po)]"
+                  style={
+                    {
+                      "--pt": PHONE_POSE[chapter],
+                      "--po": PHONE_OPACITY[chapter],
+                    } as React.CSSProperties
+                  }
+                >
+                  <Image src={mobileShot} alt={`${project.title} mobile screenshot`} fill sizes="200px" className="object-cover object-top" />
                 </div>
               )}
             </div>
-          )}
 
-          {/* Section 03: Frontend Highlights */}
-          {project.bullets && project.bullets.length > 2 && (
-            <div className="gallery-item flex flex-col gap-8 md:mt-16">
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-serif text-[#3AA89B]">03 //</span>
-                <h4 className="text-sm uppercase tracking-widest text-white/50">Frontend Highlights & Results</h4>
-              </div>
-              <ul className="flex flex-col gap-8">
-                {project.bullets.slice(2).map((bullet, idx) => (
-                  <li key={idx} className="flex gap-6 items-start text-lg md:text-2xl font-light text-white/80 border-l-2 border-[#3AA89B] pl-6 py-2">
-                    {bullet}
+            {/* Chapter rail */}
+            <ol className="hidden lg:flex absolute -left-4 xl:-left-10 top-1/2 -translate-y-1/2 -translate-x-full flex-col gap-5">
+              {CHAPTERS.map((c, i) => (
+                <li key={c.id}>
+                  <button
+                    onClick={() => jumpTo(c.id)}
+                    className={`group flex items-center gap-3 text-[11px] uppercase tracking-[0.22em] transition-colors duration-500 ${
+                      chapter === i ? "text-white" : "text-white/30 hover:text-white/60"
+                    }`}
+                  >
+                    <span className="tabular-nums">{pad(i + 1)}</span>
+                    <span
+                      className={`h-px transition-all duration-500 ${
+                        chapter === i ? "w-10 bg-[#33CC99]" : "w-4 bg-white/30 group-hover:w-6"
+                      }`}
+                    />
+                    <span className="whitespace-nowrap">{c.label}</span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+
+        {/* Chapters */}
+        <div className="lg:col-span-5">
+          {/* 01 — Brief */}
+          <article id="brief" className="min-h-[70svh] lg:min-h-svh flex flex-col justify-center py-16">
+            <div className="reveal">
+              <ChapterLabel n="01">The Brief</ChapterLabel>
+              <p className="font-serif text-2xl md:text-[2rem] leading-[1.3] text-white/90">{project.brief}</p>
+              <dl className="grid grid-cols-3 gap-4 mt-12 pt-6 border-t border-white/15">
+                {[
+                  ["Client", project.client],
+                  ["Role", project.role],
+                  ["Year", project.date],
+                ].map(([k, v]) => (
+                  <div key={k} className="flex flex-col gap-2">
+                    <dt className="text-[10px] uppercase tracking-[0.25em] text-white/35">{k}</dt>
+                    <dd className="text-sm font-medium leading-snug">{v}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </article>
+
+          {/* 02 — What I built */}
+          <article id="built" className="min-h-[70svh] lg:min-h-svh flex flex-col justify-center py-16">
+            <div className="reveal">
+              <ChapterLabel n="02">What I Built</ChapterLabel>
+              <ul className="flex flex-col">
+                {project.built.map((f, i) => (
+                  <li
+                    key={f.title}
+                    className="group flex gap-6 py-7 border-t border-white/15 last:border-b hover:border-[#33CC99]/60 transition-colors duration-500"
+                  >
+                    <span className={`font-serif text-4xl leading-none transition-colors duration-500 ${OUTLINE} group-hover:text-[#33CC99] group-hover:[-webkit-text-stroke:0]`}>
+                      {pad(i + 1)}
+                    </span>
+                    <div className="flex flex-col gap-3">
+                      <h3 className="font-serif text-2xl md:text-3xl leading-tight">{f.title}</h3>
+                      <p className="text-white/55 leading-relaxed">{f.text}</p>
+                    </div>
                   </li>
                 ))}
               </ul>
             </div>
-          )}
+          </article>
 
-          {/* Gallery Image 4 */}
-          {project.gallery && project.gallery.length > 3 && (
-            <div className="gallery-item relative w-full aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl group mt-8">
-              <Image src={project.gallery[3]} alt={`${project.title} Final Screenshot`} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-black/10 mix-blend-overlay pointer-events-none" />
+          {/* 03 — Impact */}
+          <article id="impact" className="min-h-[70svh] lg:min-h-svh flex flex-col justify-center py-16">
+            <div className="reveal">
+              <ChapterLabel n="03">The Impact</ChapterLabel>
+              <p className="font-serif text-2xl md:text-[2rem] leading-[1.3] text-white/90 mb-12">{project.impact}</p>
+              <div className="flex flex-col">
+                {project.metrics.map((m) => (
+                  <div key={m.label} className="flex items-baseline justify-between gap-6 py-5 border-t border-white/15 last:border-b">
+                    <span className="font-serif text-5xl md:text-7xl leading-none text-[#33CC99]">
+                      <Counter value={m.value} />
+                    </span>
+                    <span className="text-xs uppercase tracking-[0.2em] text-white/50 text-right max-w-[11rem] leading-snug">
+                      {m.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-          )}
+          </article>
 
+          {/* 04 — Stack */}
+          <article id="stack" className="min-h-[70svh] lg:min-h-svh flex flex-col justify-center py-16">
+            <div className="reveal">
+              <ChapterLabel n="04">Under the Hood</ChapterLabel>
+              <p className="font-serif text-2xl md:text-[2rem] leading-[1.3] text-white/90 mb-10">
+                The tools that made it possible.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                {project.tags.map((t) => (
+                  <span
+                    key={t}
+                    className="px-5 py-3 rounded-full border border-white/20 text-sm hover:border-[#33CC99] hover:text-[#33CC99] transition-colors duration-300"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+              <Link
+                href="/contact"
+                className="group mt-14 inline-flex items-center gap-3 pl-7 pr-2 py-2 rounded-full bg-[#33CC99] text-black font-semibold hover:bg-white transition-colors duration-300"
+              >
+                Want something like this?
+                <span className="grid place-items-center w-10 h-10 rounded-full bg-black text-[#33CC99] transition-transform duration-300 group-hover:rotate-45">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M7 17 17 7M8 7h9v9" />
+                  </svg>
+                </span>
+              </Link>
+            </div>
+          </article>
         </div>
       </section>
 
-      {/* Footer CTA */}
-      <section className="relative z-10 w-full py-32 border-t border-white/10 bg-[#020202] flex items-center justify-center">
-        <Link href="/" className="group flex flex-col items-center">
-          <span className="text-xs uppercase tracking-widest text-white/40 mb-6 group-hover:text-white transition-colors duration-300">
-            End of Showcase
-          </span>
-          <div className="overflow-hidden">
-            <h2 className="text-6xl md:text-8xl font-serif uppercase tracking-tighter group-hover:text-[#3AA89B] group-hover:-translate-y-2 transition-all duration-500">
-              Back to Home
-            </h2>
-          </div>
-        </Link>
+      {/* ───────── Previous / Next ───────── */}
+      <section className="relative border-t border-white/10 grid grid-cols-1 md:grid-cols-2">
+        {[
+          { p: prev, label: "Previous case file", align: "items-start text-left", arrow: "←" },
+          { p: next, label: "Next case file", align: "items-start md:items-end text-left md:text-right", arrow: "→" },
+        ].map(({ p, label, align, arrow }) => (
+          <Link
+            key={label}
+            href={`/projects/${p.slug}`}
+            className="group relative overflow-hidden border-b md:border-b-0 md:first:border-r border-white/10"
+          >
+            {p.heroImage && (
+              <Image
+                src={p.heroImage}
+                alt=""
+                fill
+                sizes="50vw"
+                className="object-cover object-top opacity-0 scale-110 group-hover:opacity-30 group-hover:scale-100 transition-all duration-1000"
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/60 to-transparent" />
+            <div className={`relative flex flex-col gap-5 px-6 md:px-12 py-20 md:py-32 ${align}`}>
+              <span className="text-xs uppercase tracking-[0.3em] text-white/40">
+                {arrow === "←" ? "← " : ""}
+                {label}
+                {arrow === "→" ? " →" : ""}
+              </span>
+              <h2 className="font-serif uppercase tracking-tighter leading-[0.9] text-[11vw] md:text-[5vw] transition-colors duration-500 group-hover:text-[#33CC99]">
+                {p.title}
+              </h2>
+              <span className="font-serif italic text-white/55 text-lg max-w-sm">{p.tagline}</span>
+            </div>
+          </Link>
+        ))}
       </section>
     </div>
   );
