@@ -1,43 +1,39 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Project, projects } from "@/data/projects";
+import { caveat, fraunces } from "../fonts";
+import { HAND, HandArrow, Marker, Print, Squiggle, headingStyle } from "../ui";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-const pad = (n: number) => String(n).padStart(2, "0");
-const OUTLINE = "text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.4)]";
-
 const CHAPTERS = [
-  { id: "brief", label: "The Brief" },
-  { id: "built", label: "What I Built" },
-  { id: "impact", label: "The Impact" },
-  { id: "stack", label: "Under the Hood" },
+  { id: "brief", label: "the problem" },
+  { id: "built", label: "what I built" },
+  { id: "impact", label: "how it went" },
+  { id: "stack", label: "tools I used" },
 ];
 
-// How the device stage poses itself for each chapter (desktop only)
-const BROWSER_POSE = [
-  "translateX(0) rotateY(-10deg) rotateX(4deg) scale(1)",
-  "translateX(-9%) rotateY(-6deg) rotateX(2deg) scale(0.88)",
-  "translateX(0) rotateY(0deg) rotateX(0deg) scale(0.78)",
-  "translateX(-4%) rotateY(9deg) rotateX(-3deg) scale(0.95)",
+// How the prints on the sticky desk re-arrange themselves for each chapter (desktop only)
+const SCREEN_POSE = [
+  "translateX(0) rotate(-2deg) scale(1)",
+  "translateX(-8%) rotate(-3.5deg) scale(0.9)",
+  "translateX(0) rotate(1deg) scale(0.84)",
+  "translateX(-3%) rotate(2.5deg) scale(0.95)",
 ];
-const BROWSER_OPACITY = [1, 1, 0.45, 1];
 const PHONE_POSE = [
-  "translateY(130%) rotate(0deg) scale(1)",
-  "translateY(0) rotate(5deg) scale(1)",
-  "translateY(-6%) rotate(0deg) scale(0.9)",
-  "translateY(0) rotate(-4deg) scale(1.05)",
+  "translateY(140%) rotate(4deg)",
+  "translateY(0) rotate(6deg)",
+  "translateY(-4%) rotate(2deg) scale(0.92)",
+  "translateY(0) rotate(-5deg) scale(1.04)",
 ];
-const PHONE_OPACITY = [0, 1, 0.5, 1];
 
-/** Animates "4.8/5", "10,000+", "<1s", "40%"… when scrolled into view. Non-numeric values render as-is. */
+/** Counts up "4.8/5", "10,000+", "<1s", "40%"… when scrolled into view. Non-numeric values stay as-is. */
 function Counter({ value }: { value: string }) {
   const ref = useRef<HTMLSpanElement>(null);
 
@@ -65,7 +61,7 @@ function Counter({ value }: { value: string }) {
       onEnter: () =>
         gsap.to(state, {
           v: target,
-          duration: 1.8,
+          duration: 1.6,
           ease: "power3.out",
           onUpdate: () => {
             el.textContent = prefix + fmt(state.v) + suffix;
@@ -78,11 +74,12 @@ function Counter({ value }: { value: string }) {
   return <span ref={ref}>{value}</span>;
 }
 
-const ChapterLabel = ({ n, children }: { n: string; children: React.ReactNode }) => (
-  <div className="flex items-center gap-4 mb-8">
-    <span className="font-serif text-[#33CC99] text-lg">{n}</span>
-    <span className="h-px w-10 bg-[#33CC99]/50" />
-    <span className="text-xs uppercase tracking-[0.3em] text-white/50">{children}</span>
+const ChapterTitle = ({ hand, children }: { hand: string; children: React.ReactNode }) => (
+  <div className="mb-8 flex flex-col gap-1">
+    <span className={`${HAND} text-2xl text-[#8ce6c4] -rotate-2 origin-left`}>{hand}</span>
+    <h2 style={headingStyle} className="text-4xl md:text-5xl leading-[1.05] tracking-tight">
+      {children}
+    </h2>
   </div>
 );
 
@@ -96,7 +93,7 @@ export default function ProjectClient({ project }: { project: Project }) {
   const desktopShot = project.gallery?.[0] ?? project.heroImage;
   const mobileShot = project.gallery?.[1];
 
-  // Scroll-spy: which chapter is centred in the viewport
+  // Which chapter is in the middle of the screen
   useEffect(() => {
     const els = CHAPTERS.map((c) => document.getElementById(c.id)).filter(Boolean) as HTMLElement[];
     const io = new IntersectionObserver(
@@ -113,18 +110,10 @@ export default function ProjectClient({ project }: { project: Project }) {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(".title-word", {
-        yPercent: 115,
-        duration: 1.3,
-        stagger: 0.1,
-        ease: "power4.out",
-        delay: 0.1,
-      });
-      gsap.from(".hero-in", { y: 40, opacity: 0, stagger: 0.12, duration: 1, ease: "power3.out", delay: 0.6 });
-
+      gsap.from(".hero-in", { y: 40, opacity: 0, stagger: 0.12, duration: 1, ease: "power3.out", delay: 0.1 });
       (gsap.utils.toArray(".reveal") as HTMLElement[]).forEach((el) => {
         gsap.from(el, {
-          y: 50,
+          y: 40,
           opacity: 0,
           duration: 0.9,
           ease: "power3.out",
@@ -138,134 +127,96 @@ export default function ProjectClient({ project }: { project: Project }) {
   if (!project) return null;
 
   const jumpTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "center" });
-  const words = project.title.split(" ");
 
   return (
     <div
       ref={containerRef}
-      className="relative bg-[#050505] text-white overflow-x-clip selection:bg-[#33CC99] selection:text-black"
+      className={`${fraunces.variable} ${caveat.variable} relative bg-[#15130f] text-[#ece5d6] overflow-x-clip selection:bg-[#33CC99] selection:text-[#15130f]`}
     >
       {/* ───────── Hero ───────── */}
-      <section className="relative min-h-svh flex flex-col justify-between px-6 md:px-12 pt-32 pb-10 max-w-[1700px] mx-auto">
-        <div className="absolute inset-0 -z-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-[-25%] left-1/2 -translate-x-1/2 w-[85vw] h-[55vw] rounded-full bg-[#33CC99] opacity-[0.13] blur-[160px]" />
-        </div>
+      <section className="max-w-[1400px] mx-auto px-6 md:px-12 pt-32 md:pt-40 pb-20 md:pb-28">
+        <Link
+          href="/projects"
+          className="hero-in group inline-flex items-center gap-2 text-[#ece5d6]/55 hover:text-[#8ce6c4] transition-colors"
+        >
+          <span className="transition-transform duration-300 group-hover:-translate-x-1">←</span> back to all projects
+        </Link>
 
-        <div className="hero-in relative flex items-center justify-between text-xs uppercase tracking-[0.25em]">
-          <Link href="/projects" className="group inline-flex items-center gap-3 text-white/50 hover:text-[#33CC99] transition-colors">
-            <span className="transition-transform duration-300 group-hover:-translate-x-1">←</span> All projects
-          </Link>
-          <span className="text-white/40">
-            Case file {pad(index + 1)} / {pad(projects.length)}
-          </span>
-        </div>
-
-        <div className="relative flex flex-col gap-8 md:gap-10 py-16">
-          <span className="hero-in text-xs md:text-sm uppercase tracking-[0.35em] text-[#33CC99] font-semibold">
-            {project.category}
-          </span>
-
-          <h1 className="font-serif uppercase tracking-tighter leading-[0.86] text-[15vw] md:text-[10.5vw] flex flex-wrap gap-x-[2.5vw]">
-            {words.map((w, i) => (
-              <span key={i} className="inline-block overflow-hidden pb-[0.08em] -mb-[0.08em]">
-                <span className={`title-word inline-block ${i % 2 === 1 ? OUTLINE : ""}`}>{w}</span>
+        <div className="mt-12 md:mt-16 grid grid-cols-1 lg:grid-cols-12 gap-10 items-end">
+          <div className="lg:col-span-9 flex flex-col gap-6">
+            <p className="hero-in text-[#ece5d6]/50 text-sm">
+              <span className={`${HAND} text-2xl text-[#8ce6c4] mr-2`}>
+                Story {index + 1} of {projects.length}
               </span>
-            ))}
-          </h1>
+              {project.category}
+            </p>
+            <h1
+              style={headingStyle}
+              className="hero-in text-[clamp(3rem,9vw,8.5rem)] leading-[0.98] tracking-tight"
+            >
+              {project.title}
+            </h1>
+            <p style={headingStyle} className="hero-in italic text-2xl md:text-4xl leading-snug text-[#ece5d6]/85 max-w-3xl">
+              <Marker>{project.tagline}</Marker>
+            </p>
+          </div>
 
-          <p className="hero-in font-serif italic text-2xl md:text-4xl leading-tight text-white/85 max-w-4xl">
-            {project.tagline}
-          </p>
-          <p className="hero-in text-white/55 text-base md:text-lg leading-relaxed max-w-2xl">{project.pitch}</p>
+          <div className="hero-in lg:col-span-3 flex flex-col gap-3 text-[#8ce6c4] -rotate-1">
+            <HandArrow className="w-16 h-8 rotate-[200deg] -scale-x-100" />
+            <span className={`${HAND} text-2xl leading-tight`}>{project.note}</span>
+          </div>
         </div>
 
-        <div className="hero-in relative grid grid-cols-3 gap-4 md:gap-10 border-t border-white/15 pt-6">
-          {project.metrics.map((m) => (
-            <div key={m.label} className="flex flex-col gap-2">
-              <span className="font-serif text-[#33CC99] text-3xl md:text-6xl leading-none">
-                <Counter value={m.value} />
-              </span>
-              <span className="text-[10px] md:text-xs uppercase tracking-[0.18em] text-white/45 leading-snug">{m.label}</span>
-            </div>
-          ))}
-        </div>
+        <p className="hero-in mt-12 max-w-2xl text-lg md:text-xl leading-relaxed text-[#ece5d6]/70">{project.pitch}</p>
       </section>
 
-      {/* ───────── Story: sticky device stage + chapters ───────── */}
-      <section className="relative max-w-[1700px] mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-x-12">
-        {/* Stage */}
-        <div className="lg:col-span-7 lg:sticky lg:top-0 lg:h-svh flex items-center justify-center py-16 lg:py-0 order-first">
-          <div className="relative w-full max-w-[820px]">
-            {/* Giant outlined headline metric behind the devices */}
-            <div
-              aria-hidden
-              className="absolute inset-0 -z-0 grid place-items-center pointer-events-none select-none transition-opacity duration-700"
-              style={{ opacity: chapter === 2 ? 1 : 0.55 }}
-            >
-              <span className="font-serif leading-none text-[20vw] lg:text-[13vw] text-transparent [-webkit-text-stroke:1px_rgba(51,204,153,0.3)] whitespace-nowrap">
-                {project.metrics[0].value}
-              </span>
-            </div>
+      {/* ───────── Story: sticky desk + chapters ───────── */}
+      <section className="max-w-[1400px] mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-x-16">
+        {/* Desk */}
+        <div className="lg:col-span-7 lg:sticky lg:top-0 lg:h-svh flex items-center justify-center py-12 lg:py-0">
+          <div className="relative w-full max-w-[780px] pb-12">
+            {desktopShot && (
+              <div
+                className="transition-transform duration-[1100ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] lg:[transform:var(--sp)]"
+                style={{ "--sp": SCREEN_POSE[chapter] } as React.CSSProperties}
+              >
+                <Print
+                  src={desktopShot}
+                  alt={`${project.title} homepage`}
+                  priority
+                  rotate={-1.5}
+                  sizes="(min-width: 1024px) 55vw, 100vw"
+                />
+              </div>
+            )}
 
-            <div className="relative [perspective:1800px]">
-              {desktopShot && (
-                <div
-                  className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-white/15 bg-[#0b0b0b] shadow-[0_50px_120px_-30px_rgba(51,204,153,0.35)] transition-all duration-[1100ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] lg:[transform:var(--bt)] lg:[opacity:var(--bo)]"
-                  style={
-                    {
-                      "--bt": BROWSER_POSE[chapter],
-                      "--bo": BROWSER_OPACITY[chapter],
-                    } as React.CSSProperties
-                  }
-                >
-                  <div className="absolute top-0 inset-x-0 h-8 flex items-center gap-2 px-4 bg-[#141414] border-b border-white/10 z-10">
-                    <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-white/20" />
-                  </div>
-                  <Image
-                    src={desktopShot}
-                    alt={`${project.title} desktop screenshot`}
-                    fill
-                    priority
-                    sizes="(min-width: 1024px) 55vw, 100vw"
-                    className="object-cover object-top pt-8"
-                  />
-                </div>
-              )}
+            {mobileShot && (
+              <div
+                className="absolute bottom-0 right-1 md:-right-4 w-[24%] transition-transform duration-[1100ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] lg:[transform:var(--pp)]"
+                style={{ "--pp": PHONE_POSE[chapter] } as React.CSSProperties}
+              >
+                <Print
+                  src={mobileShot}
+                  alt={`${project.title} on mobile`}
+                  ratio="9 / 19"
+                  rotate={5}
+                  sizes="200px"
+                  tapeClass="-top-3 left-1/2 -translate-x-1/2 rotate-2"
+                />
+              </div>
+            )}
 
-              {mobileShot && (
-                <div
-                  className="absolute -bottom-6 right-2 md:-bottom-10 md:-right-4 w-[24%] aspect-[9/19] rounded-[1.6rem] border-[7px] border-[#1c1c1c] overflow-hidden shadow-2xl transition-all duration-[1100ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] lg:[transform:var(--pt)] lg:[opacity:var(--po)]"
-                  style={
-                    {
-                      "--pt": PHONE_POSE[chapter],
-                      "--po": PHONE_OPACITY[chapter],
-                    } as React.CSSProperties
-                  }
-                >
-                  <Image src={mobileShot} alt={`${project.title} mobile screenshot`} fill sizes="200px" className="object-cover object-top" />
-                </div>
-              )}
-            </div>
-
-            {/* Chapter rail */}
-            <ol className="hidden lg:flex absolute -left-4 xl:-left-10 top-1/2 -translate-y-1/2 -translate-x-full flex-col gap-5">
+            {/* Handwritten chapter list */}
+            <ol className="hidden lg:flex absolute -top-16 left-0 flex-wrap gap-x-7 gap-y-1">
               {CHAPTERS.map((c, i) => (
                 <li key={c.id}>
                   <button
                     onClick={() => jumpTo(c.id)}
-                    className={`group flex items-center gap-3 text-[11px] uppercase tracking-[0.22em] transition-colors duration-500 ${
-                      chapter === i ? "text-white" : "text-white/30 hover:text-white/60"
+                    className={`${HAND} text-2xl text-left transition-all duration-500 ${
+                      chapter === i ? "text-[#8ce6c4]" : "text-[#ece5d6]/35 hover:text-[#ece5d6]/70"
                     }`}
                   >
-                    <span className="tabular-nums">{pad(i + 1)}</span>
-                    <span
-                      className={`h-px transition-all duration-500 ${
-                        chapter === i ? "w-10 bg-[#33CC99]" : "w-4 bg-white/30 group-hover:w-6"
-                      }`}
-                    />
-                    <span className="whitespace-nowrap">{c.label}</span>
+                    {i + 1}. {c.label}
                   </button>
                 </li>
               ))}
@@ -275,42 +226,39 @@ export default function ProjectClient({ project }: { project: Project }) {
 
         {/* Chapters */}
         <div className="lg:col-span-5">
-          {/* 01 — Brief */}
-          <article id="brief" className="min-h-[70svh] lg:min-h-svh flex flex-col justify-center py-16">
+          {/* The problem */}
+          <article id="brief" className="py-14 lg:py-24">
             <div className="reveal">
-              <ChapterLabel n="01">The Brief</ChapterLabel>
-              <p className="font-serif text-2xl md:text-[2rem] leading-[1.3] text-white/90">{project.brief}</p>
-              <dl className="grid grid-cols-3 gap-4 mt-12 pt-6 border-t border-white/15">
+              <ChapterTitle hand="1.">The problem</ChapterTitle>
+              <p className="text-xl md:text-2xl leading-relaxed text-[#ece5d6]/85">{project.brief}</p>
+              <dl className="mt-10 pt-6 border-t border-dashed border-[#ece5d6]/25 grid grid-cols-3 gap-4 text-sm">
                 {[
                   ["Client", project.client],
-                  ["Role", project.role],
-                  ["Year", project.date],
+                  ["My role", project.role],
+                  ["When", project.date],
                 ].map(([k, v]) => (
-                  <div key={k} className="flex flex-col gap-2">
-                    <dt className="text-[10px] uppercase tracking-[0.25em] text-white/35">{k}</dt>
-                    <dd className="text-sm font-medium leading-snug">{v}</dd>
+                  <div key={k} className="flex flex-col gap-1">
+                    <dt className="text-[#ece5d6]/45">{k}</dt>
+                    <dd className="font-medium leading-snug">{v}</dd>
                   </div>
                 ))}
               </dl>
             </div>
           </article>
 
-          {/* 02 — What I built */}
-          <article id="built" className="min-h-[70svh] lg:min-h-svh flex flex-col justify-center py-16">
+          {/* What I built */}
+          <article id="built" className="py-14 lg:py-24">
             <div className="reveal">
-              <ChapterLabel n="02">What I Built</ChapterLabel>
+              <ChapterTitle hand="2.">What I built</ChapterTitle>
               <ul className="flex flex-col">
                 {project.built.map((f, i) => (
-                  <li
-                    key={f.title}
-                    className="group flex gap-6 py-7 border-t border-white/15 last:border-b hover:border-[#33CC99]/60 transition-colors duration-500"
-                  >
-                    <span className={`font-serif text-4xl leading-none transition-colors duration-500 ${OUTLINE} group-hover:text-[#33CC99] group-hover:[-webkit-text-stroke:0]`}>
-                      {pad(i + 1)}
-                    </span>
-                    <div className="flex flex-col gap-3">
-                      <h3 className="font-serif text-2xl md:text-3xl leading-tight">{f.title}</h3>
-                      <p className="text-white/55 leading-relaxed">{f.text}</p>
+                  <li key={f.title} className="flex gap-5 py-6 border-t border-dashed border-[#ece5d6]/25 last:border-b">
+                    <span className={`${HAND} text-3xl text-[#8ce6c4] leading-none pt-1`}>{i + 1}.</span>
+                    <div className="flex flex-col gap-2">
+                      <h3 style={headingStyle} className="text-2xl leading-tight">
+                        {f.title}
+                      </h3>
+                      <p className="text-[#ece5d6]/65 leading-relaxed">{f.text}</p>
                     </div>
                   </li>
                 ))}
@@ -318,91 +266,63 @@ export default function ProjectClient({ project }: { project: Project }) {
             </div>
           </article>
 
-          {/* 03 — Impact */}
-          <article id="impact" className="min-h-[70svh] lg:min-h-svh flex flex-col justify-center py-16">
+          {/* How it went */}
+          <article id="impact" className="py-14 lg:py-24">
             <div className="reveal">
-              <ChapterLabel n="03">The Impact</ChapterLabel>
-              <p className="font-serif text-2xl md:text-[2rem] leading-[1.3] text-white/90 mb-12">{project.impact}</p>
-              <div className="flex flex-col">
+              <ChapterTitle hand="3.">How it went</ChapterTitle>
+              <p className="text-xl md:text-2xl leading-relaxed text-[#ece5d6]/85 mb-10">{project.impact}</p>
+              <ul className="flex flex-col gap-6">
                 {project.metrics.map((m) => (
-                  <div key={m.label} className="flex items-baseline justify-between gap-6 py-5 border-t border-white/15 last:border-b">
-                    <span className="font-serif text-5xl md:text-7xl leading-none text-[#33CC99]">
-                      <Counter value={m.value} />
+                  <li key={m.label} className="flex items-baseline gap-5">
+                    <span style={headingStyle} className="text-5xl md:text-6xl leading-none min-w-[7.5rem]">
+                      <Marker>
+                        <Counter value={m.value} />
+                      </Marker>
                     </span>
-                    <span className="text-xs uppercase tracking-[0.2em] text-white/50 text-right max-w-[11rem] leading-snug">
-                      {m.label}
-                    </span>
-                  </div>
+                    <span className="text-[#ece5d6]/65 leading-snug">{m.label}</span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           </article>
 
-          {/* 04 — Stack */}
-          <article id="stack" className="min-h-[70svh] lg:min-h-svh flex flex-col justify-center py-16">
+          {/* Tools */}
+          <article id="stack" className="py-14 lg:py-24">
             <div className="reveal">
-              <ChapterLabel n="04">Under the Hood</ChapterLabel>
-              <p className="font-serif text-2xl md:text-[2rem] leading-[1.3] text-white/90 mb-10">
-                The tools that made it possible.
+              <ChapterTitle hand="4.">Tools I used</ChapterTitle>
+              <p className="text-xl md:text-2xl leading-relaxed text-[#ece5d6]/85">
+                {project.tags.slice(0, -1).join(", ")}
+                {project.tags.length > 1 ? " and " : ""}
+                {project.tags[project.tags.length - 1]}.
               </p>
-              <div className="flex flex-wrap gap-3">
-                {project.tags.map((t) => (
-                  <span
-                    key={t}
-                    className="px-5 py-3 rounded-full border border-white/20 text-sm hover:border-[#33CC99] hover:text-[#33CC99] transition-colors duration-300"
-                  >
-                    {t}
-                  </span>
-                ))}
+
+              <div className="mt-14 flex flex-col gap-3">
+                <p className={`${HAND} text-3xl text-[#8ce6c4] -rotate-1`}>want something like this?</p>
+                <Link href="/contact" className="group relative self-start inline-block text-xl font-medium pb-2">
+                  Let&apos;s talk about your project →
+                  <Squiggle className="absolute left-0 bottom-0 w-full h-2 text-[#33CC99] transition-transform duration-500 origin-left group-hover:scale-x-105" />
+                </Link>
               </div>
-              <Link
-                href="/contact"
-                className="group mt-14 inline-flex items-center gap-3 pl-7 pr-2 py-2 rounded-full bg-[#33CC99] text-black font-semibold hover:bg-white transition-colors duration-300"
-              >
-                Want something like this?
-                <span className="grid place-items-center w-10 h-10 rounded-full bg-black text-[#33CC99] transition-transform duration-300 group-hover:rotate-45">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M7 17 17 7M8 7h9v9" />
-                  </svg>
-                </span>
-              </Link>
             </div>
           </article>
         </div>
       </section>
 
-      {/* ───────── Previous / Next ───────── */}
-      <section className="relative border-t border-white/10 grid grid-cols-1 md:grid-cols-2">
+      {/* ───────── Keep reading ───────── */}
+      <section className="max-w-[1400px] mx-auto px-6 md:px-12 border-t border-dashed border-[#ece5d6]/25 mt-8 py-16 md:py-24 grid grid-cols-1 md:grid-cols-2 gap-12">
         {[
-          { p: prev, label: "Previous case file", align: "items-start text-left", arrow: "←" },
-          { p: next, label: "Next case file", align: "items-start md:items-end text-left md:text-right", arrow: "→" },
-        ].map(({ p, label, align, arrow }) => (
-          <Link
-            key={label}
-            href={`/projects/${p.slug}`}
-            className="group relative overflow-hidden border-b md:border-b-0 md:first:border-r border-white/10"
-          >
-            {p.heroImage && (
-              <Image
-                src={p.heroImage}
-                alt=""
-                fill
-                sizes="50vw"
-                className="object-cover object-top opacity-0 scale-110 group-hover:opacity-30 group-hover:scale-100 transition-all duration-1000"
-              />
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/60 to-transparent" />
-            <div className={`relative flex flex-col gap-5 px-6 md:px-12 py-20 md:py-32 ${align}`}>
-              <span className="text-xs uppercase tracking-[0.3em] text-white/40">
-                {arrow === "←" ? "← " : ""}
-                {label}
-                {arrow === "→" ? " →" : ""}
-              </span>
-              <h2 className="font-serif uppercase tracking-tighter leading-[0.9] text-[11vw] md:text-[5vw] transition-colors duration-500 group-hover:text-[#33CC99]">
-                {p.title}
-              </h2>
-              <span className="font-serif italic text-white/55 text-lg max-w-sm">{p.tagline}</span>
-            </div>
+          { p: prev, hand: "← the one before", align: "" },
+          { p: next, hand: "the next story →", align: "md:items-end md:text-right" },
+        ].map(({ p, hand, align }) => (
+          <Link key={hand} href={`/projects/${p.slug}`} className={`group flex flex-col gap-3 ${align}`}>
+            <span className={`${HAND} text-2xl text-[#8ce6c4]`}>{hand}</span>
+            <span
+              style={headingStyle}
+              className="text-4xl md:text-5xl leading-[1.05] tracking-tight transition-colors duration-300 group-hover:text-[#8ce6c4]"
+            >
+              {p.title}
+            </span>
+            <span className="text-[#ece5d6]/55 max-w-sm">{p.tagline}</span>
           </Link>
         ))}
       </section>

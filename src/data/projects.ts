@@ -23,6 +23,7 @@ export interface Project {
   // Case-study storytelling
   category: string;
   tagline: string;
+  note: string; // handwritten margin note
   pitch: string;
   brief: string;
   built: Feature[];
@@ -47,24 +48,25 @@ export const projects: Project[] = [
       "/sphereSection/imgi_4_sebastian_coelho-yfood.jpg"
     ],
     category: "E-commerce · EdTech",
-    tagline: "A storefront students actually enjoy buying from.",
-    pitch: "Rebuilt from scratch for thousands of daily JEE & NEET aspirants, fast on any phone and rated 4.8/5 by its customers.",
-    brief: "Meiosis Publications sells Mind Maps and Flashcards to JEE & NEET students, a mostly-mobile audience that browses between classes and wants to check out in a few taps. The brief: rebuild the storefront UI/UX from the ground up so discovering the right product feels effortless and buying it feels even easier.",
+    tagline: "A shop students actually enjoy using.",
+    note: "my favourite bit: the WhatsApp share on the cart page",
+    pitch: "Meiosis sells mind maps and flashcards to JEE & NEET students, mostly on their phones. I rebuilt the whole storefront so finding a product and paying for it takes just a few taps.",
+    brief: "Meiosis Publications makes Mind Maps and Flashcards for JEE & NEET students. Most of them shop on their phones, usually between classes. I rebuilt the storefront from scratch so people could find what they need quickly and check out without any fuss.",
     built: [
       {
-        title: "A truly mobile-first storefront",
-        text: "Interactive product carousels and dynamic variant selectors, hand-built with Liquid and vanilla JavaScript so nothing heavy gets between a student and the product."
+        title: "A storefront made for thumbs",
+        text: "Product carousels and variant pickers, written in plain Liquid and vanilla JavaScript so the pages stay light."
       },
       {
-        title: "A cart that keeps the momentum",
-        text: "A custom cart drawer that keeps shoppers in flow, which helped bring down bounce rates and abandoned carts."
+        title: "A cart drawer that keeps the flow",
+        text: "A custom cart drawer that keeps people moving toward checkout. It noticeably cut bounce rates and abandoned carts."
       },
       {
-        title: "Social proof that earns trust",
-        text: "A frontend reviews system holding a 4.8/5 rating across 10,000+ reviews, plus a WhatsApp share on the cart page that turns happy students into organic referrals."
+        title: "Reviews, plus a WhatsApp nudge",
+        text: "I built the reviews system, which holds a 4.8/5 rating across 10,000+ reviews, and added a WhatsApp share button on the cart page. Students started recommending the shop to each other."
       }
     ],
-    impact: "Easier discovery, a smoother checkout and a mobile experience that scores 95+ on Lighthouse, thanks to aggressive asset lazy-loading.",
+    impact: "The site now scores 95+ on mobile Lighthouse, because I was strict about lazy-loading every asset I could.",
     metrics: [
       { value: "4.8/5", label: "Average customer rating" },
       { value: "10,000+", label: "Customer reviews" },
@@ -94,24 +96,25 @@ export const projects: Project[] = [
       "/bridge/imgi_17_bridge_up-Offground.jpg"
     ],
     category: "Luxury · Fashion",
-    tagline: "Luxury should feel effortless, even in a browser.",
-    pitch: "A buttery-smooth, scroll-choreographed storefront for a premium brand, built to feel as refined as the product itself.",
-    brief: "House of Aerawat is a premium luxury brand, so its storefront had to look and move like high fashion: rich in imagery, generous with animation, and still fast enough that nobody ever waits. It also had to stay fully visible to search engines. Beauty and performance, with no trade-off.",
+    tagline: "Luxury, but make it smooth.",
+    note: "ask me about the staggered text reveals",
+    pitch: "House of Aerawat is a premium brand, so the site had to feel like one. I built a richly animated storefront with Next.js and GSAP that still loads in under a second.",
+    brief: "House of Aerawat is a premium luxury brand. The storefront needed to look and move like high fashion, with lots of imagery and animation, without feeling slow or disappearing from search results.",
     built: [
       {
-        title: "Scroll-choreographed motion",
-        text: "Complex GSAP scroll-triggered animations, staggered text reveals and smooth page transitions that give the brand its premium feel."
+        title: "Motion with a purpose",
+        text: "GSAP scroll animations, staggered text reveals and smooth page transitions give the site its premium feel."
       },
       {
-        title: "Server-rendered for speed and search",
-        text: "Built on Next.js with SSR, plus a scroll-aware navigation bar, so the site is quick on first paint and easy for search engines to read."
+        title: "Server-rendered with Next.js",
+        text: "SSR keeps the first paint quick and the pages easy for search engines to read. The nav bar reacts as you scroll."
       },
       {
-        title: "Discovery that keeps up",
-        text: "A dynamic product discovery interface with seamless filtering and instant search, so shoppers find the piece they want without friction."
+        title: "Finding things fast",
+        text: "Product discovery with smooth filtering and instant search."
       }
     ],
-    impact: "Image- and video-heavy pages load in under a second, and responsive typography stays crisp at every viewport size.",
+    impact: "Heavy images and video still load in under a second, and the typography scales cleanly at every screen size.",
     metrics: [
       { value: "<1s", label: "Load time on media-heavy pages" },
       { value: "SSR", label: "Search-friendly from the first byte" },
@@ -142,23 +145,24 @@ export const projects: Project[] = [
     ],
     category: "Real Estate · Luxury",
     tagline: "Browse luxury homes like you're already inside.",
-    pitch: "An app-like property experience with virtual tours, smart filters and a 40% lift in lead-form conversions.",
-    brief: "Chalet Estate's clients are high-net-worth buyers who expect trust, polish and zero friction. The goal was an interface that lets them explore luxury properties through interactive maps and high-resolution galleries, and feel confident enough to get in touch.",
+    note: "the pricing slider is fun to play with",
+    pitch: "Chalet Estate sells luxury properties to people who expect things to just work. I built the listing platform in React with virtual tours and smart filters, and improved lead-form conversions by 40%.",
+    brief: "Chalet Estate's buyers are high-net-worth and expect polish and trust. The goal was a place where they could explore luxury properties with interactive maps and sharp galleries, and feel comfortable getting in touch.",
     built: [
       {
-        title: "An immersive, app-like feel",
-        text: "React and Framer Motion power fluid transitions, plus virtual tour modals that let buyers step into a property before they ever visit."
+        title: "It feels like an app",
+        text: "React and Framer Motion for smooth transitions, plus virtual tour modals so buyers can step inside before they visit."
       },
       {
-        title: "Search that bends to the buyer",
-        text: "A complex filtering mechanism and dynamic pricing sliders that make narrowing down a property portfolio feel natural."
+        title: "Filters that make sense",
+        text: "Property search with a flexible filtering system and dynamic pricing sliders."
       },
       {
-        title: "Galleries without the jump",
-        text: "Highly optimised masonry galleries that showcase real estate photography without a single layout shift."
+        title: "Galleries that don't jump",
+        text: "Optimised masonry galleries, so photos load without the page shifting around."
       }
     ],
-    impact: "Frictionless UX and pixel-perfect mobile layouts turned more on-the-go visitors into real leads.",
+    impact: "Cleaner forms and a pixel-perfect mobile layout turned more visitors on the go into real leads.",
     metrics: [
       { value: "40%", label: "Lift in lead-form conversions" },
       { value: "0", label: "Layout shift in image galleries" },
@@ -188,24 +192,25 @@ export const projects: Project[] = [
       "/sphereSection/imgi_4_sebastian_coelho-yfood.jpg"
     ],
     category: "Corporate · Security",
-    tagline: "Trust, communicated in the first second.",
-    pitch: "A high-contrast, statically generated site that loads instantly and speaks with authority to enterprise buyers.",
-    brief: "Technical Chowkidar is a technology and security firm, and its website had to radiate trust and authority from the first glance. Enterprise clients needed clear service breakdowns, and the whole thing needed to feel as secure as the work the company does.",
+    tagline: "A security company's website that earns trust fast.",
+    note: "deep blues, stark whites, nothing fancy on purpose",
+    pitch: "Technical Chowkidar is a technology and security firm, so the site had to look trustworthy at first glance. I built it with Next.js and static generation, and pages load in under a second worldwide.",
+    brief: "Technical Chowkidar is a technology and security firm. Its site had to show authority, break the services down clearly for enterprise clients, and feel as secure as the work they do.",
     built: [
       {
-        title: "Clarity by design",
-        text: "A high-contrast, modern look built on deep blues and stark whites keeps every service easy to read and every message unmistakable."
+        title: "Clear, high-contrast design",
+        text: "Deep blues and stark whites keep every service easy to read."
       },
       {
-        title: "Fast by default",
-        text: "Next.js static site generation with asset optimisation and edge caching delivers sub-second page loads around the world."
+        title: "Fast everywhere",
+        text: "Static site generation, optimised assets and edge caching bring page loads under a second around the world."
       },
       {
-        title: "Lead funnels that qualify",
-        text: "Secure multi-step contact forms and intelligent lead funnels, backed by a scalable CMS structure so the marketing team can update content safely."
+        title: "Forms that qualify leads",
+        text: "Secure multi-step contact forms and lead funnels, plus a CMS structure the marketing team can update safely."
       }
     ],
-    impact: "Instant page loads, a credible enterprise presence and a content workflow the marketing team can run on its own.",
+    impact: "Pages load instantly, the brand looks credible to enterprise buyers, and the marketing team can update content on its own.",
     metrics: [
       { value: "<1s", label: "Page loads, globally" },
       { value: "SSG", label: "Pre-rendered for instant delivery" },
@@ -235,24 +240,25 @@ export const projects: Project[] = [
       "/sphereSection/imgi_6_Jules_Toulmunde-Noise.jpg"
     ],
     category: "Education · Accessibility",
-    tagline: "A school website that everyone can use.",
-    pitch: "Accessible by design: WCAG-compliant, light on bandwidth, and effortless for parents, students and staff alike.",
-    brief: "Parents, students and staff come to a school website with very different comfort levels around technology. Genesis School needed admissions portals, event calendars and policies to be one clear click away for all of them, on any device and any connection.",
+    tagline: "A school website everyone can actually use.",
+    note: "built for slow connections too",
+    pitch: "Parents, students and teachers all use the Genesis School site, and they're not all comfortable with technology. I built it to be WCAG-compliant, light on bandwidth and simple to get around.",
+    brief: "Parents, students and staff come to a school site with very different comfort levels. Genesis School needed admissions, event calendars and policies to be easy to find for everyone, on any device and any connection.",
     built: [
       {
         title: "Accessibility first",
-        text: "Strict WCAG compliance, a clear and readable typography system, and simple, interactive navigation that works for every kind of visitor."
+        text: "Strict WCAG compliance, readable typography and simple navigation."
       },
       {
-        title: "Light on any connection",
-        text: "Optimised for low-bandwidth connections so the site stays usable across varied devices and networks."
+        title: "Works on slow connections",
+        text: "Optimised for low bandwidth, so it stays usable on all kinds of devices."
       },
       {
-        title: "Easy for staff to keep fresh",
-        text: "Netlify with automated CI/CD means content updates go live fast, alongside interactive calendars, portal entry points and photo galleries celebrating student achievements."
+        title: "Easy for staff to update",
+        text: "Deployed on Netlify with automated CI/CD, so content changes go live quickly. It also has interactive calendars, portal entry points and galleries for student achievements."
       }
     ],
-    impact: "A welcoming, inclusive site where families find admissions, events and policies without needing help.",
+    impact: "A welcoming site where families find admissions, events and policies without needing any help.",
     metrics: [
       { value: "WCAG", label: "Strict accessibility compliance" },
       { value: "CI/CD", label: "Automated deploys on Netlify" },
@@ -282,24 +288,25 @@ export const projects: Project[] = [
       "/bridge/imgi_17_bridge_up-Offground.jpg"
     ],
     category: "Corporate · Data",
-    tagline: "Professional confidence, backed by data.",
-    pitch: "A scalable Next.js site with interactive charts and onboarding flows that guide visitors from curiosity to contact.",
-    brief: "The PMC needed a corporate presence that builds client confidence at first sight: sleek, professional, data-driven and crystal clear about what the company offers. Every page had to nudge a visitor one step closer to getting in touch.",
+    tagline: "A corporate site that shows its work.",
+    note: "the onboarding flow has more state than it looks",
+    pitch: "The PMC wanted a site that builds confidence at first sight. I built it with Next.js, with interactive charts, a smooth onboarding flow and the SEO to get found.",
+    brief: "The PMC needed a corporate presence that builds confidence quickly. It had to look professional, back its claims with data and make it obvious what the company offers.",
     built: [
       {
-        title: "Data you can explore",
-        text: "Highly interactive data visualisations built with modern chart libraries, so claims are backed by numbers visitors can play with."
+        title: "Charts you can explore",
+        text: "Interactive data visualisations built with modern chart libraries."
       },
       {
-        title: "Flows that guide",
-        text: "Complex state management behind streamlined client onboarding, and lead-generation flows that lead visitors from service discovery to the final contact step."
+        title: "Onboarding that guides",
+        text: "Complex state management behind a streamlined client onboarding flow, with lead flows that lead from service discovery to contact."
       },
       {
-        title: "Found by the right people",
-        text: "Semantic HTML and localised routing deliver strong SEO rankings on top of a frontend architecture designed to scale."
+        title: "Easy to find",
+        text: "Semantic HTML and localised routing for strong SEO rankings."
       }
     ],
-    impact: "A credible, fast and search-friendly portfolio that turns interested visitors into conversations.",
+    impact: "A fast, credible, search-friendly site that turns interested visitors into conversations.",
     metrics: [
       { value: "SEO", label: "Strong rankings via semantic HTML" },
       { value: "Live", label: "Interactive data visualisations" },
