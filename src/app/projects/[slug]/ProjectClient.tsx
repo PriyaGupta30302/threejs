@@ -5,8 +5,8 @@ import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Project, projects } from "@/data/projects";
-import { caveat, fraunces } from "../fonts";
-import { HAND, HandArrow, Marker, Print, Squiggle, headingStyle } from "../ui";
+import { caveat, fraunces } from "@/components/human/fonts";
+import { HAND, HandArrow, Marker, Print, Squiggle, headingStyle } from "@/components/human/ui";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
