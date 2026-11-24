@@ -75,9 +75,9 @@ function Counter({ value }: { value: string }) {
 }
 
 const ChapterTitle = ({ hand, children }: { hand: string; children: React.ReactNode }) => (
-  <div className="mb-8 flex flex-col gap-1">
-    <span className={`${HAND} text-2xl text-[#8ce6c4] -rotate-2 origin-left`}>{hand}</span>
-    <h2 style={headingStyle} className="text-4xl md:text-5xl leading-[1.05] tracking-tight">
+  <div className="mb-5 md:mb-8 flex flex-col gap-1">
+    <span className={`${HAND} text-xl md:text-2xl text-[#8ce6c4] -rotate-2 origin-left`}>{hand}</span>
+    <h2 style={headingStyle} className="text-3xl md:text-4xl xl:text-5xl leading-[1.05] tracking-tight">
       {children}
     </h2>
   </div>
@@ -134,7 +134,7 @@ export default function ProjectClient({ project }: { project: Project }) {
       className={`${fraunces.variable} ${caveat.variable} relative bg-[#15130f] text-[#ece5d6] overflow-x-clip selection:bg-[#33CC99] selection:text-[#15130f]`}
     >
       {/* ───────── Hero ───────── */}
-      <section className="max-w-[1400px] mx-auto px-6 md:px-12 pt-32 md:pt-40 pb-20 md:pb-28">
+      <section className="max-w-[1400px] mx-auto px-5 sm:px-6 md:px-10 lg:px-12 pt-28 sm:pt-32 md:pt-36 lg:pt-40 pb-10 md:pb-16 lg:pb-20">
         <Link
           href="/projects"
           className="hero-in group inline-flex items-center gap-2 text-[#ece5d6]/55 hover:text-[#8ce6c4] transition-colors"
@@ -142,8 +142,8 @@ export default function ProjectClient({ project }: { project: Project }) {
           <span className="transition-transform duration-300 group-hover:-translate-x-1">←</span> back to all projects
         </Link>
 
-        <div className="mt-12 md:mt-16 grid grid-cols-1 lg:grid-cols-12 gap-10 items-end">
-          <div className="lg:col-span-9 flex flex-col gap-6">
+        <div className="mt-8 md:mt-12 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-end">
+          <div className="lg:col-span-9 flex flex-col gap-4 md:gap-6">
             <p className="hero-in text-[#ece5d6]/50 text-sm">
               <span className={`${HAND} text-2xl text-[#8ce6c4] mr-2`}>
                 Story {index + 1} of {projects.length}
@@ -152,29 +152,29 @@ export default function ProjectClient({ project }: { project: Project }) {
             </p>
             <h1
               style={headingStyle}
-              className="hero-in text-[clamp(3rem,9vw,8.5rem)] leading-[0.98] tracking-tight"
+              className="hero-in text-[clamp(2.6rem,9vw,8.5rem)] leading-[1] tracking-tight"
             >
               {project.title}
             </h1>
-            <p style={headingStyle} className="hero-in italic text-2xl md:text-4xl leading-snug text-[#ece5d6]/85 max-w-3xl">
+            <p style={headingStyle} className="hero-in italic text-xl sm:text-2xl md:text-4xl leading-snug text-[#ece5d6]/85 max-w-3xl">
               <Marker>{project.tagline}</Marker>
             </p>
           </div>
 
           <div className="hero-in lg:col-span-3 flex flex-col gap-3 text-[#8ce6c4] -rotate-1">
-            <HandArrow className="w-16 h-8 rotate-[200deg] -scale-x-100" />
-            <span className={`${HAND} text-2xl leading-tight`}>{project.note}</span>
+            <HandArrow className="hidden lg:block w-16 h-8 rotate-[200deg] -scale-x-100" />
+            <span className={`${HAND} text-xl md:text-2xl leading-tight`}>{project.note}</span>
           </div>
         </div>
 
-        <p className="hero-in mt-12 max-w-2xl text-lg md:text-xl leading-relaxed text-[#ece5d6]/70">{project.pitch}</p>
+        <p className="hero-in mt-6 md:mt-10 max-w-2xl text-base md:text-xl leading-relaxed text-[#ece5d6]/70">{project.pitch}</p>
       </section>
 
       {/* ───────── Story: sticky desk + chapters ───────── */}
-      <section className="max-w-[1400px] mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-x-16">
+      <section className="max-w-[1400px] mx-auto px-5 sm:px-6 md:px-10 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-x-8 xl:gap-x-16">
         {/* Desk */}
-        <div className="lg:col-span-7 lg:sticky lg:top-0 lg:h-svh flex items-center justify-center py-12 lg:py-0">
-          <div className="relative w-full max-w-[780px] pb-12">
+        <div className="lg:col-span-6 xl:col-span-7 lg:sticky lg:top-0 lg:h-svh flex items-center justify-center py-6 md:py-10 lg:py-0">
+          <div className="relative w-full max-w-[780px] pb-8 md:pb-12">
             {desktopShot && (
               <div
                 className="transition-transform duration-[1100ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] lg:[transform:var(--sp)]"
@@ -192,7 +192,7 @@ export default function ProjectClient({ project }: { project: Project }) {
 
             {mobileShot && (
               <div
-                className="absolute bottom-0 right-1 md:-right-4 w-[24%] transition-transform duration-[1100ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] lg:[transform:var(--pp)]"
+                className="absolute bottom-0 right-1 md:-right-4 w-[26%] md:w-[24%] transition-transform duration-[1100ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] lg:[transform:var(--pp)]"
                 style={{ "--pp": PHONE_POSE[chapter] } as React.CSSProperties}
               >
                 <Print
@@ -225,21 +225,21 @@ export default function ProjectClient({ project }: { project: Project }) {
         </div>
 
         {/* Chapters */}
-        <div className="lg:col-span-5">
+        <div className="lg:col-span-6 xl:col-span-5">
           {/* The problem */}
-          <article id="brief" className="py-14 lg:py-24">
+          <article id="brief" className="py-8 md:py-12 lg:py-20">
             <div className="reveal">
               <ChapterTitle hand="1.">The problem</ChapterTitle>
-              <p className="text-xl md:text-2xl leading-relaxed text-[#ece5d6]/85">{project.brief}</p>
-              <dl className="mt-10 pt-6 border-t border-dashed border-[#ece5d6]/25 grid grid-cols-3 gap-4 text-sm">
+              <p className="text-lg md:text-xl xl:text-2xl leading-relaxed text-[#ece5d6]/85">{project.brief}</p>
+              <dl className="mt-6 md:mt-8 pt-5 border-t border-dashed border-[#ece5d6]/25 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 text-sm">
                 {[
                   ["Client", project.client],
                   ["My role", project.role],
                   ["When", project.date],
                 ].map(([k, v]) => (
-                  <div key={k} className="flex flex-col gap-1">
+                  <div key={k} className="flex flex-row justify-between gap-4 sm:flex-col sm:justify-start sm:gap-1">
                     <dt className="text-[#ece5d6]/45">{k}</dt>
-                    <dd className="font-medium leading-snug">{v}</dd>
+                    <dd className="font-medium leading-snug text-right sm:text-left">{v}</dd>
                   </div>
                 ))}
               </dl>
@@ -247,18 +247,18 @@ export default function ProjectClient({ project }: { project: Project }) {
           </article>
 
           {/* What I built */}
-          <article id="built" className="py-14 lg:py-24">
+          <article id="built" className="py-8 md:py-12 lg:py-20">
             <div className="reveal">
               <ChapterTitle hand="2.">What I built</ChapterTitle>
               <ul className="flex flex-col">
                 {project.built.map((f, i) => (
-                  <li key={f.title} className="flex gap-5 py-6 border-t border-dashed border-[#ece5d6]/25 last:border-b">
-                    <span className={`${HAND} text-3xl text-[#8ce6c4] leading-none pt-1`}>{i + 1}.</span>
+                  <li key={f.title} className="flex gap-4 py-4 md:py-5 border-t border-dashed border-[#ece5d6]/25 last:border-b">
+                    <span className={`${HAND} text-2xl md:text-3xl text-[#8ce6c4] leading-none pt-1`}>{i + 1}.</span>
                     <div className="flex flex-col gap-2">
-                      <h3 style={headingStyle} className="text-2xl leading-tight">
+                      <h3 style={headingStyle} className="text-xl md:text-2xl leading-tight">
                         {f.title}
                       </h3>
-                      <p className="text-[#ece5d6]/65 leading-relaxed">{f.text}</p>
+                      <p className="text-[#ece5d6]/65 text-[15px] md:text-base leading-relaxed">{f.text}</p>
                     </div>
                   </li>
                 ))}
@@ -267,14 +267,14 @@ export default function ProjectClient({ project }: { project: Project }) {
           </article>
 
           {/* How it went */}
-          <article id="impact" className="py-14 lg:py-24">
+          <article id="impact" className="py-8 md:py-12 lg:py-20">
             <div className="reveal">
               <ChapterTitle hand="3.">How it went</ChapterTitle>
-              <p className="text-xl md:text-2xl leading-relaxed text-[#ece5d6]/85 mb-10">{project.impact}</p>
-              <ul className="flex flex-col gap-6">
+              <p className="text-lg md:text-xl xl:text-2xl leading-relaxed text-[#ece5d6]/85 mb-6 md:mb-8">{project.impact}</p>
+              <ul className="flex flex-col gap-4 md:gap-5">
                 {project.metrics.map((m) => (
-                  <li key={m.label} className="flex items-baseline gap-5">
-                    <span style={headingStyle} className="text-5xl md:text-6xl leading-none min-w-[7.5rem]">
+                  <li key={m.label} className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-5">
+                    <span style={headingStyle} className="text-4xl sm:text-5xl md:text-6xl leading-none sm:min-w-[7.5rem] break-words">
                       <Marker>
                         <Counter value={m.value} />
                       </Marker>
@@ -287,18 +287,18 @@ export default function ProjectClient({ project }: { project: Project }) {
           </article>
 
           {/* Tools */}
-          <article id="stack" className="py-14 lg:py-24">
+          <article id="stack" className="py-8 md:py-12 lg:py-20">
             <div className="reveal">
               <ChapterTitle hand="4.">Tools I used</ChapterTitle>
-              <p className="text-xl md:text-2xl leading-relaxed text-[#ece5d6]/85">
+              <p className="text-lg md:text-xl xl:text-2xl leading-relaxed text-[#ece5d6]/85">
                 {project.tags.slice(0, -1).join(", ")}
                 {project.tags.length > 1 ? " and " : ""}
                 {project.tags[project.tags.length - 1]}.
               </p>
 
-              <div className="mt-14 flex flex-col gap-3">
-                <p className={`${HAND} text-3xl text-[#8ce6c4] -rotate-1`}>want something like this?</p>
-                <Link href="/contact" className="group relative self-start inline-block text-xl font-medium pb-2">
+              <div className="mt-8 md:mt-12 flex flex-col gap-2">
+                <p className={`${HAND} text-2xl md:text-3xl text-[#8ce6c4] -rotate-1`}>want something like this?</p>
+                <Link href="/contact" className="group relative self-start inline-block text-lg md:text-xl font-medium pb-2">
                   Let&apos;s talk about your project →
                   <Squiggle className="absolute left-0 bottom-0 w-full h-2 text-[#33CC99] transition-transform duration-500 origin-left group-hover:scale-x-105" />
                 </Link>
@@ -309,7 +309,7 @@ export default function ProjectClient({ project }: { project: Project }) {
       </section>
 
       {/* ───────── Keep reading ───────── */}
-      <section className="max-w-[1400px] mx-auto px-6 md:px-12 border-t border-dashed border-[#ece5d6]/25 mt-8 py-16 md:py-24 grid grid-cols-1 md:grid-cols-2 gap-12">
+      <section className="max-w-[1400px] mx-auto px-5 sm:px-6 md:px-10 lg:px-12 border-t border-dashed border-[#ece5d6]/25 mt-4 md:mt-8 py-10 md:py-16 lg:py-20 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
         {[
           { p: prev, hand: "← the one before", align: "" },
           { p: next, hand: "the next story →", align: "md:items-end md:text-right" },
@@ -318,11 +318,11 @@ export default function ProjectClient({ project }: { project: Project }) {
             <span className={`${HAND} text-2xl text-[#8ce6c4]`}>{hand}</span>
             <span
               style={headingStyle}
-              className="text-4xl md:text-5xl leading-[1.05] tracking-tight transition-colors duration-300 group-hover:text-[#8ce6c4]"
+              className="text-3xl md:text-4xl xl:text-5xl leading-[1.05] tracking-tight transition-colors duration-300 group-hover:text-[#8ce6c4]"
             >
               {p.title}
             </span>
-            <span className="text-[#ece5d6]/55 max-w-sm">{p.tagline}</span>
+            <span className="text-[#ece5d6]/55 text-sm md:text-base max-w-sm">{p.tagline}</span>
           </Link>
         ))}
       </section>
