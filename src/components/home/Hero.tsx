@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -12,6 +12,25 @@ export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { margin: "200px" });
   const progressRef = useRef(0);
+  const titleWrapRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+
+  // Fit the title to the full width of the screen on a single line
+  useLayoutEffect(() => {
+    const wrap = titleWrapRef.current;
+    const title = titleRef.current;
+    if (!wrap || !title) return;
+    const fit = () => {
+      title.style.fontSize = '100px';
+      const natural = title.scrollWidth;
+      if (natural > 0) title.style.fontSize = `${(wrap.clientWidth / natural) * 100}px`;
+    };
+    fit();
+    document.fonts?.ready.then(fit);
+    const ro = new ResizeObserver(fit);
+    ro.observe(wrap);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -76,14 +95,16 @@ export default function Hero() {
         </Canvas>
       </div>
 
-      {/* Logo Text Element */}
-      <div className="absolute bottom-24 md:bottom-12 left-0 right-0 z-20 w-full px-4 md:px-8 pointer-events-none flex flex-col items-center justify-end text-center">
-        <h1 className="text-[12vw] leading-none font-bold tracking-tighter text-white opacity-40 mix-blend-overlay uppercase font-sans">
-          PRIYA GUPTA
-        </h1>
-        <p className="text-xl md:text-3xl font-medium tracking-wide text-white opacity-60 mt-4 mix-blend-overlay">
-          Frontend Developer
-        </p>
+      {/* Title */}
+      <div className="absolute bottom-24 md:bottom-12 left-0 right-0 z-20 w-full px-4 md:px-8 pointer-events-none">
+        <div ref={titleWrapRef} className="w-full">
+          <h1
+            ref={titleRef}
+            className="inline-block whitespace-nowrap leading-none font-medium tracking-wide text-white opacity-60 mix-blend-overlay"
+          >
+            Frontend Developer
+          </h1>
+        </div>
       </div>
     </div>
   );
