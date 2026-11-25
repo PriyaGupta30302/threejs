@@ -1,318 +1,330 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
-import Image from "next/image";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment, Float, MeshTransmissionMaterial } from "@react-three/drei";
-import * as THREE from "three";
-import { Project } from "@/data/projects";
+import { Project, projects } from "@/data/projects";
+import { caveat, fraunces } from "@/components/human/fonts";
+import { HAND, HandArrow, Marker, Print, Squiggle, headingStyle } from "@/components/human/ui";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-function GlassParticles() {
-  const groupRef = useRef<THREE.Group>(null);
-  
-  // Create 8 random glass shapes (reduced significantly for performance)
-  const shapes = React.useMemo(() => {
-    const temp = [];
-    for (let i = 0; i < 8; i++) {
-      temp.push({
-        position: [
-          (Math.random() - 0.5) * 20,
-          (Math.random() - 0.5) * 20,
-          (Math.random() - 0.5) * 10 - 5
-        ] as [number, number, number],
-        rotation: [
-          Math.random() * Math.PI,
-          Math.random() * Math.PI,
-          0
-        ] as [number, number, number],
-        scale: Math.random() * 0.6 + 0.2, // Slightly larger to compensate for fewer particles
-      });
-    }
-    return temp;
-  }, []);
+const CHAPTERS = [
+  { id: "brief", label: "the problem" },
+  { id: "built", label: "what I built" },
+  { id: "impact", label: "how it went" },
+  { id: "stack", label: "tools I used" },
+];
 
-  useFrame((state, delta) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.05;
-      const scrollY = window.scrollY;
-      groupRef.current.position.y = scrollY * 0.01; // Parallax effect against scroll
-    }
-  });
+// How the prints on the sticky desk re-arrange themselves for each chapter (desktop only)
+const SCREEN_POSE = [
+  "translateX(0) rotate(-2deg) scale(1)",
+  "translateX(-8%) rotate(-3.5deg) scale(0.9)",
+  "translateX(0) rotate(1deg) scale(0.84)",
+  "translateX(-3%) rotate(2.5deg) scale(0.95)",
+];
+const PHONE_POSE = [
+  "translateY(140%) rotate(4deg)",
+  "translateY(0) rotate(6deg)",
+  "translateY(-4%) rotate(2deg) scale(0.92)",
+  "translateY(0) rotate(-5deg) scale(1.04)",
+];
 
-  return (
-    <group ref={groupRef}>
-      {shapes.map((shape, i) => (
-        <Float key={i} speed={1 + Math.random() * 2} rotationIntensity={2} floatIntensity={2}>
-          <mesh position={shape.position} rotation={shape.rotation} scale={shape.scale}>
-            <icosahedronGeometry args={[1, 0]} />
-            <MeshTransmissionMaterial 
-              backside 
-              thickness={0.5} 
-              roughness={0.1} 
-              transmission={1} 
-              ior={1.5} 
-              chromaticAberration={0.4}
-              color="#ffffff"
-              resolution={64} // Highly optimized resolution
-              samples={3} // Optimized sampling
-            />
-          </mesh>
-        </Float>
-      ))}
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[5, 5, 5]} intensity={2} color="#3AA89B" />
-      <directionalLight position={[-5, -5, -5]} intensity={1} color="#ffffff" />
-      <Environment preset="city" />
-    </group>
-  );
+/** Counts up "4.8/5", "10,000+", "<1s", "40%"… when scrolled into view. Non-numeric values stay as-is. */
+function Counter({ value }: { value: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    const m = value.match(/^([^\d]*)([\d,]*\.?\d+)(.*)$/);
+    if (!el || !m) return;
+
+    const [, prefix, num, suffix] = m;
+    const target = parseFloat(num.replace(/,/g, ""));
+    const decimals = (num.split(".")[1] || "").length;
+    const comma = num.includes(",");
+    const fmt = (v: number) =>
+      comma
+        ? v.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
+        : v.toFixed(decimals);
+
+    const state = { v: 0 };
+    el.textContent = prefix + fmt(0) + suffix;
+
+    const st = ScrollTrigger.create({
+      trigger: el,
+      start: "top 90%",
+      once: true,
+      onEnter: () =>
+        gsap.to(state, {
+          v: target,
+          duration: 1.6,
+          ease: "power3.out",
+          onUpdate: () => {
+            el.textContent = prefix + fmt(state.v) + suffix;
+          },
+        }),
+    });
+    return () => st.kill();
+  }, [value]);
+
+  return <span ref={ref}>{value}</span>;
 }
+
+const ChapterTitle = ({ hand, children }: { hand: string; children: React.ReactNode }) => (
+  <div className="mb-5 md:mb-8 flex flex-col gap-1">
+    <span className={`${HAND} text-xl md:text-2xl text-[#8ce6c4] -rotate-2 origin-left`}>{hand}</span>
+    <h2 style={headingStyle} className="text-3xl md:text-4xl xl:text-5xl leading-[1.05] tracking-tight">
+      {children}
+    </h2>
+  </div>
+);
 
 export default function ProjectClient({ project }: { project: Project }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [showCanvas, setShowCanvas] = useState(false);
+  const [chapter, setChapter] = useState(0);
 
+  const index = projects.findIndex((p) => p.slug === project.slug);
+  const prev = projects[(index - 1 + projects.length) % projects.length];
+  const next = projects[(index + 1) % projects.length];
+  const desktopShot = project.gallery?.[0] ?? project.heroImage;
+  const mobileShot = project.gallery?.[1];
+
+  // Which chapter is in the middle of the screen
   useEffect(() => {
-    // Mount canvas almost immediately, but defer just enough to not block paint
-    const timer = setTimeout(() => setShowCanvas(true), 100);
-    return () => clearTimeout(timer);
+    const els = CHAPTERS.map((c) => document.getElementById(c.id)).filter(Boolean) as HTMLElement[];
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setChapter(CHAPTERS.findIndex((c) => c.id === e.target.id));
+        });
+      },
+      { rootMargin: "-45% 0px -45% 0px" }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
   }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      
-      // Hero Entrance
-      gsap.from(".hero-char", {
-        y: 100,
-        opacity: 0,
-        stagger: 0.05,
-        duration: 1.5,
-        ease: "power4.out",
-        delay: 1.0 // Wait for particles to fade in first
+      gsap.from(".hero-in", { y: 40, opacity: 0, stagger: 0.12, duration: 1, ease: "power3.out", delay: 0.1 });
+      (gsap.utils.toArray(".reveal") as HTMLElement[]).forEach((el) => {
+        gsap.from(el, {
+          y: 40,
+          opacity: 0,
+          duration: 0.9,
+          ease: "power3.out",
+          scrollTrigger: { trigger: el, start: "top 88%", once: true },
+        });
       });
-
-      gsap.to(".hero-text", {
-        y: -150,
-        opacity: 0,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero-section",
-          start: "top top",
-          end: "bottom top",
-          scrub: true
-        }
-      });
-
-      // Gallery Items Staggered Fade Up
-      const items = gsap.utils.toArray(".gallery-item") as HTMLElement[];
-      items.forEach((item) => {
-        gsap.fromTo(item, 
-          { opacity: 0, y: 100, scale: 0.95 },
-          { 
-            opacity: 1, 
-            y: 0, 
-            scale: 1, 
-            duration: 1,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: item,
-              start: "top 85%",
-              toggleActions: "play none none reverse"
-            }
-          }
-        );
-      });
-
     }, containerRef);
     return () => ctx.revert();
   }, []);
 
   if (!project) return null;
 
+  const jumpTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "center" });
+
   return (
-    <div ref={containerRef} className="bg-[#050505] min-h-screen text-white relative selection:bg-[#3AA89B] selection:text-white">
-      
-      {/* Soft Glowing Background Orbs */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#3AA89B] opacity-[0.15] blur-[100px]" />
-        <div className="absolute top-[40%] right-[-20%] w-[40vw] h-[40vw] rounded-full bg-[#3AA89B] opacity-[0.1] blur-[120px]" />
-        <div className="absolute bottom-[-10%] left-[20%] w-[60vw] h-[60vw] rounded-full bg-[#3AA89B] opacity-[0.1] blur-[150px]" />
-      </div>
+    <div
+      ref={containerRef}
+      className={`${fraunces.variable} ${caveat.variable} relative bg-[#15130f] text-[#ece5d6] overflow-x-clip selection:bg-[#33CC99] selection:text-[#15130f]`}
+    >
+      {/* ───────── Hero ───────── */}
+      <section className="max-w-[1400px] mx-auto px-5 sm:px-6 md:px-10 lg:px-12 pt-28 sm:pt-32 md:pt-36 lg:pt-40 pb-10 md:pb-16 lg:pb-20">
+        <Link
+          href="/projects"
+          className="hero-in group inline-flex items-center gap-2 text-[#ece5d6]/55 hover:text-[#8ce6c4] transition-colors"
+        >
+          <span className="transition-transform duration-300 group-hover:-translate-x-1">←</span> back to all projects
+        </Link>
 
-      {/* Fixed 3D Particle Background */}
-      <div className={`fixed inset-0 z-0 pointer-events-none transition-opacity duration-1000 ${showCanvas ? 'opacity-100' : 'opacity-0'}`}>
-        {showCanvas && (
-          <Canvas camera={{ position: [0, 0, 10], fov: 45 }} dpr={[1, 1.5]}>
-            <GlassParticles />
-          </Canvas>
-        )}
-      </div>
-
-      {/* Hero Section */}
-      <section className="hero-section relative h-[80vh] md:h-screen w-full overflow-hidden z-10 flex items-center justify-center">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(58,168,155,0.7)_0%,_rgba(58,168,155,0.1)_40%,_#050505_80%)]" />
-        
-        <div className="hero-text relative z-10 text-center flex flex-col items-center">
-          <span className="text-sm md:text-md uppercase tracking-[0.4em] text-[#3AA89B] mb-6 font-semibold overflow-hidden">
-            <span className="inline-block hero-char">Featured</span>
-            <span className="inline-block hero-char">&nbsp;Project</span>
-          </span>
-          <h1 className="text-[14vw] md:text-[10vw] font-serif uppercase tracking-tighter leading-[0.85] flex flex-wrap justify-center gap-x-[3vw] md:gap-x-[2vw]">
-            {project.title.split(" ").map((word, wIdx) => (
-              <span key={wIdx} className="inline-flex overflow-hidden pr-8 -mr-8 pb-4 -mb-4 pt-2 -mt-2">
-                {word.split("").map((char, cIdx) => (
-                  <span key={cIdx} className="inline-block hero-char">
-                    {char}
-                  </span>
-                ))}
+        <div className="mt-8 md:mt-12 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-end">
+          <div className="lg:col-span-9 flex flex-col gap-4 md:gap-6">
+            <p className="hero-in text-[#ece5d6]/50 text-sm">
+              <span className={`${HAND} text-2xl text-[#8ce6c4] mr-2`}>
+                Story {index + 1} of {projects.length}
               </span>
-            ))}
-          </h1>
-        </div>
-      </section>
+              {project.category}
+            </p>
+            <h1
+              style={headingStyle}
+              className="hero-in text-[clamp(2.6rem,9vw,8.5rem)] leading-[1] tracking-tight"
+            >
+              {project.title}
+            </h1>
+            <p style={headingStyle} className="hero-in italic text-xl sm:text-2xl md:text-4xl leading-snug text-[#ece5d6]/85 max-w-3xl">
+              <Marker>{project.tagline}</Marker>
+            </p>
+          </div>
 
-      {/* Content Section (Editorial Split) */}
-      <section className="content-section relative z-10 w-full max-w-[1600px] mx-auto px-6 md:px-16 py-20 flex flex-col md:flex-row gap-12 md:gap-24">
-        
-        {/* Left Column: Sticky Metadata & Info */}
-        <div className="w-full md:w-1/3 flex flex-col gap-12">
-          {/* CSS Sticky positioning for smooth native sticky effect */}
-          <div className="sticky top-32 flex flex-col gap-16">
-            
-            {/* Description */}
-            <div>
-              <h3 className="text-2xl md:text-3xl font-serif leading-relaxed text-white/90">
-                {project.description}
-              </h3>
-            </div>
-
-            {/* Meta Data Table */}
-            <div className="flex flex-col gap-8 border-t border-white/20 pt-8">
-              <div className="flex justify-between items-center">
-                <span className="text-xs uppercase tracking-widest text-white/40">Client</span>
-                <span className="text-sm font-medium">{project.client}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs uppercase tracking-widest text-white/40">Year</span>
-                <span className="text-sm font-medium">{project.date}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs uppercase tracking-widest text-white/40">Role</span>
-                <span className="text-sm font-medium">{project.role}</span>
-              </div>
-              <div className="flex flex-col gap-4">
-                <span className="text-xs uppercase tracking-widest text-white/40">Services</span>
-                <div className="flex flex-wrap gap-2">
-                  {project.tags?.map((tag, idx) => (
-                    <span key={idx} className="text-xs font-medium px-4 py-2 bg-white/5 backdrop-blur-md rounded-full border border-white/10">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
+          <div className="hero-in lg:col-span-3 flex flex-col gap-3 text-[#8ce6c4] -rotate-1">
+            <HandArrow className="hidden lg:block w-16 h-8 rotate-[200deg] -scale-x-100" />
+            <span className={`${HAND} text-xl md:text-2xl leading-tight`}>{project.note}</span>
           </div>
         </div>
 
-        {/* Right Column: Case Study Structure */}
-        <div className="w-full md:w-2/3 flex flex-col gap-16 md:gap-32 mt-12 md:mt-0 pb-32">
-          
-          {/* Section 01: The Challenge */}
-          {project.bullets && project.bullets.length > 0 && (
-            <div className="gallery-item flex flex-col gap-6">
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-serif text-[#3AA89B]">01 //</span>
-                <h4 className="text-sm uppercase tracking-widest text-white/50">Project Overview</h4>
-              </div>
-              <h3 className="text-2xl md:text-4xl font-serif leading-tight text-white/90">
-                {project.bullets[0]}
-              </h3>
-            </div>
-          )}
+        <p className="hero-in mt-6 md:mt-10 max-w-2xl text-base md:text-xl leading-relaxed text-[#ece5d6]/70">{project.pitch}</p>
+      </section>
 
-          {/* Gallery Image 1 */}
-          {project.gallery && project.gallery.length > 0 && (
-            <div className="gallery-item relative w-full aspect-[4/3] md:aspect-[16/10] rounded-2xl overflow-hidden shadow-2xl group">
-              <Image src={project.gallery[0]} alt={`${project.title} Screenshot 1`} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-black/10 mix-blend-overlay pointer-events-none" />
-            </div>
-          )}
-
-          {/* Section 02: Execution & Strategy */}
-          {project.bullets && project.bullets.length > 1 && (
-            <div className="gallery-item flex flex-col gap-6 p-8 md:p-12 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl">
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-serif text-[#3AA89B]">02 //</span>
-                <h4 className="text-sm uppercase tracking-widest text-white/50">Execution Strategy</h4>
+      {/* ───────── Story: sticky desk + chapters ───────── */}
+      <section className="max-w-[1400px] mx-auto px-5 sm:px-6 md:px-10 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-x-8 xl:gap-x-16">
+        {/* Desk */}
+        <div className="lg:col-span-6 xl:col-span-7 lg:sticky lg:top-0 lg:h-svh flex items-center justify-center py-6 md:py-10 lg:py-0">
+          <div className="relative w-full max-w-[780px] pb-8 md:pb-12">
+            {desktopShot && (
+              <div
+                className="transition-transform duration-[1100ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] lg:[transform:var(--sp)]"
+                style={{ "--sp": SCREEN_POSE[chapter] } as React.CSSProperties}
+              >
+                <Print
+                  src={desktopShot}
+                  alt={`${project.title} homepage`}
+                  priority
+                  rotate={-1.5}
+                  sizes="(min-width: 1024px) 55vw, 100vw"
+                />
               </div>
-              <p className="text-xl md:text-3xl font-light leading-relaxed text-white/90 italic">
-                &quot;{project.bullets[1]}&quot;
-              </p>
-            </div>
-          )}
+            )}
 
-          {/* Gallery Images 2 & 3 (Staggered Grid) */}
-          {project.gallery && project.gallery.length > 1 && (
-            <div className="gallery-item grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl group">
-                <Image src={project.gallery[1]} alt={`${project.title} Screenshot 2`} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-black/10 mix-blend-overlay pointer-events-none" />
+            {mobileShot && (
+              <div
+                className="absolute bottom-0 right-1 md:-right-4 w-[26%] md:w-[24%] transition-transform duration-[1100ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] lg:[transform:var(--pp)]"
+                style={{ "--pp": PHONE_POSE[chapter] } as React.CSSProperties}
+              >
+                <Print
+                  src={mobileShot}
+                  alt={`${project.title} on mobile`}
+                  ratio="9 / 19"
+                  rotate={5}
+                  sizes="200px"
+                  tapeClass="-top-3 left-1/2 -translate-x-1/2 rotate-2"
+                />
               </div>
-              {project.gallery.length > 2 && (
-                <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl group md:translate-y-16">
-                  <Image src={project.gallery[2]} alt={`${project.title} Screenshot 3`} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-black/10 mix-blend-overlay pointer-events-none" />
-                </div>
-              )}
-            </div>
-          )}
+            )}
 
-          {/* Section 03: Frontend Highlights */}
-          {project.bullets && project.bullets.length > 2 && (
-            <div className="gallery-item flex flex-col gap-8 md:mt-16">
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-serif text-[#3AA89B]">03 //</span>
-                <h4 className="text-sm uppercase tracking-widest text-white/50">Frontend Highlights & Results</h4>
-              </div>
-              <ul className="flex flex-col gap-8">
-                {project.bullets.slice(2).map((bullet, idx) => (
-                  <li key={idx} className="flex gap-6 items-start text-lg md:text-2xl font-light text-white/80 border-l-2 border-[#3AA89B] pl-6 py-2">
-                    {bullet}
+            {/* Handwritten chapter list */}
+            <ol className="hidden lg:flex absolute -top-16 left-0 flex-wrap gap-x-7 gap-y-1">
+              {CHAPTERS.map((c, i) => (
+                <li key={c.id}>
+                  <button
+                    onClick={() => jumpTo(c.id)}
+                    className={`${HAND} text-2xl text-left transition-all duration-500 ${
+                      chapter === i ? "text-[#8ce6c4]" : "text-[#ece5d6]/35 hover:text-[#ece5d6]/70"
+                    }`}
+                  >
+                    {i + 1}. {c.label}
+                  </button>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+
+        {/* Chapters */}
+        <div className="lg:col-span-6 xl:col-span-5">
+          {/* The problem */}
+          <article id="brief" className="py-8 md:py-12 lg:py-20">
+            <div className="reveal">
+              <ChapterTitle hand="1.">The problem</ChapterTitle>
+              <p className="text-lg md:text-xl xl:text-2xl leading-relaxed text-[#ece5d6]/85">{project.brief}</p>
+              <dl className="mt-6 md:mt-8 pt-5 border-t border-dashed border-[#ece5d6]/25 grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 text-sm">
+                {[
+                  ["Client", project.client],
+                  ["My role", project.role],
+                  ["When", project.date],
+                ].map(([k, v]) => (
+                  <div key={k} className="flex flex-row justify-between gap-4 sm:flex-col sm:justify-start sm:gap-1">
+                    <dt className="text-[#ece5d6]/45">{k}</dt>
+                    <dd className="font-medium leading-snug text-right sm:text-left">{v}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </article>
+
+          {/* What I built */}
+          <article id="built" className="py-8 md:py-12 lg:py-20">
+            <div className="reveal">
+              <ChapterTitle hand="2.">What I built</ChapterTitle>
+              <ul className="flex flex-col">
+                {project.built.map((f, i) => (
+                  <li key={f.title} className="flex gap-4 py-4 md:py-5 border-t border-dashed border-[#ece5d6]/25 last:border-b">
+                    <span className={`${HAND} text-2xl md:text-3xl text-[#8ce6c4] leading-none pt-1`}>{i + 1}.</span>
+                    <div className="flex flex-col gap-2">
+                      <h3 style={headingStyle} className="text-xl md:text-2xl leading-tight">
+                        {f.title}
+                      </h3>
+                      <p className="text-[#ece5d6]/65 text-[15px] md:text-base leading-relaxed">{f.text}</p>
+                    </div>
                   </li>
                 ))}
               </ul>
             </div>
-          )}
+          </article>
 
-          {/* Gallery Image 4 */}
-          {project.gallery && project.gallery.length > 3 && (
-            <div className="gallery-item relative w-full aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl group mt-8">
-              <Image src={project.gallery[3]} alt={`${project.title} Final Screenshot`} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-black/10 mix-blend-overlay pointer-events-none" />
+          {/* How it went */}
+          <article id="impact" className="py-8 md:py-12 lg:py-20">
+            <div className="reveal">
+              <ChapterTitle hand="3.">How it went</ChapterTitle>
+              <p className="text-lg md:text-xl xl:text-2xl leading-relaxed text-[#ece5d6]/85 mb-6 md:mb-8">{project.impact}</p>
+              <ul className="flex flex-col gap-4 md:gap-5">
+                {project.metrics.map((m) => (
+                  <li key={m.label} className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-5">
+                    <span style={headingStyle} className="text-4xl sm:text-5xl md:text-6xl leading-none sm:min-w-[7.5rem] break-words">
+                      <Marker>
+                        <Counter value={m.value} />
+                      </Marker>
+                    </span>
+                    <span className="text-[#ece5d6]/65 leading-snug">{m.label}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-          )}
+          </article>
 
+          {/* Tools */}
+          <article id="stack" className="py-8 md:py-12 lg:py-20">
+            <div className="reveal">
+              <ChapterTitle hand="4.">Tools I used</ChapterTitle>
+              <p className="text-lg md:text-xl xl:text-2xl leading-relaxed text-[#ece5d6]/85">
+                {project.tags.slice(0, -1).join(", ")}
+                {project.tags.length > 1 ? " and " : ""}
+                {project.tags[project.tags.length - 1]}.
+              </p>
+
+              <div className="mt-8 md:mt-12 flex flex-col gap-2">
+                <p className={`${HAND} text-2xl md:text-3xl text-[#8ce6c4] -rotate-1`}>want something like this?</p>
+                <Link href="/contact" className="group relative self-start inline-block text-lg md:text-xl font-medium pb-2">
+                  Let&apos;s talk about your project →
+                  <Squiggle className="absolute left-0 bottom-0 w-full h-2 text-[#33CC99] transition-transform duration-500 origin-left group-hover:scale-x-105" />
+                </Link>
+              </div>
+            </div>
+          </article>
         </div>
       </section>
 
-      {/* Footer CTA */}
-      <section className="relative z-10 w-full py-32 border-t border-white/10 bg-[#020202] flex items-center justify-center">
-        <Link href="/" className="group flex flex-col items-center">
-          <span className="text-xs uppercase tracking-widest text-white/40 mb-6 group-hover:text-white transition-colors duration-300">
-            End of Showcase
-          </span>
-          <div className="overflow-hidden">
-            <h2 className="text-6xl md:text-8xl font-serif uppercase tracking-tighter group-hover:text-[#3AA89B] group-hover:-translate-y-2 transition-all duration-500">
-              Back to Home
-            </h2>
-          </div>
-        </Link>
+      {/* ───────── Keep reading ───────── */}
+      <section className="max-w-[1400px] mx-auto px-5 sm:px-6 md:px-10 lg:px-12 border-t border-dashed border-[#ece5d6]/25 mt-4 md:mt-8 py-10 md:py-16 lg:py-20 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+        {[
+          { p: prev, hand: "← the one before", align: "" },
+          { p: next, hand: "the next story →", align: "md:items-end md:text-right" },
+        ].map(({ p, hand, align }) => (
+          <Link key={hand} href={`/projects/${p.slug}`} className={`group flex flex-col gap-3 ${align}`}>
+            <span className={`${HAND} text-2xl text-[#8ce6c4]`}>{hand}</span>
+            <span
+              style={headingStyle}
+              className="text-3xl md:text-4xl xl:text-5xl leading-[1.05] tracking-tight transition-colors duration-300 group-hover:text-[#8ce6c4]"
+            >
+              {p.title}
+            </span>
+            <span className="text-[#ece5d6]/55 text-sm md:text-base max-w-sm">{p.tagline}</span>
+          </Link>
+        ))}
       </section>
     </div>
   );
