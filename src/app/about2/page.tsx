@@ -1,6 +1,33 @@
 import React from 'react';
-import About2 from '@/components/about2/About2';
+import AboutHero from '@/components/about/AboutHero';
+import AboutMe from '@/components/about/AboutMe';
+import Experience from '@/components/about/Experience';
+import Toolkit from '@/components/about/Toolkit';
+import Numbers from '@/components/about/Numbers';
+import WhatIEnjoy from '@/components/about/WhatIEnjoy';
+import ContactCTA from '@/components/about/ContactCTA';
+import AboutBackground3D from '@/components/about/AboutBackground3D';
 
-export default function About2Page() {
-  return <About2 />;
+export default function AboutPage() {
+  return (
+    <main className="bg-black min-h-screen w-full text-white relative" style={{ clipPath: 'inset(0)' }}>
+      {/* Global 3D Background */}
+      <div className="fixed top-0 left-0 w-full h-screen z-0 pointer-events-none opacity-40">
+        <AboutBackground3D />
+      </div>
+
+      <div className="relative z-10 w-full">
+        <AboutHero />
+      </div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        <AboutMe />
+        <Experience />
+        <Toolkit />
+        <Numbers />
+        <WhatIEnjoy />
+        <ContactCTA />
+      </div>
+    </main>
+  );
 }

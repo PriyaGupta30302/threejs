@@ -115,11 +115,17 @@ export default function Navbar() {
 
   // Show the bottom capsule once the user scrolls past the top navbar
   useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 120);
+    // On home, wait until the hero section has fully scrolled away
+    const onScroll = () => {
+      // Hero is pinned for 100% (mobile) / 300% (desktop) of viewport height
+      const pinned = window.innerWidth < 768 ? 1 : 3;
+      const threshold = pathname === '/' ? window.innerHeight * pinned : 120;
+      setIsScrolled(window.scrollY > threshold);
+    };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [pathname]);
 
   // Close drawer on route change
   useEffect(() => {
@@ -145,7 +151,7 @@ export default function Navbar() {
     <>
       {/* Top navbar (scrolls away with the page) */}
       <nav className={`absolute top-8 left-0 right-0 z-[100] flex justify-between items-center w-full pointer-events-none ${
-        pathname === '/about2' ? 'px-[70px]' : 'max-w-7xl mx-auto px-8'
+        pathname === '/about' ? 'px-[70px]' : 'max-w-7xl mx-auto px-8'
       }`}>
         <div className="pointer-events-auto">
           <Magnetic>
