@@ -24,6 +24,7 @@ export default function Hero() {
       title.style.fontSize = '100px';
       const natural = title.scrollWidth;
       if (natural > 0) title.style.fontSize = `${(wrap.clientWidth / natural) * 100}px`;
+      title.style.visibility = 'visible';
     };
     fit();
     document.fonts?.ready.then(fit);
@@ -101,6 +102,7 @@ export default function Hero() {
           <h1
             ref={titleRef}
             className="inline-block whitespace-nowrap leading-none font-medium tracking-wide text-white opacity-60 mix-blend-overlay"
+            style={{ visibility: 'hidden' }}
           >
             Frontend Developer
           </h1>

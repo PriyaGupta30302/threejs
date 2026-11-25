@@ -117,10 +117,15 @@ export default function Navbar() {
   useEffect(() => {
     // On home, wait until the hero section has fully scrolled away
     const onScroll = () => {
-      // Hero is pinned for 100% (mobile) / 300% (desktop) of viewport height
+      // Hide the capsule once the footer enters the viewport
+      const footer = document.querySelector('footer');
+      if (footer && footer.getBoundingClientRect().top < window.innerHeight) return setIsScrolled(false);
+      if (pathname !== '/') return setIsScrolled(window.scrollY > 120);
+      // Hero is pinned (GSAP wraps it in a .pin-spacer): show once that spacer has scrolled away
+      const spacer = document.querySelector('.pin-spacer');
+      if (spacer) return setIsScrolled(spacer.getBoundingClientRect().bottom <= window.innerHeight);
       const pinned = window.innerWidth < 768 ? 1 : 3;
-      const threshold = pathname === '/' ? window.innerHeight * pinned : 120;
-      setIsScrolled(window.scrollY > threshold);
+      setIsScrolled(window.scrollY >= window.innerHeight * pinned);
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });

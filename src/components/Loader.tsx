@@ -6,7 +6,7 @@ import gsap from "gsap";
 
 const STRIPS = 14;
 
-// Survives Loader remounts, so the intro (name text) plays only once per page load
+// Survives Loader remounts, so the first-load reveal plays only once per page load
 let introPlayed = false;
 
 // Shutter transition: strips drop in from the top to cover the page,
@@ -16,8 +16,6 @@ export default function Loader() {
   const router = useRouter();
   const wrapRef = useRef<HTMLDivElement>(null);
   const stripsRef = useRef<(HTMLDivElement | null)[]>([]);
-  const textRef = useRef<HTMLHeadingElement>(null);
-  const introRef = useRef<HTMLDivElement>(null);
   const prevPath = useRef(pathname);
   const pending = useRef(false); // a click-triggered navigation is in flight
   const busy = useRef(false);
@@ -55,29 +53,20 @@ export default function Loader() {
       },
     });
 
-  // First load: strips are already covering the page (no flash), show name, then reveal
+  // First load: strips are already covering the page (no flash), then reveal
   useEffect(() => {
     if (introStarted.current) return;
     introStarted.current = true;
     if (introPlayed) {
-      // Remounted (not a real first load): never show the intro text again
-      gsap.set(introRef.current, { display: "none" });
+      // Remounted (not a real first load): don't cover the page again
       gsap.set(strips(), { transformOrigin: "top center", scaleY: 0 });
       block(false);
       return;
     }
     introPlayed = true;
     gsap.set(strips(), { transformOrigin: "top center", scaleY: 1 });
-    gsap.set(introRef.current, { visibility: "visible" });
-    const tl = gsap.timeline();
-    tl.fromTo(textRef.current, { yPercent: 110 }, { yPercent: 0, duration: 0.9, ease: "power3.out" })
-      .to(textRef.current, { yPercent: -110, duration: 0.6, ease: "power3.in", delay: 0.4 })
-      .add(() => {
-        // Intro text is only for the first load; remove it so it never shows again
-        gsap.set(introRef.current, { display: "none" });
-        reveal();
-      });
     block(true);
+    reveal(0.6);
     // Not killed on cleanup: StrictMode's dev double-mount must not leave the page covered
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -147,17 +136,6 @@ export default function Loader() {
           }}
         />
       ))}
-      <div ref={introRef} className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden" style={{ visibility: "hidden" }}>
-        <div className="overflow-hidden">
-          <h1
-            ref={textRef}
-            className="text-4xl md:text-6xl tracking-wider text-[#34d399]"
-            style={{ fontFamily: "var(--font-lateef)", transform: "translateY(110%)" }}
-          >
-            PRIYA GUPTA
-          </h1>
-        </div>
-      </div>
     </div>
   );
 }
