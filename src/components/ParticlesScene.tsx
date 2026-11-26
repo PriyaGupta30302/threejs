@@ -118,7 +118,8 @@ export function Particles({ progressRef }: { progressRef: React.MutableRefObject
   // If the screen is portrait (mobile), scale down the mesh so it fits the narrow horizontal view
   const meshScale = aspect < 1 ? Math.max(0.5, aspect * 1.6) : 1.0;
 
-  const particleCount = 50000;
+  // Fewer particles on small screens keeps the vertex shader cheap on phones
+  const particleCount = size.width < 768 ? 14000 : size.width < 1100 ? 30000 : 50000;
 
   const sphereRotY = useRef(0);
   const sphereRotX = useRef(0);
@@ -142,7 +143,7 @@ export function Particles({ progressRef }: { progressRef: React.MutableRefObject
     const randOffsets = new Float32Array(particleCount);
 
     const widthSegments = 250;
-    const depthSegments = 200;
+    const depthSegments = Math.ceil(particleCount / widthSegments);
 
     for (let i = 0; i < particleCount; i++) {
       const col = i % widthSegments;
@@ -151,7 +152,7 @@ export function Particles({ progressRef }: { progressRef: React.MutableRefObject
       // Massive width to ensure the horizon (top of screen) stays perfectly straight and edges are off-screen
       let x = (col / (widthSegments - 1)) * 400 - 200; 
       // Extend Z past the camera (camera is at z=30) so there's NO empty space at the bottom
-      let z = (row / (depthSegments - 1)) * 200 - 150; // from -150 to 50
+      let z = (row / Math.max(1, depthSegments - 1)) * 200 - 150; // from -150 to 50
       
       // Add organic sine waves to make the horizontal lines wavy instead of a rigid straight grid
       z += Math.sin(x * 0.05) * 5.0;
@@ -229,7 +230,7 @@ export function Particles({ progressRef }: { progressRef: React.MutableRefObject
         <planeGeometry args={[1000, 1000]} />
       </mesh>
       <points ref={pointsRef} scale={meshScale}>
-        <bufferGeometry>
+        <bufferGeometry key={particleCount}>
         <bufferAttribute
           attach="attributes-position"
           count={particleCount}

@@ -5,7 +5,8 @@ import Image from "next/image";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import MotionPathPlugin from "gsap/MotionPathPlugin";
-import Network3D from "../Network3D";
+import dynamic from "next/dynamic";
+const Network3D = dynamic(() => import("../Network3D"), { ssr: false });
 import textData from "../../data/servicesText.json";
 
 gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);

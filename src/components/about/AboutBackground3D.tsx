@@ -7,7 +7,7 @@ import * as THREE from 'three';
 function ParticleField() {
   const pointsRef = useRef<THREE.Points>(null);
 
-  const particlesCount = 2000;
+  const particlesCount = typeof window !== 'undefined' && window.innerWidth < 768 ? 800 : 2000;
   
   const positions = useMemo(() => {
     const positions = new Float32Array(particlesCount * 3);
@@ -50,7 +50,7 @@ function ParticleField() {
 export default function AboutBackground3D() {
   return (
     <div className="w-full h-full">
-      <Canvas camera={{ position: [0, 0, 5], fov: 60 }}>
+      <Canvas camera={{ position: [0, 0, 5], fov: 60 }} dpr={1} gl={{ antialias: false, powerPreference: 'low-power' }}>
         <ParticleField />
       </Canvas>
     </div>
