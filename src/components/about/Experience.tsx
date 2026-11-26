@@ -89,7 +89,7 @@ export default function Experience() {
           {timeline.map((item, idx) => (
             <div 
               key={idx} 
-              className="stack-card sticky w-full p-8 md:p-12 rounded-3xl border border-white/5 bg-black/40 backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.5)] flex flex-col md:flex-row gap-8 items-start group overflow-hidden"
+              className="stack-card sticky w-full p-8 md:p-12 rounded-3xl border border-white/5 bg-black/80 md:bg-black/40 md:backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.5)] flex flex-col md:flex-row gap-8 items-start group overflow-hidden"
               style={{ zIndex: idx, top: `calc(8rem + ${idx * 1.5}rem)` }}
             >
               {/* Hover Glow Effect */}
@@ -115,7 +115,7 @@ export default function Experience() {
                 
                 <div className="flex flex-wrap gap-3 mt-auto">
                   {item.tags.map((tag, tIdx) => (
-                    <span key={tIdx} className="px-4 py-2 rounded-full border border-white/10 bg-white/5 text-xs text-white/70 backdrop-blur-md">
+                    <span key={tIdx} className="px-4 py-2 rounded-full border border-white/10 bg-white/5 text-xs text-white/70 md:backdrop-blur-md">
                       {tag}
                     </span>
                   ))}

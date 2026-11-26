@@ -181,6 +181,7 @@ export default function AboutHero() {
           <Canvas 
             camera={{ position: [0, 0, 10], fov: 45 }} 
             dpr={[1, isMobile ? 1 : 1.5]} // Restrict pixel ratio on mobile for performance
+            gl={{ antialias: false, powerPreference: 'high-performance' }}
             performance={{ min: 0.5 }} // Allow three.js to drop quality to maintain framerate
           >
             <ambientLight intensity={0.5} />

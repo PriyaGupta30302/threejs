@@ -160,7 +160,7 @@ export default function Toolkit() {
           {skills.map((skill, idx) => (
             <div 
               key={idx} 
-              className={`skill-card group flex flex-col items-center justify-center p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md cursor-default transition-all duration-500 hover:-translate-y-2 ${skill.color} ${idx === 8 ? 'lg:col-start-3' : ''}`}
+              className={`skill-card group flex flex-col items-center justify-center p-8 rounded-2xl bg-white/10 md:bg-white/5 border border-white/10 md:backdrop-blur-md cursor-default transition-all duration-500 hover:-translate-y-2 ${skill.color} ${idx === 8 ? 'lg:col-start-3' : ''}`}
             >
               <div className="mb-6 opacity-80 group-hover:opacity-100 transition-opacity duration-500 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]">
                 {skill.icon}

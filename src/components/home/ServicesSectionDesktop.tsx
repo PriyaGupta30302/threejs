@@ -3,7 +3,8 @@
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { useServicesAnimation } from "@/hooks/useServicesAnimation";
-import Network3D from "../Network3D";
+import dynamic from "next/dynamic";
+const Network3D = dynamic(() => import("../Network3D"), { ssr: false });
 
 import textData from "../../data/servicesText.json";
 
